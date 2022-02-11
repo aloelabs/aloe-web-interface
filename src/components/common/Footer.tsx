@@ -38,7 +38,12 @@ export default function Footer() {
         </a>
       </div>
       <div className='flex flex-row text-grey-900 items-center justify-between divide-x divide-x-2 divide-grey-600'>
-        <a className='text-center px-2' href={'https://aloelabs.medium.com/'}>
+        <a
+          className='text-center px-2'
+          href={'https://aloelabs.medium.com/'}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
           blog
         </a>
         <a
