@@ -225,7 +225,8 @@ export default function DepositTab(props: DepositTabProps) {
               setToken1Amount(
                 amount0
                   .mul(mantissa0)
-                  .mul(poolStats.token1OverToken0)
+                  .mul(poolStats.inventory1.total)
+                  .div(poolStats.inventory0.total)
                   .div(mantissa1)
                   .toFixed(poolStats.token1Decimals)
               );
@@ -248,7 +249,8 @@ export default function DepositTab(props: DepositTabProps) {
               setToken0Amount(
                 amount1
                   .mul(mantissa1)
-                  .div(poolStats.token1OverToken0)
+                  .mul(poolStats.inventory0.total)
+                  .div(poolStats.inventory1.total)
                   .div(mantissa0)
                   .toFixed(poolStats.token0Decimals)
               );
