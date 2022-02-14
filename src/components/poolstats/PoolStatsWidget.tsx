@@ -33,7 +33,9 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
     watch: true,
   });
 
-  const sharesBalance = (shareBalanceData) ? toBig(shareBalanceData.value) : undefined;
+  const sharesBalance = shareBalanceData
+    ? toBig(shareBalanceData.value)
+    : undefined;
 
   const token0Reserves = prettyFormatBalance(
     poolStats?.inventory0.total,
@@ -62,9 +64,9 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             .div(poolStats.outstandingShares),
           poolStats.token1Decimals
         );
-  const poolSharesBalance = (sharesBalance) ?
-    sharesBalance.div(String1E(18))
-    .toExponential(4) : '-';
+  const poolSharesBalance = sharesBalance
+    ? sharesBalance.div(String1E(18)).toExponential(4)
+    : '-';
 
   return (
     <div className='w-full rounded-md border-2 border-grey-200 flex flex-col items-start justify-start p-4'>

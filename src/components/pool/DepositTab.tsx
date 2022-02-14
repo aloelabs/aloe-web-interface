@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { BlendPoolData } from '../../data/BlendPoolData';
 import {
-  BlendPoolDrawData, logBig,
+  BlendPoolDrawData,
+  logBig,
   ResolveBlendPoolDrawData,
 } from '../../data/BlendPoolDataResolver';
 import TokenAmountInput from '../common/TokenAmountInput';
@@ -14,10 +15,17 @@ import { WETH_9_MAINNET_ADDRESS } from '../../data/constants/Addresses';
 import Big from 'big.js';
 import { useDeposit } from '../../data/hooks/UseDeposit';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
-import { approve, deposit, mintWeth } from '../../connector/BlendDepositActions';
+import {
+  approve,
+  deposit,
+  mintWeth,
+} from '../../connector/BlendDepositActions';
 import Pending from '../common/Pending';
 import { useSigner } from 'wagmi';
-import { DEFAULT_RATIO_CHANGE, RATIO_CHANGE_CUTOFF } from '../../data/constants/Values';
+import {
+  DEFAULT_RATIO_CHANGE,
+  RATIO_CHANGE_CUTOFF,
+} from '../../data/constants/Values';
 
 export type DepositTabProps = {
   poolData: BlendPoolData;
@@ -35,7 +43,6 @@ enum ButtonState {
   PENDING_TRANSACTION,
 }
 
-
 function printButtonState(
   buttonState: ButtonState,
   drawData: BlendPoolDrawData
@@ -44,7 +51,7 @@ function printButtonState(
     case ButtonState.NO_WALLET:
       return 'Deposit';
     case ButtonState.RATIO_CHANGE_TOO_LOW:
-      return 'Ratio Change Too Low'
+      return 'Ratio Change Too Low';
     case ButtonState.INSUFFICIENT_TOKEN_0:
       return `Insufficient ${drawData.token0Label}`;
     case ButtonState.INSUFFICIENT_TOKEN_1:
@@ -73,35 +80,41 @@ export default function DepositTab(props: DepositTabProps) {
   const [advOptionsClosed, setAdvOptionsClosed] = useState<boolean>(true);
   const [ratioChange, setRatioChange] = useState(DEFAULT_RATIO_CHANGE);
 
-  const [buttonState, setButtonState] = useState<ButtonState>(ButtonState.NO_WALLET);
+  const [buttonState, setButtonState] = useState<ButtonState>(
+    ButtonState.NO_WALLET
+  );
 
-  const [isTransactionPending, setIsTransactionPending] = useState<boolean>(false);
+  const [isTransactionPending, setIsTransactionPending] =
+    useState<boolean>(false);
 
   // Cancel out weird on-chain decimal stuff
-  const maxToken0String =
-    (depositData) ?
-    depositData.maxToken0
-      .div(String1E(depositData.token0Decimals))
-      .toFixed(depositData.token0Decimals)
-      : undefined;
-  const maxToken1String =
-    (depositData) ?
-    depositData.maxToken1
-      ?.div(String1E(depositData.token1Decimals))
-      .toFixed(depositData.token1Decimals)
-      : undefined;
+  const maxToken0String = depositData
+    ? depositData.maxToken0
+        .div(String1E(depositData.token0Decimals))
+        .toFixed(depositData.token0Decimals)
+    : undefined;
+  const maxToken1String = depositData
+    ? depositData.maxToken1
+        ?.div(String1E(depositData.token1Decimals))
+        .toFixed(depositData.token1Decimals)
+    : undefined;
 
   // Determine button state
   useEffect(() => {
-
     const token0IsWETH =
       props.poolData.token0Address === WETH_9_MAINNET_ADDRESS;
     const token1IsWETH =
       props.poolData.token1Address === WETH_9_MAINNET_ADDRESS;
 
     // Input fields as Big
-    const amount0 = (token0Amount === '' || !depositData) ? new Big(0) : new Big(token0Amount).mul(String1E(depositData.token0Decimals));
-    const amount1 = (token1Amount === '' || !depositData)  ? new Big(0) : new Big(token1Amount).mul(String1E(depositData.token1Decimals));
+    const amount0 =
+      token0Amount === '' || !depositData
+        ? new Big(0)
+        : new Big(token0Amount).mul(String1E(depositData.token0Decimals));
+    const amount1 =
+      token1Amount === '' || !depositData
+        ? new Big(0)
+        : new Big(token1Amount).mul(String1E(depositData.token1Decimals));
 
     if (isTransactionPending) {
       setButtonState(ButtonState.PENDING_TRANSACTION);
@@ -114,10 +127,8 @@ export default function DepositTab(props: DepositTabProps) {
     } else if (amount1.gt(depositData.maxToken1)) {
       setButtonState(ButtonState.INSUFFICIENT_TOKEN_1);
     } else if (
-      (token0IsWETH &&
-        amount0.gt(depositData.token0Balance)) ||
-      (token1IsWETH &&
-        amount1.gt(depositData.token1Balance))
+      (token0IsWETH && amount0.gt(depositData.token0Balance)) ||
+      (token1IsWETH && amount1.gt(depositData.token1Balance))
     ) {
       // should mint amount entered - weth balance
       setButtonState(ButtonState.MINT_WETH);
@@ -130,28 +141,46 @@ export default function DepositTab(props: DepositTabProps) {
     } else {
       setButtonState(ButtonState.READY);
     }
-  }, [depositData, isTransactionPending, props.poolData.token0Address, props.poolData.token1Address, ratioChange, token0Amount, token1Amount, signer]);
+  }, [
+    depositData,
+    isTransactionPending,
+    props.poolData.token0Address,
+    props.poolData.token1Address,
+    ratioChange,
+    token0Amount,
+    token1Amount,
+    signer,
+  ]);
 
   const buttonLabel = printButtonState(buttonState, drawData);
 
   // Resolve button action
 
-  const constructButtonAction: (buttonState: ButtonState) => () => void = (buttonState) => {
+  const constructButtonAction: (buttonState: ButtonState) => () => void = (
+    buttonState
+  ) => {
     if (!signer) return () => {};
 
     switch (buttonState) {
       case ButtonState.MINT_WETH:
         return () => {
           if (!depositData) {
-            console.log('No deposit data in mint call, something bad happened...');
+            console.log(
+              'No deposit data in mint call, something bad happened...'
+            );
             return;
           }
           setIsTransactionPending(true);
           // should mint amount entered - weth balance
 
-          const token0IsWeth = props.poolData.token0Address === WETH_9_MAINNET_ADDRESS;
-          const wethDesired = new Big(token0IsWeth ? token0Amount : token1Amount).mul(String1E(18));
-          const wethToMint = wethDesired.minus(token0IsWeth ? depositData.token0Balance : depositData.token1Balance);
+          const token0IsWeth =
+            props.poolData.token0Address === WETH_9_MAINNET_ADDRESS;
+          const wethDesired = new Big(
+            token0IsWeth ? token0Amount : token1Amount
+          ).mul(String1E(18));
+          const wethToMint = wethDesired.minus(
+            token0IsWeth ? depositData.token0Balance : depositData.token1Balance
+          );
 
           logBig(wethDesired);
           logBig(wethToMint);
@@ -166,35 +195,58 @@ export default function DepositTab(props: DepositTabProps) {
         return () => {
           setIsTransactionPending(true);
           // Approve max
-          approve(signer, props.poolData.token0Address, props.poolData.poolAddress, (receipt) => {
-            setIsTransactionPending(false);
-            console.log(receipt);
-          });
-        }
+          approve(
+            signer,
+            props.poolData.token0Address,
+            props.poolData.poolAddress,
+            (receipt) => {
+              setIsTransactionPending(false);
+              console.log(receipt);
+            }
+          );
+        };
       case ButtonState.APPROVE_1:
         return () => {
           setIsTransactionPending(true);
           // Approve max
-          approve(signer, props.poolData.token1Address, props.poolData.poolAddress, (receipt) => {
-            setIsTransactionPending(false);
-            console.log(receipt);
-          });
-        }
+          approve(
+            signer,
+            props.poolData.token1Address,
+            props.poolData.poolAddress,
+            (receipt) => {
+              setIsTransactionPending(false);
+              console.log(receipt);
+            }
+          );
+        };
       case ButtonState.READY:
         return () => {
           if (!depositData) {
-            console.log('No deposit data in deposit handler, something bad happened...');
+            console.log(
+              'No deposit data in deposit handler, something bad happened...'
+            );
             return;
           }
           setIsTransactionPending(true);
 
-          const amount0Max = new Big(token0Amount).mul(String1E(depositData.token0Decimals));
-          const amount1Max = new Big(token1Amount).mul(String1E(depositData.token1Decimals));
+          const amount0Max = new Big(token0Amount).mul(
+            String1E(depositData.token0Decimals)
+          );
+          const amount1Max = new Big(token1Amount).mul(
+            String1E(depositData.token1Decimals)
+          );
 
-          deposit(signer, props.poolData.poolAddress, amount0Max, amount1Max, Number(ratioChange), (receipt) => {
-            setIsTransactionPending(false);
-            console.log(receipt);
-          });
+          deposit(
+            signer,
+            props.poolData.poolAddress,
+            amount0Max,
+            amount1Max,
+            Number(ratioChange),
+            (receipt) => {
+              setIsTransactionPending(false);
+              console.log(receipt);
+            }
+          );
         };
       case ButtonState.NO_WALLET:
       case ButtonState.RATIO_CHANGE_TOO_LOW:
@@ -203,7 +255,7 @@ export default function DepositTab(props: DepositTabProps) {
       default:
         return () => {};
     }
-  }
+  };
 
   const onButtonClick: () => void = constructButtonAction(buttonState);
 
@@ -293,18 +345,23 @@ export default function DepositTab(props: DepositTabProps) {
         </ToggleableRatioChange>
       </div>
       <div className='w-full'>
-        <PrimaryButton className='w-full py-2 mt-2'
-                       name={buttonLabel}
-                       onClick={onButtonClick}
-                       disabled={([ButtonState.INSUFFICIENT_TOKEN_0,
-                         ButtonState.INSUFFICIENT_TOKEN_1,
-                         ButtonState.PENDING_TRANSACTION,
-                         ButtonState.RATIO_CHANGE_TOO_LOW].includes(buttonState))}>
+        <PrimaryButton
+          className='w-full py-2 mt-2'
+          name={buttonLabel}
+          onClick={onButtonClick}
+          disabled={[
+            ButtonState.INSUFFICIENT_TOKEN_0,
+            ButtonState.INSUFFICIENT_TOKEN_1,
+            ButtonState.PENDING_TRANSACTION,
+            ButtonState.RATIO_CHANGE_TOO_LOW,
+          ].includes(buttonState)}
+        >
           <div className='flex flex-row items-center justify-center'>
-            {buttonState === ButtonState.PENDING_TRANSACTION ?
+            {buttonState === ButtonState.PENDING_TRANSACTION ? (
               <Pending />
-              : <span>{buttonLabel}</span>
-            }
+            ) : (
+              <span>{buttonLabel}</span>
+            )}
           </div>
         </PrimaryButton>
       </div>

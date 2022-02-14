@@ -18,8 +18,6 @@ type DepositPageState = {
   token1Decimals: number;
 };
 
-
-
 function tokenMaxFromBalance(
   balanceToken: Big,
   balanceETH: Big,

@@ -66,15 +66,17 @@ export default function ConnectWalletButton() {
                   href={'/terms.pdf'}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='underline text-green-600 hover:text-green-700'>
+                  className='underline text-green-600 hover:text-green-700'
+                >
                   Terms of Use
-                </a>
-                {' '}and{' '}
+                </a>{' '}
+                and{' '}
                 <a
                   href={'/privacy.pdf'}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='underline text-green-600 hover:text-green-700'>
+                  className='underline text-green-600 hover:text-green-700'
+                >
                   Privacy Policy
                 </a>
                 .
