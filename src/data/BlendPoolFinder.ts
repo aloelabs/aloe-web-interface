@@ -93,6 +93,6 @@ export default async function findPools(
   });
   return {
     poolDataMap,
-    poolAddresses
+    poolAddresses,
   };
 }

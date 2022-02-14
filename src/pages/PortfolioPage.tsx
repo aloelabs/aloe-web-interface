@@ -20,7 +20,12 @@ const StyledImgWrapper = styled.div`
     width: 100%;
     height: 100%;
     display: inline-block;
-    background: linear-gradient(100.12deg, #C08FFF5A -34.33%, #6CCFE41A 60.51%, #88E2A11A 117.32%);
+    background: linear-gradient(
+      100.12deg,
+      #c08fff5a -34.33%,
+      #6ccfe41a 60.51%,
+      #88e2a11a 117.32%
+    );
     box-shadow: 0 30px 40px 10px #3e5a6f;
   }
 `;
@@ -145,7 +150,7 @@ export default function PortfolioPage() {
         <li>One-click migration from other services</li>
         <li>Portfolio performance tracking</li>
       </ul>
-      
+
       <div className='flex flex-col items-center justify-center mt-12'>
         <CardContainer>
           <Card

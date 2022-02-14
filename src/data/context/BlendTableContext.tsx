@@ -16,7 +16,7 @@ export interface IBlendTableContext {
 const defaultState: IBlendTableContext = {
   poolAddresses: [],
   poolDataMap: new Map<string, BlendPoolData>(),
-  fetchPoolData: ((address: string) => {}),
+  fetchPoolData: (address: string) => {},
 };
 
 export const BlendTableContext =
@@ -32,11 +32,16 @@ export function BlendTableProvider(props: BlendTableContextProviderProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const provider = useProvider();
 
-  const fetchBlendPoolDataCallback = React.useCallback<(address: string) => void>((address: string) => {
-    fetchBlendPoolData(address, provider).then((poolData) => {
-      contextState.poolDataMap.set(address, poolData)
-    });
-  }, [provider, contextState]);
+  const fetchBlendPoolDataCallback = React.useCallback<
+    (address: string) => void
+  >(
+    (address: string) => {
+      fetchBlendPoolData(address, provider).then((poolData) => {
+        contextState.poolDataMap.set(address, poolData);
+      });
+    },
+    [provider, contextState]
+  );
 
   useEffect(() => {
     if (!loading) {
@@ -44,7 +49,7 @@ export function BlendTableProvider(props: BlendTableContextProviderProps) {
         return {
           ...state,
           fetchPoolData: fetchBlendPoolDataCallback,
-        }
+        };
       });
       const loadAsync = async () => {
         const searchResults = await findPools(
@@ -57,8 +62,11 @@ export function BlendTableProvider(props: BlendTableContextProviderProps) {
             return {
               ...x,
               poolAddresses: searchResults.poolAddresses,
-              poolDataMap: new Map<string, BlendPoolData>([...Array.from(x.poolDataMap.entries()), ...Array.from(searchResults.poolDataMap.entries())])
-            }
+              poolDataMap: new Map<string, BlendPoolData>([
+                ...Array.from(x.poolDataMap.entries()),
+                ...Array.from(searchResults.poolDataMap.entries()),
+              ]),
+            };
           });
         } else {
           setTimeout(() => {

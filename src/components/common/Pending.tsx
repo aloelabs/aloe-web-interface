@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 export default function Pending() {
-
   const [periodCount, setPeriodCount] = useState(0);
   const periodCountRef = useRef(periodCount);
   periodCountRef.current = periodCount;
@@ -17,9 +16,5 @@ export default function Pending() {
     return () => clearInterval(timer);
   }, []);
 
-  return (
-    <span>
-      Pending{'.'.repeat(periodCount)}
-    </span>
-  );
+  return <span>Pending{'.'.repeat(periodCount)}</span>;
 }

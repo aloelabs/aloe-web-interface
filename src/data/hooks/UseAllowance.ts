@@ -35,7 +35,7 @@ export function useAllowance({
   watch,
 }: UseAllowanceConfig = {}) {
   const wagmiContext = useContext();
-  const cacheBuster = wagmiContext.state.cacheBuster
+  const cacheBuster = wagmiContext.state.cacheBuster;
   const provider = useProvider();
   const [{ data: blockNumber }] = useBlockNumber({ skip: true, watch });
   const [state, setState] = React.useState<State>(initialState);

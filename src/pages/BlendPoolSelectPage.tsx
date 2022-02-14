@@ -21,12 +21,28 @@ export default function BlendPoolSelectPage() {
 
   if (searchText.length > 0) {
     pools = pools.filter((pool) => {
-      const { silo0Name, silo1Name, silo0Label, silo1Label, token0Label, token1Label } = ResolveBlendPoolDrawData(pool);
+      const {
+        silo0Name,
+        silo1Name,
+        silo0Label,
+        silo1Label,
+        token0Label,
+        token1Label,
+      } = ResolveBlendPoolDrawData(pool);
 
-      return [silo0Name, silo1Name, silo0Label, silo1Label, token0Label, token1Label].findIndex((field) => {
-        return field.toLowerCase().includes(searchText.toLowerCase());
-      }) !== -1;
-    })
+      return (
+        [
+          silo0Name,
+          silo1Name,
+          silo0Label,
+          silo1Label,
+          token0Label,
+          token1Label,
+        ].findIndex((field) => {
+          return field.toLowerCase().includes(searchText.toLowerCase());
+        }) !== -1
+      );
+    });
   }
 
   return (

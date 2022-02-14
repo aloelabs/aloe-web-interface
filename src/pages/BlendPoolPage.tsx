@@ -31,7 +31,7 @@ export default function BlendPoolPage() {
     return <div>Finding pool...</div>;
   }
   const poolDrawData = ResolveBlendPoolDrawData(poolData);
-  
+
   const combinedSiloLabel = poolDrawData.silo0Label.concat(
     poolDrawData.silo0Label === poolDrawData.silo1Label
       ? ''
@@ -69,10 +69,11 @@ export default function BlendPoolPage() {
           <BlendStampHolo poolData={poolData} />
           <div className='text-grey-700 pt-8 pb-4'>
             <p>
-              This pool provides liquidity to the {poolDrawData.token0Label}
-              /{poolDrawData.token1Label} pair on Uniswap&nbsp;V3. It maintains the
-              same liquidity density as a full&#8209;width position, and liquidity
-              far from the current price is deposited to silos ({combinedSiloLabel}) to earn extra yield.
+              This pool provides liquidity to the {poolDrawData.token0Label}/
+              {poolDrawData.token1Label} pair on Uniswap&nbsp;V3. It maintains
+              the same liquidity density as a full&#8209;width position, and
+              liquidity far from the current price is deposited to silos (
+              {combinedSiloLabel}) to earn extra yield.
             </p>
           </div>
           <div className='w-full'>
