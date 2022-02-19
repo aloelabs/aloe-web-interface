@@ -22,6 +22,12 @@ interface MouseMoveData {
 }
 
 const PIE_CHART_HOVER_GROWTH = 1.05;
+const TOKEN0_COLOR_UNISWAP = '#BEEDC7';
+const TOKEN0_COLOR_SILO = '#59D67C';
+const TOKEN0_COLOR_FLOAT = '#00C143';
+const TOKEN1_COLOR_UNISWAP = '#BBA3F7';
+const TOKEN1_COLOR_SILO = '#865EF2';
+const TOKEN1_COLOR_FLOAT = '#6002EE';
 
 const PieChartContainer = styled.div`
   transform: rotate(90deg);
@@ -107,7 +113,6 @@ const ExpandingPath = styled.path`
 `
 
 const PieChartLabel = styled.div.attrs<{visibility: boolean}>((props) => {
-  console.log(props.visibility);
   return {
     style: { color: props.visibility ? 'white' : 'transparent' }
   }
@@ -134,11 +139,31 @@ const PieChartLabel = styled.div.attrs<{visibility: boolean}>((props) => {
   
   // stuff to make animation work
   pointer-events: none;
-  transition: all 0.15s linear;
+  transition: all 0.1s linear;
 
   // colors, borders, text
   border-radius: calc(var(--height) / 2);
   ${tw`bg-grey-50 font-bold`};
+`
+
+const CategoryAndAPRLabel = styled.div<{color: string}>`
+  position: relative;
+  margin: 2px 0px;
+
+  :before {
+    content: '';
+
+    position: absolute;
+    top: 50%;
+    left: -22px;
+
+    height: 8px;
+    aspect-ratio: 1;
+    margin-top: -4px;
+
+    border-radius: 50%;
+    background: ${({ color }) => color};
+  }
 `
 
 export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
@@ -158,27 +183,27 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
 
     slices[0] = {
       percent: silo0_1.div(poolStats.tvl_1).toNumber(),
-      color: '#59D67C',
+      color: TOKEN0_COLOR_SILO,
     };
     slices[1] = {
       percent: float0_1.div(poolStats.tvl_1).toNumber(),
-      color: '#00C143',
+      color: TOKEN0_COLOR_FLOAT,
     };
     slices[2] = {
       percent: uni0_1.div(poolStats.tvl_1).toNumber(),
-      color: '#BEEDC7',
+      color: TOKEN0_COLOR_UNISWAP,
     };
     slices[3] = {
       percent: uni1.div(poolStats.tvl_1).toNumber(),
-      color: '#BBA3F7',
+      color: TOKEN1_COLOR_UNISWAP,
     };
     slices[4] = {
       percent: float1.div(poolStats.tvl_1).toNumber(),
-      color: '#6002EE',
+      color: TOKEN1_COLOR_FLOAT,
     };
     slices[5] = {
       percent: silo1.div(poolStats.tvl_1).toNumber(),
-      color: '#865EF2',
+      color: TOKEN1_COLOR_SILO,
     };
   }
 
@@ -205,11 +230,14 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
   });
 
   cumulativePercent = 0;
+  let activeSliceIdx: number | null = null;
   let pieChartLabelText = '';
-  for (const slice of slices) {
+  for (let i = 0; i < slices.length; i++) {
+    const slice = slices[i];
     cumulativePercent += slice.percent;
 
     if (cumulativePercent > mouseData.theta / 360.)  {
+      activeSliceIdx = i;
       pieChartLabelText = `${(slice.percent * 100).toFixed(2)}%`;
       break;
     }
@@ -218,7 +246,7 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
   return (
     <div className='w-full h-full rounded-md border-2 border-grey-200 flex flex-col items-start justify-start p-4'>
         <WidgetHeading>Token Allocation</WidgetHeading>
-        <div className='w-full h-full grid grid-cols-2'>
+        <div className='w-full h-full flex flex-row flex-nowrap'>
           <div className='w-[200px] h-[200px] relative'>
 
             <PieChartContainer
@@ -242,8 +270,41 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
             </PieChartLabel>
 
           </div>
-          <div>
-            Test
+          <div className='flex flex-col flex-nowrap ml-8'>
+            <div className='h-1/2 flex flex-row flex-nowrap justify-start items-center'>
+              <div className='font-semibold w-14'>
+                {drawData.token0Label}
+              </div>
+              <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
+              <div className='grid grid-rows-3'>
+                <CategoryAndAPRLabel color={TOKEN0_COLOR_UNISWAP} className={mouseData.isActive && activeSliceIdx === 2 ? 'text-white' : 'text-grey-600'}>
+                  Uniswap
+                </CategoryAndAPRLabel>
+                <CategoryAndAPRLabel color={TOKEN0_COLOR_SILO} className={mouseData.isActive && activeSliceIdx === 0 ? 'text-white' : 'text-grey-600'}>
+                  {drawData.silo0Label}
+                </CategoryAndAPRLabel>
+                <CategoryAndAPRLabel color={TOKEN0_COLOR_FLOAT} className={mouseData.isActive && activeSliceIdx === 1 ? 'italic text-white' : 'italic text-grey-600'}>
+                  Float
+                </CategoryAndAPRLabel>
+              </div>
+            </div>
+            <div className='h-1/2 flex flex-row flex-nowrap justify-start items-center'>
+            <div className='font-semibold w-14'>
+                {drawData.token1Label}
+              </div>
+              <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
+              <div className='grid grid-rows-3'>
+              <CategoryAndAPRLabel color={TOKEN1_COLOR_UNISWAP} className={mouseData.isActive && activeSliceIdx === 3 ? 'text-white' : 'text-grey-600'}>
+                  Uniswap
+                </CategoryAndAPRLabel>
+                <CategoryAndAPRLabel color={TOKEN1_COLOR_SILO} className={mouseData.isActive && activeSliceIdx === 5 ? 'text-white' : 'text-grey-600'}>
+                  {drawData.silo1Label}
+                </CategoryAndAPRLabel>
+                <CategoryAndAPRLabel color={TOKEN1_COLOR_FLOAT} className={mouseData.isActive && activeSliceIdx === 4 ? 'italic text-white' : 'italic text-grey-600'}>
+                  Float
+                </CategoryAndAPRLabel>
+              </div>
+            </div>
           </div>
         </div>
     </div>
