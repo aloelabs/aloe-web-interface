@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { MouseEventHandler, useContext, useState } from 'react';
 import WidgetHeading from '../common/WidgetHeading';
 import styled from 'styled-components';
 import tw from 'twin.macro';
@@ -6,12 +6,81 @@ import { BlendPoolData } from '../../data/BlendPoolData';
 import { ResolveBlendPoolDrawData } from '../../data/BlendPoolDataResolver';
 
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
-import { prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
-import { useAccount, useBalance } from 'wagmi';
 
 export type PoolStatsWidgetProps = {
   poolData: BlendPoolData;
 };
+
+// MARK: Capturing Mouse Data on container div ---------------------------------------
+
+interface MouseMoveData {
+  x: number;
+  y: number;
+  r: number;
+  theta: number;
+  isActive: boolean;
+}
+
+const PIE_CHART_HOVER_GROWTH = 1.05;
+
+const PieChartContainer = styled.div`
+  transform: rotate(90deg);
+
+  perspective: 800px;
+  perspective-origin: center;
+`
+
+const useMove = () => {
+  const [state, setState] = useState<MouseMoveData>({
+    x: 0,
+    y: 0,
+    r: 0,
+    theta: 0,
+    isActive: false,
+  });
+
+  const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
+    const currentTarget = e.currentTarget;
+    const boundingRect = currentTarget.getBoundingClientRect();
+
+    // Compute pointer's offset from center of element (in pixels)
+    const offsetX = e.clientX - (boundingRect.x + currentTarget.offsetWidth / 2);
+    const offsetY = e.clientY - (boundingRect.y + currentTarget.offsetHeight / 2);
+
+    // Non-dimensionalize it (-1 to 1)
+    const percentX = offsetX * 2 / currentTarget.offsetWidth;
+    const percentY = offsetY * 2 / currentTarget.offsetHeight;
+
+    const r = Math.hypot(percentX, percentY);
+    let theta = Math.atan2(-percentX, percentY) * 180 / Math.PI;
+    if (theta < 0) theta += 360;
+
+    setState((state) => {
+      const data: MouseMoveData = {
+        ...state,
+        x: percentX,
+        y: percentY,
+        r,
+        theta,
+        isActive: true,
+      };
+
+      return data;
+    });
+  };
+
+  const handleMouseLeave: MouseEventHandler<HTMLDivElement> = (e) => {
+    setState((state) => ({ ...state, isActive: false }));
+  };
+
+  return {
+    mouseData: state,
+    handleMouseMove,
+    handleMouseLeave,
+  };
+};
+
+// MARK: Pie chart setup -------------------------------------------------------------
 
 type PieChartSlice = {
   percent: number;
@@ -29,20 +98,52 @@ function getCoordinatesForPercent(percent: number) {
   return [x, y];
 }
 
-const PieChartContainer = styled.div`
-  transform: rotate(90deg);
-`
-
 const ExpandingPath = styled.path`
   transition: all 0.15s ease-in;
 
   :hover {
-    transform: scale(1.05);
+    transform: scale(${PIE_CHART_HOVER_GROWTH});
   }
+`
+
+const PieChartLabel = styled.div.attrs<{visibility: boolean}>((props) => {
+  console.log(props.visibility);
+  return {
+    style: { color: props.visibility ? 'white' : 'transparent' }
+  }
+})<{visibility: boolean}>`
+  --width: 90px;
+  --height: 90px;
+
+  position: absolute;
+  width: var(--width);
+  height: var(--height);
+
+  // set top left corner to be centered in parent
+  left: 50%;
+  top: 50%;
+  // offset top left corner by element width so that text is centered
+  margin-left: calc(var(--width) / -2);
+  margin-top: calc(var(--height) / -2);
+
+  // padding and alignment
+  padding: 4px 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  // stuff to make animation work
+  pointer-events: none;
+  transition: all 0.15s linear;
+
+  // colors, borders, text
+  border-radius: calc(var(--height) / 2);
+  ${tw`bg-grey-50 font-bold`};
 `
 
 export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
   const drawData = ResolveBlendPoolDrawData(props.poolData);
+  const {mouseData, handleMouseMove, handleMouseLeave} = useMove();
 
   const { poolStats } = useContext(BlendPoolContext);
 
@@ -103,21 +204,48 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
     };
   });
 
+  cumulativePercent = 0;
+  let pieChartLabelText = '';
+  for (const slice of slices) {
+    cumulativePercent += slice.percent;
+
+    if (cumulativePercent > mouseData.theta / 360.)  {
+      pieChartLabelText = `${(slice.percent * 100).toFixed(2)}%`;
+      break;
+    }
+  }
+
   return (
-    <div className='w-full h-84 rounded-md border-2 border-grey-200 flex flex-col items-start justify-start p-4'>
+    <div className='w-full h-full rounded-md border-2 border-grey-200 flex flex-col items-start justify-start p-4'>
         <WidgetHeading>Token Allocation</WidgetHeading>
-        <PieChartContainer className='w-[200px] h-[200px]'>
-          <svg
-            viewBox="-1 -1 2 2"
-            overflow="visible"
-          >
-            {paths.map((path) => {
-              return (
-                <ExpandingPath d={path.data} fill={path.color}></ExpandingPath>
-              );
-            })}
-          </svg>
-        </PieChartContainer>
+        <div className='w-full h-full grid grid-cols-2'>
+          <div className='w-[200px] h-[200px] relative'>
+
+            <PieChartContainer
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+            >
+              <svg
+                viewBox="-1 -1 2 2"
+                overflow="visible"
+              >
+                {paths.map((path) => {
+                  return (
+                    <ExpandingPath d={path.data} fill={path.color}></ExpandingPath>
+                  );
+                })}
+              </svg>
+            </PieChartContainer>
+
+            <PieChartLabel visibility={mouseData.isActive && mouseData.r < 1.}>
+              {pieChartLabelText}
+            </PieChartLabel>
+
+          </div>
+          <div>
+            Test
+          </div>
+        </div>
     </div>
   );
 }
