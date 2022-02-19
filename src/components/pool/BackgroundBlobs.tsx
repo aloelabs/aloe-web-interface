@@ -5,9 +5,8 @@ const BlobContainer = styled.div`
   pointer-events: none;
   z-index: 0;
   position: absolute;
-  height: 240px;
-  width: 530px;
-  top: 6rem;
+  height: 100%;
+  width: 100%;
   left: 50%;
   transform: translate(-50%, 0%);
 `;
@@ -15,13 +14,11 @@ const BlobContainer = styled.div`
 const Blob = styled.div`
   position: absolute;
   border-radius: 50%;
-  //   background: linear-gradient(100.12deg, rgba(192, 143, 255, 1.0) -34.33%, rgba(108, 207, 228, 1.0) 60.51%, rgba(136, 226, 161, 1.0) 117.32%);
   background: linear-gradient(
     100.12deg,
     rgba(108, 207, 228, 1) 30.51%,
     rgba(136, 226, 161, 1) 117.32%
   );
-  //   background: #2F485A;
 
   @keyframes float {
     0% {
@@ -42,8 +39,8 @@ const Blob1 = styled(Blob)`
 
   height: var(--diameter);
   width: var(--diameter);
-  bottom: -0.5rem;
-  left: -2rem;
+  top: 5%;
+  left: -3rem;
 
   opacity: 0.8;
   animation-timing-function: cubic-bezier(0.54, 0.085, 0.5, 0.92);
@@ -59,8 +56,8 @@ const Blob2 = styled(Blob)`
 
   height: var(--diameter);
   width: var(--diameter);
-  top: 25%;
-  right: -1rem;
+  top: -4%;
+  right: -1.5rem;
 
   opacity: 0.8;
   animation-timing-function: cubic-bezier(0.54, 0.085, 0.5, 0.92);

@@ -12,6 +12,7 @@ import BlendStampHolo from '../components/common/BlendStampHolo';
 import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
+import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 
 type PoolParams = {
   pooladdress: string;
@@ -40,8 +41,10 @@ export default function BlendPoolPage() {
 
   return (
     <BlendPoolProvider poolData={poolData}>
-      <div className='flex flex-col items-center justify-start h-full w-full'>
-        <div className='pt-10 w-full max-w-screen-sm px-6 sm:px-10 md:px-20'>
+      <div className='flex flex-row justify-center'>
+      <div className='h-full max-w-[1260px] flex flex-row flex-nowrap gap-16 pt-10 px-36'>
+      {/* max-w-screen-sm px-6 sm:px-10 md:px-20 */}
+        <div className='basis-3/5 relative'> {/* using relative so that BackgroundBlobs behave */}
           <LinkButtonWithIcon
             onClick={() => {
               navigate('../pools');
@@ -76,14 +79,19 @@ export default function BlendPoolPage() {
               {combinedSiloLabel}) to earn extra yield.
             </p>
           </div>
-          <div className='w-full'>
-            <PoolInteractionTabs poolData={poolData} />
-          </div>
+
           <div className='w-full pt-4'>
             {/*<BlendAllocationGraph />*/}
+            <PoolPieChartWidget poolData={poolData} />
             <PoolStatsWidget poolData={poolData} />
           </div>
         </div>
+        <div className='basis-2/5 pt-24'>
+          <div className='w-full'>
+            <PoolInteractionTabs poolData={poolData} />
+          </div>
+        </div>
+      </div>
       </div>
     </BlendPoolProvider>
   );
