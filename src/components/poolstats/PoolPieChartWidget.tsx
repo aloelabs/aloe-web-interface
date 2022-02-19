@@ -13,47 +13,31 @@ export type PoolStatsWidgetProps = {
   poolData: BlendPoolData;
 };
 
-const Pie = styled.div<{ segmentTurns: number[] }>`
-  width: 200px;
-  height: 200px;
+type PieChartSlice = {
+  percent: number;
+  color: string;
+}
 
-  border-radius: 50%;
+type PieChartSlicePath = {
+  data: string,
+  color: string,
+}
 
-  transform: rotate(0.5turn);
+function getCoordinatesForPercent(percent: number) {
+  const x = Math.cos(2 * Math.PI * percent);
+  const y = Math.sin(2 * Math.PI * percent);
+  return [x, y];
+}
 
-  background: conic-gradient(
-    #59D67C ${({segmentTurns}) => segmentTurns[0]}turn,
-    ${({segmentTurns}) => segmentTurns[0]}turn,
-    #00C143 ${({segmentTurns}) => segmentTurns[1]}turn,
-    ${({segmentTurns}) => segmentTurns[1]}turn,
-    #BEEDC7 ${({segmentTurns}) => segmentTurns[2]}turn,
-    ${({segmentTurns}) => segmentTurns[2]}turn,
-    #BBA3F7 ${({segmentTurns}) => segmentTurns[3]}turn,
-    ${({segmentTurns}) => segmentTurns[3]}turn,
-    #6002EE ${({segmentTurns}) => segmentTurns[4]}turn,
-    ${({segmentTurns}) => segmentTurns[4]}turn,
-    #865EF2 0turn
-  );
+const PieChartContainer = styled.div`
+  transform: rotate(90deg);
 `
 
-const PieSlice = styled.div<{ color: string, turns: number[] }>`
-  position: absolute;
+const ExpandingPath = styled.path`
+  transition: all 0.15s ease-in;
 
-  width: 200px;
-  height: 200px;
-
-  border-radius: 50%;
-
-  background: conic-gradient(
-    ${({color}) => color} ${({turns}) => turns[1]}turn,
-    ${({turns}) => turns[1]}turn,
-    transparent 0turn
-  );
-
-  transition: all 0.2s ease-in-out;
-  transform: rotate(${({turns}) => turns[0]}turn);
   :hover {
-    transform: rotate(${({turns}) => turns[0]}turn) scale(1.05);
+    transform: scale(1.05);
   }
 `
 
@@ -62,7 +46,7 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
 
   const { poolStats } = useContext(BlendPoolContext);
 
-  const pieChartSegments = [0, 0, 0, 0, 0];
+  const slices: PieChartSlice[] = [];
   if (poolStats) {
     const silo0_1 = poolStats.inventory0.silo.mul(poolStats.token1OverToken0);
     const float0_1 = poolStats.inventory0.float.mul(poolStats.token1OverToken0);
@@ -71,66 +55,69 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
     const float1 = poolStats.inventory1.float;
     const silo1 = poolStats.inventory1.silo;
 
-    pieChartSegments[0] = silo0_1.div(poolStats.tvl_1).toNumber();
-    pieChartSegments[1] = pieChartSegments[0] + float0_1.div(poolStats.tvl_1).toNumber();
-    pieChartSegments[2] = pieChartSegments[1] + uni0_1.div(poolStats.tvl_1).toNumber();
-    pieChartSegments[3] = pieChartSegments[2] + uni1.div(poolStats.tvl_1).toNumber();
-    pieChartSegments[4] = pieChartSegments[3] + float1.div(poolStats.tvl_1).toNumber();
-    pieChartSegments[5] = pieChartSegments[4] + silo1.div(poolStats.tvl_1).toNumber();
+    slices[0] = {
+      percent: silo0_1.div(poolStats.tvl_1).toNumber(),
+      color: '#59D67C',
+    };
+    slices[1] = {
+      percent: float0_1.div(poolStats.tvl_1).toNumber(),
+      color: '#00C143',
+    };
+    slices[2] = {
+      percent: uni0_1.div(poolStats.tvl_1).toNumber(),
+      color: '#BEEDC7',
+    };
+    slices[3] = {
+      percent: uni1.div(poolStats.tvl_1).toNumber(),
+      color: '#BBA3F7',
+    };
+    slices[4] = {
+      percent: float1.div(poolStats.tvl_1).toNumber(),
+      color: '#6002EE',
+    };
+    slices[5] = {
+      percent: silo1.div(poolStats.tvl_1).toNumber(),
+      color: '#865EF2',
+    };
   }
 
-//   const [{ data: accountData }] = useAccount();
-//   const [{ data: shareBalanceData }] = useBalance({
-//     addressOrName: accountData?.address,
-//     token: props.poolData.poolAddress,
-//     watch: true,
-//   });
+  let cumulativePercent = 0;
+  const paths: PieChartSlicePath[] = slices.map((slice) => {
+    // destructuring assignment sets the two variables at once
+    const [startX, startY] = getCoordinatesForPercent(cumulativePercent);
+    // each slice starts where the last slice ended, so keep a cumulative percent
+    cumulativePercent += slice.percent;
+    const [endX, endY] = getCoordinatesForPercent(cumulativePercent);
+    // if the slice is more than 50%, take the large arc (the long way around)
+    const largeArcFlag = slice.percent > .5 ? 1 : 0;
 
-//   const sharesBalance = shareBalanceData
-//     ? toBig(shareBalanceData.value)
-//     : undefined;
-
-//   const token0Reserves = prettyFormatBalance(
-//     poolStats?.inventory0.total,
-//     poolStats?.token0Decimals
-//   );
-//   const token1Reserves = prettyFormatBalance(
-//     poolStats?.inventory1.total,
-//     poolStats?.token1Decimals
-//   );
-
-//   const token0OwedToUser =
-//     !poolStats || !sharesBalance || poolStats.outstandingShares.eq(0)
-//       ? '-'
-//       : prettyFormatBalance(
-//           poolStats.inventory0.total
-//             .mul(sharesBalance)
-//             .div(poolStats.outstandingShares),
-//           poolStats.token0Decimals
-//         );
-//   const token1OwedToUser =
-//     !poolStats || !sharesBalance || poolStats.outstandingShares.eq(0)
-//       ? '-'
-//       : prettyFormatBalance(
-//           poolStats.inventory1.total
-//             .mul(sharesBalance)
-//             .div(poolStats.outstandingShares),
-//           poolStats.token1Decimals
-//         );
-//   const poolSharesBalance = sharesBalance
-//     ? sharesBalance.div(String1E(18)).toExponential(4)
-//     : '-';
+    // create an array and join it just for code readability
+    const pathData = [
+        `M ${startX} ${startY}`, // Move
+        `A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`, // Arc
+        `L 0 0`, // Line
+    ].join(' ');
+    return {
+      data: pathData,
+      color: slice.color,
+    };
+  });
 
   return (
     <div className='w-full h-84 rounded-md border-2 border-grey-200 flex flex-col items-start justify-start p-4'>
         <WidgetHeading>Token Allocation</WidgetHeading>
-        <Pie segmentTurns={pieChartSegments}></Pie>
-        {/* <div className='relative w-[200px] h-[200px]'>
-            <PieSlice color={'white'} turns={[0, 0.1]} />
-            <PieSlice color={'red'} turns={[0.1, 0.1]} />
-            <PieSlice color={'blue'} turns={[0.2, 0.1]} />
-            <PieSlice color={'black'} turns={[0.3, 0.1]} />
-        </div> */}
+        <PieChartContainer className='w-[200px] h-[200px]'>
+          <svg
+            viewBox="-1 -1 2 2"
+            overflow="visible"
+          >
+            {paths.map((path) => {
+              return (
+                <ExpandingPath d={path.data} fill={path.color}></ExpandingPath>
+              );
+            })}
+          </svg>
+        </PieChartContainer>
     </div>
   );
 }
