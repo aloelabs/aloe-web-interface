@@ -139,16 +139,17 @@ export default function BlendStampHolo(props: BlendStampProps) {
         elH={elH}
         isActive={isActive}
       >
-        <div className='flex flex-row items-center justify-evenly w-full h-36'>
-          <div className='flex flex-col items-center justify-evenly flex-initial mx-4 p-4'>
+        <div className='flex flex-row items-center justify-evenly w-full h-42'>
+          <div className='flex flex-col items-center justify-evenly flex-initial mx-2 p-4'>
             <TokenPairLogos drawData={drawData} excludeNames={true} />
-            <div className='border-2 border-grey-400 text-md text-grey-1000 rounded-md px-2 py-1 mt-4'>
-              {drawData.feeTierText}
+            <div className='border-2 border-grey-400 rounded-md p-1 mt-4 text-center w-fit'>
+              <p className='text-xs text-grey-1000'>Uniswap&nbsp;Fee&nbsp;Tier</p>
+              <p className='text-md text-grey-1000'>{drawData.feeTierText}</p>
             </div>
           </div>
           {/* vertical spacer */}
           {/*border-r-[#FFFFFF4D]*/}
-          <div className=' h-full border-r-2 border-r-grey-400 w-0' />
+          <div className='border-r-2 border-r-grey-400 w-0 h-40' />
           <div className='grow px-8 flex flex-col items-center justify-evenly'>
             {[
               [drawData.token0Label, drawData.silo0Label],

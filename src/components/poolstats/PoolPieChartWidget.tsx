@@ -243,10 +243,19 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
     }
   }
 
+  const combinedSiloLabelA = drawData.silo0Label === drawData.silo1Label
+    ? `and ${drawData.silo0Label}`
+    : `, ${drawData.silo0Label}, and ${drawData.silo1Label}`;
+  const combinedSiloLabelB = drawData.silo0Label.concat(
+    drawData.silo0Label === drawData.silo1Label
+      ? ''
+      : ` and ${drawData.silo1Label}`
+  );
+
   return (
-    <div className='w-full h-full rounded-md border-2 border-grey-200 flex flex-col items-start justify-start p-4'>
+    <div className='w-full h-full rounded-md border-2 border-grey-200 flex flex-col items-start justify-start p-4 mb-8'>
         <WidgetHeading>Token Allocation</WidgetHeading>
-        <div className='w-full h-full flex flex-row flex-nowrap'>
+        <div className='w-full h-full mt-4 flex flex-row flex-nowrap'>
           <div className='w-[200px] h-[200px] relative'>
 
             <PieChartContainer
@@ -306,6 +315,12 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className='text-grey-700 text-md mt-6 pb-2'>
+          As prices shift, tokens are moved between Uniswap {combinedSiloLabelA} to keep liquidity in range. Blend replicates
+          Uniswap V2 payoffs with extreme capital efficiency, so most tokens can earn yield in {combinedSiloLabelB}.
+          Value marked as <i>"Float"</i> helps facilitate gas-efficient withdrawals.
         </div>
     </div>
   );

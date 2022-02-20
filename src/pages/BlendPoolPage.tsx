@@ -75,8 +75,8 @@ export default function BlendPoolPage() {
               This pool provides liquidity to the {poolDrawData.token0Label}/
               {poolDrawData.token1Label} pair on Uniswap&nbsp;V3. It maintains
               the same liquidity density as a full&#8209;width position, and
-              liquidity far from the current price is deposited to silos (
-              {combinedSiloLabel}) to earn extra yield.
+              liquidity far from the current price is deposited
+              to {combinedSiloLabel} to earn extra yield.
             </p>
           </div>
 
