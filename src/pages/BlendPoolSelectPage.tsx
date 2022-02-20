@@ -77,9 +77,9 @@ export default function BlendPoolSelectPage() {
           <thead>
             <tr className='bg-grey-200'>
               <th className='p-4'>Token&nbsp;Pair</th>
-              <th className='p-4'>Silo&nbsp;1</th>
-              <th className='p-4'>Silo&nbsp;2</th>
-              <th className='p-4'>Fee&nbsp;Tier</th>
+              <th className='p-4'>Additional&nbsp;Sources&nbsp;of&nbsp;Yield</th>
+              <th className='p-4'></th>
+              <th className='p-4'>Uniswap&nbsp;Fee&nbsp;Tier</th>
               {/*<th className='p-4'>TVL</th>*/}
             </tr>
           </thead>
