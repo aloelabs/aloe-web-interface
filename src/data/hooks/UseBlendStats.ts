@@ -4,9 +4,9 @@ import { useContract, useProvider, useBlockNumber } from 'wagmi';
 import AloeBlendABI from '../../assets/abis/AloeBlend.json';
 import SiloABI from '../../assets/abis/Silo.json';
 import ERC20ABI from '../../assets/abis/ERC20.json';
-import { BlendPoolData } from '../BlendPoolData';
+import { BlendPoolMarkers } from '../BlendPoolMarkers';
 
-export function useBlendStats(poolData: BlendPoolData) {
+export function useBlendStats(poolData: BlendPoolMarkers) {
   const [blendStats, setBlendStats] = useState<BlendPoolStats | null>(null);
   const [{ data: blockNumberData }] = useBlockNumber();
 

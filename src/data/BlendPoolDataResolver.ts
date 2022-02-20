@@ -1,4 +1,4 @@
-import { BlendPoolData, PrintFeeTier } from './BlendPoolData';
+import { BlendPoolMarkers, PrintFeeTier } from './BlendPoolMarkers';
 import { GetTokenData } from './TokenData';
 import { GetSiloData } from './SiloData';
 import { FormatAddressStart } from '../util/FormatAddress';
@@ -25,7 +25,7 @@ export type BlendPoolDrawData = {
   feeTierText: string;
 };
 
-export function ResolveBlendPoolDrawData(poolData: BlendPoolData) {
+export function ResolveBlendPoolDrawData(poolData: BlendPoolMarkers) {
   const token0Data = GetTokenData(poolData.token0Address.toLowerCase());
   const token1Data = GetTokenData(poolData.token1Address.toLowerCase());
 

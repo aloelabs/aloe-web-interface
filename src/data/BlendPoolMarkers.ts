@@ -1,4 +1,4 @@
-export type BlendPoolData = {
+export type BlendPoolMarkers = {
   poolAddress: string;
   token0Address: string;
   token1Address: string;

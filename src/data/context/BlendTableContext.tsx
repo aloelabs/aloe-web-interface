@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { BlendPoolData } from '../BlendPoolData';
+import { BlendPoolMarkers } from '../BlendPoolMarkers';
 import findPools, { fetchBlendPoolData } from '../BlendPoolFinder';
 import {
   BLEND_FACTORY_ADDRESS,
@@ -9,13 +9,13 @@ import { useProvider } from 'wagmi';
 
 export interface IBlendTableContext {
   poolAddresses: string[];
-  poolDataMap: Map<string, BlendPoolData>;
+  poolDataMap: Map<string, BlendPoolMarkers>;
   fetchPoolData: (address: string) => void;
 }
 
 const defaultState: IBlendTableContext = {
   poolAddresses: [],
-  poolDataMap: new Map<string, BlendPoolData>(),
+  poolDataMap: new Map<string, BlendPoolMarkers>(),
   fetchPoolData: (address: string) => {},
 };
 
@@ -62,7 +62,7 @@ export function BlendTableProvider(props: BlendTableContextProviderProps) {
             return {
               ...x,
               poolAddresses: searchResults.poolAddresses,
-              poolDataMap: new Map<string, BlendPoolData>([
+              poolDataMap: new Map<string, BlendPoolMarkers>([
                 ...Array.from(x.poolDataMap.entries()),
                 ...Array.from(searchResults.poolDataMap.entries()),
               ]),

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import TokenAmountInput from '../common/TokenAmountInput';
-import { BlendPoolData } from '../../data/BlendPoolData';
+import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import {
   BlendPoolDrawData,
   ResolveBlendPoolDrawData,
@@ -20,7 +20,7 @@ import { withdraw } from '../../connector/BlendWithdrawActions';
 import Pending from '../common/Pending';
 
 export type WithdrawTabProps = {
-  poolData: BlendPoolData;
+  poolData: BlendPoolMarkers;
 };
 
 enum ButtonState {

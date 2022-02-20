@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
-import { BlendPoolData, FeeTier } from './BlendPoolData';
+import { BlendPoolMarkers, FeeTier } from './BlendPoolMarkers';
 
 import AloeBlendABI from '../assets/abis/AloeBlend.json';
 import UniswapV3PoolABI from '../assets/abis/UniswapV3Pool.json';
@@ -8,7 +8,7 @@ import UniswapV3PoolABI from '../assets/abis/UniswapV3Pool.json';
 export async function fetchBlendPoolData(
   address: string,
   provider: ethers.providers.BaseProvider
-): Promise<BlendPoolData> {
+): Promise<BlendPoolMarkers> {
   const blend = new ethers.Contract(address, AloeBlendABI, provider);
 
   const promises: Promise<any>[] = [];
@@ -82,14 +82,14 @@ export default async function findPools(
     return `0x${address}`;
   });
 
-  const promises: Promise<BlendPoolData>[] = poolAddresses.map(
+  const promises: Promise<BlendPoolMarkers>[] = poolAddresses.map(
     (address: string) => fetchBlendPoolData(address, provider)
   );
-  const blendPoolData = await Promise.all(promises);
+  const BlendPoolMarkers = await Promise.all(promises);
 
-  const poolDataMap = new Map<string, BlendPoolData>();
+  const poolDataMap = new Map<string, BlendPoolMarkers>();
   poolAddresses.forEach((element: string, i: number) => {
-    poolDataMap.set(element, blendPoolData[i]);
+    poolDataMap.set(element, BlendPoolMarkers[i]);
   });
   return {
     poolDataMap,

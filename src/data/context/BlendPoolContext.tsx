@@ -1,4 +1,4 @@
-import { BlendPoolData } from '../BlendPoolData';
+import { BlendPoolMarkers } from '../BlendPoolMarkers';
 import React, { createContext } from 'react';
 import { BlendPoolStats } from '../BlendPoolDataResolver';
 import { useBlendStats } from '../hooks/UseBlendStats';
@@ -14,7 +14,7 @@ const defaultState: IBlendPoolContext = {
 export const BlendPoolContext = createContext<IBlendPoolContext>(defaultState);
 
 export type BlendPoolContextProviderProps = {
-  poolData: BlendPoolData;
+  poolData: BlendPoolMarkers;
   children?: React.ReactNode;
 };
 

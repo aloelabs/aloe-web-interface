@@ -1,12 +1,12 @@
 import React from 'react';
 import { Tab } from '@headlessui/react';
-import { BlendPoolData } from '../../data/BlendPoolData';
+import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { classNames } from '../../util/ClassNames';
 import DepositTab from './DepositTab';
 import WithdrawTab from './WithdrawTab';
 
 export type PoolInteractionTabsProps = {
-  poolData: BlendPoolData;
+  poolData: BlendPoolMarkers;
 };
 
 export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {

@@ -1,5 +1,5 @@
 import React, { MouseEventHandler, useState } from 'react';
-import { BlendPoolData } from '../../data/BlendPoolData';
+import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import TokenPairLogos from './TokenPairLogos';
 import { ResolveBlendPoolDrawData } from '../../data/BlendPoolDataResolver';
 import SiloBlob from './SiloBlob';
@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 
 export type BlendStampProps = {
-  poolData: BlendPoolData;
+  poolData: BlendPoolMarkers;
 };
 
 interface MouseMoveData {

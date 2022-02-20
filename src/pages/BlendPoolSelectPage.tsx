@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { TertiaryButton } from '../components/common/Buttons';
-import { BlendPoolData } from '../data/BlendPoolData';
+import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
 import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTableRow';
 import EllipsesIcon from '../assets/svg/more_ellipses.svg';
 import LeftArrow from '../assets/svg/left_arrow.svg';
@@ -17,7 +17,7 @@ export default function BlendPoolSelectPage() {
 
   const { poolDataMap } = useContext(BlendTableContext);
 
-  let pools: BlendPoolData[] = Array.from(poolDataMap.values());
+  let pools: BlendPoolMarkers[] = Array.from(poolDataMap.values());
 
   if (searchText.length > 0) {
     pools = pools.filter((pool) => {

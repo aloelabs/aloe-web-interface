@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { BlendPoolData } from '../../data/BlendPoolData';
+import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import {
   BlendPoolDrawData,
   logBig,
@@ -28,7 +28,7 @@ import {
 } from '../../data/constants/Values';
 
 export type DepositTabProps = {
-  poolData: BlendPoolData;
+  poolData: BlendPoolMarkers;
 };
 
 enum ButtonState {

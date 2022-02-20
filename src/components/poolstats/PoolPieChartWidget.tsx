@@ -2,13 +2,13 @@ import React, { MouseEventHandler, useContext, useState } from 'react';
 import WidgetHeading from '../common/WidgetHeading';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { BlendPoolData } from '../../data/BlendPoolData';
+import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { ResolveBlendPoolDrawData } from '../../data/BlendPoolDataResolver';
 
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 
 export type PoolStatsWidgetProps = {
-  poolData: BlendPoolData;
+  poolData: BlendPoolMarkers;
 };
 
 // MARK: Capturing Mouse Data on container div ---------------------------------------

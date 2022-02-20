@@ -1,4 +1,4 @@
-import { BlendPoolData } from '../BlendPoolData';
+import { BlendPoolMarkers } from '../BlendPoolMarkers';
 import { useAccount, useBalance } from 'wagmi';
 import { useAllowance } from './UseAllowance';
 import Big from 'big.js';
@@ -29,7 +29,7 @@ function tokenMaxFromBalance(
   return balanceToken.plus(balanceETH).minus(WETH_GAS_RESERVE);
 }
 
-export function useDeposit(poolData: BlendPoolData) {
+export function useDeposit(poolData: BlendPoolMarkers) {
   const [state, setState] = useState<DepositPageState | null>(null);
 
   const [{ data: accountData }] = useAccount();
