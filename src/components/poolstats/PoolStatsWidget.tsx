@@ -69,7 +69,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
     : '-';
 
   return (
-    <div className='w-full rounded-md border-2 border-grey-200 flex flex-col items-start justify-start p-4'>
+    <div className='w-full flex flex-col items-start justify-start'>
       <WidgetHeading>Vault Usage</WidgetHeading>
       <div className='w-full flex flex-col items-start justify-start pb-4 text-grey-800'>
         {/*<Card>*/}

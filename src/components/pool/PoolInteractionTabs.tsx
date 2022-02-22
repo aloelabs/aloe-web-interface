@@ -11,19 +11,19 @@ export type PoolInteractionTabsProps = {
 
 export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
   return (
-    <div className='rounded-md border-2 border-grey-200 w-full p-4'>
+    <div className='w-full p-4 rounded-md bg-grey-75'>
       <Tab.Group defaultIndex={0}>
-        <Tab.List className='flex p-1 space-x-1 bg-grey-0 rounded-md'>
+        <Tab.List className='flex p-1 space-x-1 rounded-md border-2 border-grey-200'>
           {['Deposit', 'Withdraw'].map((tabName) => (
             <Tab
               key={tabName}
               className={({ selected }) =>
                 classNames(
-                  'w-full py-2.5 text-sm leading-5 m-0.5 font-medium rounded-lg',
+                  'w-full py-2.5 text-sm leading-5 m-0.5 font-medium rounded-md',
                   'focus:border-none',
                   selected
                     ? 'bg-grey-200 text-grey-1000'
-                    : 'text-grey-700 hover:bg-grey-75 hover:text-grey-800'
+                    : 'text-grey-700 hover:bg-grey-50 hover:text-grey-800'
                 )
               }
             >

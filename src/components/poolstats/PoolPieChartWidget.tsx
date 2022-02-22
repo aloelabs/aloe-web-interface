@@ -31,9 +31,6 @@ const TOKEN1_COLOR_FLOAT = '#6002EE';
 
 const PieChartContainer = styled.div`
   transform: rotate(90deg);
-
-  perspective: 800px;
-  perspective-origin: center;
 `
 
 const useMove = () => {
@@ -182,12 +179,12 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
     const silo1 = poolStats.inventory1.silo;
 
     slices[0] = {
-      percent: silo0_1.div(poolStats.tvl_1).toNumber(),
-      color: TOKEN0_COLOR_SILO,
-    };
-    slices[1] = {
       percent: float0_1.div(poolStats.tvl_1).toNumber(),
       color: TOKEN0_COLOR_FLOAT,
+    };
+    slices[1] = {
+      percent: silo0_1.div(poolStats.tvl_1).toNumber(),
+      color: TOKEN0_COLOR_SILO,
     };
     slices[2] = {
       percent: uni0_1.div(poolStats.tvl_1).toNumber(),
@@ -198,12 +195,12 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
       color: TOKEN1_COLOR_UNISWAP,
     };
     slices[4] = {
-      percent: float1.div(poolStats.tvl_1).toNumber(),
-      color: TOKEN1_COLOR_FLOAT,
-    };
-    slices[5] = {
       percent: silo1.div(poolStats.tvl_1).toNumber(),
       color: TOKEN1_COLOR_SILO,
+    };
+    slices[5] = {
+      percent: float1.div(poolStats.tvl_1).toNumber(),
+      color: TOKEN1_COLOR_FLOAT,
     };
   }
 
@@ -252,8 +249,10 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
       : ` and ${drawData.silo1Label}`
   );
 
+  const mouseIsInsidePieChart = mouseData.isActive && mouseData.r < 1.;
+
   return (
-    <div className='w-full h-full rounded-md border-2 border-grey-200 flex flex-col items-start justify-start p-4 mb-8'>
+    <div className='w-full h-full flex flex-col items-start justify-start mb-8'>
         <WidgetHeading>Token Allocation</WidgetHeading>
         <div className='w-full h-full mt-4 flex flex-row flex-nowrap'>
           <div className='w-[200px] h-[200px] relative'>
@@ -274,7 +273,7 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
               </svg>
             </PieChartContainer>
 
-            <PieChartLabel visibility={mouseData.isActive && mouseData.r < 1.}>
+            <PieChartLabel visibility={mouseIsInsidePieChart}>
               {pieChartLabelText}
             </PieChartLabel>
 
@@ -286,13 +285,13 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
               </div>
               <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
               <div className='grid grid-rows-3'>
-                <CategoryAndAPRLabel color={TOKEN0_COLOR_UNISWAP} className={mouseData.isActive && activeSliceIdx === 2 ? 'text-white' : 'text-grey-600'}>
+                <CategoryAndAPRLabel color={TOKEN0_COLOR_UNISWAP} className={mouseIsInsidePieChart && activeSliceIdx === 2 ? 'text-white' : 'text-grey-600'}>
                   Uniswap
                 </CategoryAndAPRLabel>
-                <CategoryAndAPRLabel color={TOKEN0_COLOR_SILO} className={mouseData.isActive && activeSliceIdx === 0 ? 'text-white' : 'text-grey-600'}>
+                <CategoryAndAPRLabel color={TOKEN0_COLOR_SILO} className={mouseIsInsidePieChart && activeSliceIdx === 1 ? 'text-white' : 'text-grey-600'}>
                   {drawData.silo0Label}
                 </CategoryAndAPRLabel>
-                <CategoryAndAPRLabel color={TOKEN0_COLOR_FLOAT} className={mouseData.isActive && activeSliceIdx === 1 ? 'italic text-white' : 'italic text-grey-600'}>
+                <CategoryAndAPRLabel color={TOKEN0_COLOR_FLOAT} className={mouseIsInsidePieChart && activeSliceIdx === 0 ? 'italic text-white' : 'italic text-grey-600'}>
                   Float
                 </CategoryAndAPRLabel>
               </div>
@@ -303,13 +302,13 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
               </div>
               <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
               <div className='grid grid-rows-3'>
-              <CategoryAndAPRLabel color={TOKEN1_COLOR_UNISWAP} className={mouseData.isActive && activeSliceIdx === 3 ? 'text-white' : 'text-grey-600'}>
+              <CategoryAndAPRLabel color={TOKEN1_COLOR_UNISWAP} className={mouseIsInsidePieChart && activeSliceIdx === 3 ? 'text-white' : 'text-grey-600'}>
                   Uniswap
                 </CategoryAndAPRLabel>
-                <CategoryAndAPRLabel color={TOKEN1_COLOR_SILO} className={mouseData.isActive && activeSliceIdx === 5 ? 'text-white' : 'text-grey-600'}>
+                <CategoryAndAPRLabel color={TOKEN1_COLOR_SILO} className={mouseIsInsidePieChart && activeSliceIdx === 4 ? 'text-white' : 'text-grey-600'}>
                   {drawData.silo1Label}
                 </CategoryAndAPRLabel>
-                <CategoryAndAPRLabel color={TOKEN1_COLOR_FLOAT} className={mouseData.isActive && activeSliceIdx === 4 ? 'italic text-white' : 'italic text-grey-600'}>
+                <CategoryAndAPRLabel color={TOKEN1_COLOR_FLOAT} className={mouseIsInsidePieChart && activeSliceIdx === 5 ? 'italic text-white' : 'italic text-grey-600'}>
                   Float
                 </CategoryAndAPRLabel>
               </div>
