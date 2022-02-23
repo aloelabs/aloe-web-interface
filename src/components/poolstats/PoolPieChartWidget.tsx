@@ -31,7 +31,7 @@ const TOKEN1_COLOR_FLOAT = '#6002EE';
 
 const PieChartContainer = styled.div`
   transform: rotate(90deg);
-`
+`;
 
 const useMove = () => {
   const [state, setState] = useState<MouseMoveData>({
@@ -47,15 +47,17 @@ const useMove = () => {
     const boundingRect = currentTarget.getBoundingClientRect();
 
     // Compute pointer's offset from center of element (in pixels)
-    const offsetX = e.clientX - (boundingRect.x + currentTarget.offsetWidth / 2);
-    const offsetY = e.clientY - (boundingRect.y + currentTarget.offsetHeight / 2);
+    const offsetX =
+      e.clientX - (boundingRect.x + currentTarget.offsetWidth / 2);
+    const offsetY =
+      e.clientY - (boundingRect.y + currentTarget.offsetHeight / 2);
 
     // Non-dimensionalize it (-1 to 1)
-    const percentX = offsetX * 2 / currentTarget.offsetWidth;
-    const percentY = offsetY * 2 / currentTarget.offsetHeight;
+    const percentX = (offsetX * 2) / currentTarget.offsetWidth;
+    const percentY = (offsetY * 2) / currentTarget.offsetHeight;
 
     const r = Math.hypot(percentX, percentY);
-    let theta = Math.atan2(-percentX, percentY) * 180 / Math.PI;
+    let theta = (Math.atan2(-percentX, percentY) * 180) / Math.PI;
     if (theta < 0) theta += 360;
 
     setState((state) => {
@@ -88,12 +90,12 @@ const useMove = () => {
 type PieChartSlice = {
   percent: number;
   color: string;
-}
+};
 
 type PieChartSlicePath = {
-  data: string,
-  color: string,
-}
+  data: string;
+  color: string;
+};
 
 function getCoordinatesForPercent(percent: number) {
   const x = Math.cos(2 * Math.PI * percent);
@@ -107,13 +109,13 @@ const ExpandingPath = styled.path`
   :hover {
     transform: scale(${PIE_CHART_HOVER_GROWTH});
   }
-`
+`;
 
-const PieChartLabel = styled.div.attrs<{visibility: boolean}>((props) => {
+const PieChartLabel = styled.div.attrs<{ shouldShow: boolean }>((props) => {
   return {
-    style: { color: props.visibility ? 'white' : 'transparent' }
-  }
-})<{visibility: boolean}>`
+    style: { color: props.shouldShow ? 'white' : 'transparent' },
+  };
+})<{ shouldShow: boolean }>`
   --width: 90px;
   --height: 90px;
 
@@ -133,7 +135,7 @@ const PieChartLabel = styled.div.attrs<{visibility: boolean}>((props) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   // stuff to make animation work
   pointer-events: none;
   transition: all 0.1s linear;
@@ -141,11 +143,12 @@ const PieChartLabel = styled.div.attrs<{visibility: boolean}>((props) => {
   // colors, borders, text
   border-radius: calc(var(--height) / 2);
   ${tw`bg-grey-50 font-bold`};
-`
+`;
 
-const CategoryAndAPRLabel = styled.div<{color: string}>`
+const CategoryAndAPRLabel = styled.div<{ color: string }>`
   position: relative;
   margin: 2px 0px;
+  white-space: nowrap;
 
   :before {
     content: '';
@@ -161,11 +164,11 @@ const CategoryAndAPRLabel = styled.div<{color: string}>`
     border-radius: 50%;
     background: ${({ color }) => color};
   }
-`
+`;
 
 export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
   const drawData = ResolveBlendPoolDrawData(props.poolData);
-  const {mouseData, handleMouseMove, handleMouseLeave} = useMove();
+  const { mouseData, handleMouseMove, handleMouseLeave } = useMove();
 
   const { poolStats } = useContext(BlendPoolContext);
 
@@ -214,13 +217,13 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
     cumulativePercent += slice.percent;
     const [endX, endY] = getCoordinatesForPercent(cumulativePercent);
     // if the slice is more than 50%, take the large arc (the long way around)
-    const largeArcFlag = slice.percent > .5 ? 1 : 0;
+    const largeArcFlag = slice.percent > 0.5 ? 1 : 0;
 
     // create an array and join it just for code readability
     const pathData = [
-        `M ${startX} ${startY}`, // Move
-        `A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`, // Arc
-        `L 0 0`, // Line
+      `M ${startX} ${startY}`, // Move
+      `A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`, // Arc
+      `L 0 0`, // Line
     ].join(' ');
     return {
       data: pathData,
@@ -235,94 +238,134 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
     const slice = slices[i];
     cumulativePercent += slice.percent;
 
-    if (cumulativePercent > mouseData.theta / 360.)  {
+    if (cumulativePercent > mouseData.theta / 360) {
       activeSliceIdx = i;
       pieChartLabelText = `${(slice.percent * 100).toFixed(2)}%`;
       break;
     }
   }
 
-  const combinedSiloLabelA = drawData.silo0Label === drawData.silo1Label
-    ? `and ${drawData.silo0Label}`
-    : `, ${drawData.silo0Label}, and ${drawData.silo1Label}`;
+  const combinedSiloLabelA =
+    drawData.silo0Label === drawData.silo1Label
+      ? ` and ${drawData.silo0Label}`
+      : `, ${drawData.silo0Label}, and ${drawData.silo1Label}`;
   const combinedSiloLabelB = drawData.silo0Label.concat(
     drawData.silo0Label === drawData.silo1Label
       ? ''
       : ` and ${drawData.silo1Label}`
   );
 
-  const mouseIsInsidePieChart = mouseData.isActive && mouseData.r < 1.;
+  const mouseIsInsidePieChart = mouseData.isActive && mouseData.r < 1;
 
   return (
-    <div className='w-full h-full flex flex-col items-start justify-start mb-8'>
-        <WidgetHeading>Token Allocation</WidgetHeading>
-        <div className='w-full h-full mt-4 flex flex-row flex-nowrap'>
-          <div className='w-[200px] h-[200px] relative'>
+    <div className='w-full flex flex-col items-start justify-start mb-8'>
+      <WidgetHeading>Token Allocation</WidgetHeading>
+      <div className='w-full h-full mt-4 flex flex-row flex-nowrap'>
+        <div className='w-[200px] h-[200px] relative'>
+          <PieChartContainer
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
+            <svg viewBox='-1 -1 2 2' overflow='visible'>
+              {paths.map((path, index) => {
+                return (
+                  <ExpandingPath
+                    key={index}
+                    d={path.data}
+                    fill={path.color}
+                  ></ExpandingPath>
+                );
+              })}
+            </svg>
+          </PieChartContainer>
 
-            <PieChartContainer
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-            >
-              <svg
-                viewBox="-1 -1 2 2"
-                overflow="visible"
+          <PieChartLabel shouldShow={mouseIsInsidePieChart}>
+            {pieChartLabelText}
+          </PieChartLabel>
+        </div>
+        <div className='flex flex-col flex-nowrap ml-8'>
+          <div className='h-1/2 flex flex-row flex-nowrap justify-start items-center'>
+            <div className='font-semibold w-14'>{drawData.token0Label}</div>
+            <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
+            <div className='grid grid-rows-3'>
+              <CategoryAndAPRLabel
+                color={TOKEN0_COLOR_UNISWAP}
+                className={
+                  mouseIsInsidePieChart && activeSliceIdx === 2
+                    ? 'text-white'
+                    : 'text-grey-600'
+                }
               >
-                {paths.map((path) => {
-                  return (
-                    <ExpandingPath d={path.data} fill={path.color}></ExpandingPath>
-                  );
-                })}
-              </svg>
-            </PieChartContainer>
-
-            <PieChartLabel visibility={mouseIsInsidePieChart}>
-              {pieChartLabelText}
-            </PieChartLabel>
-
-          </div>
-          <div className='flex flex-col flex-nowrap ml-8'>
-            <div className='h-1/2 flex flex-row flex-nowrap justify-start items-center'>
-              <div className='font-semibold w-14'>
-                {drawData.token0Label}
-              </div>
-              <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
-              <div className='grid grid-rows-3'>
-                <CategoryAndAPRLabel color={TOKEN0_COLOR_UNISWAP} className={mouseIsInsidePieChart && activeSliceIdx === 2 ? 'text-white' : 'text-grey-600'}>
-                  Uniswap
-                </CategoryAndAPRLabel>
-                <CategoryAndAPRLabel color={TOKEN0_COLOR_SILO} className={mouseIsInsidePieChart && activeSliceIdx === 1 ? 'text-white' : 'text-grey-600'}>
-                  {drawData.silo0Label}
-                </CategoryAndAPRLabel>
-                <CategoryAndAPRLabel color={TOKEN0_COLOR_FLOAT} className={mouseIsInsidePieChart && activeSliceIdx === 0 ? 'italic text-white' : 'italic text-grey-600'}>
-                  Float
-                </CategoryAndAPRLabel>
-              </div>
+                Uniswap
+              </CategoryAndAPRLabel>
+              <CategoryAndAPRLabel
+                color={TOKEN0_COLOR_SILO}
+                className={
+                  mouseIsInsidePieChart && activeSliceIdx === 1
+                    ? 'text-white'
+                    : 'text-grey-600'
+                }
+              >
+                {drawData.silo0Label}
+              </CategoryAndAPRLabel>
+              <CategoryAndAPRLabel
+                color={TOKEN0_COLOR_FLOAT}
+                className={
+                  mouseIsInsidePieChart && activeSliceIdx === 0
+                    ? 'italic text-white'
+                    : 'italic text-grey-600'
+                }
+              >
+                Float
+              </CategoryAndAPRLabel>
             </div>
-            <div className='h-1/2 flex flex-row flex-nowrap justify-start items-center'>
-            <div className='font-semibold w-14'>
-                {drawData.token1Label}
-              </div>
-              <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
-              <div className='grid grid-rows-3'>
-              <CategoryAndAPRLabel color={TOKEN1_COLOR_UNISWAP} className={mouseIsInsidePieChart && activeSliceIdx === 3 ? 'text-white' : 'text-grey-600'}>
-                  Uniswap
-                </CategoryAndAPRLabel>
-                <CategoryAndAPRLabel color={TOKEN1_COLOR_SILO} className={mouseIsInsidePieChart && activeSliceIdx === 4 ? 'text-white' : 'text-grey-600'}>
-                  {drawData.silo1Label}
-                </CategoryAndAPRLabel>
-                <CategoryAndAPRLabel color={TOKEN1_COLOR_FLOAT} className={mouseIsInsidePieChart && activeSliceIdx === 5 ? 'italic text-white' : 'italic text-grey-600'}>
-                  Float
-                </CategoryAndAPRLabel>
-              </div>
+          </div>
+          <div className='h-1/2 flex flex-row flex-nowrap justify-start items-center'>
+            <div className='font-semibold w-14'>{drawData.token1Label}</div>
+            <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
+            <div className='grid grid-rows-3'>
+              <CategoryAndAPRLabel
+                color={TOKEN1_COLOR_UNISWAP}
+                className={
+                  mouseIsInsidePieChart && activeSliceIdx === 3
+                    ? 'text-white'
+                    : 'text-grey-600'
+                }
+              >
+                Uniswap
+              </CategoryAndAPRLabel>
+              <CategoryAndAPRLabel
+                color={TOKEN1_COLOR_SILO}
+                className={
+                  mouseIsInsidePieChart && activeSliceIdx === 4
+                    ? 'text-white'
+                    : 'text-grey-600'
+                }
+              >
+                {drawData.silo1Label}
+              </CategoryAndAPRLabel>
+              <CategoryAndAPRLabel
+                color={TOKEN1_COLOR_FLOAT}
+                className={
+                  mouseIsInsidePieChart && activeSliceIdx === 5
+                    ? 'italic text-white'
+                    : 'italic text-grey-600'
+                }
+              >
+                Float
+              </CategoryAndAPRLabel>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className='text-grey-700 text-md mt-6 pb-2'>
-          As prices shift, tokens are moved between Uniswap {combinedSiloLabelA} to keep liquidity in range. Blend replicates
-          Uniswap V2 payoffs with extreme capital efficiency, so most tokens can earn yield in {combinedSiloLabelB}.
-          Value marked as <i>"Float"</i> helps facilitate gas-efficient withdrawals.
-        </div>
+      <div className='text-grey-700 text-md mt-6 pb-2'>
+        As prices shift, tokens are moved between Uniswap{combinedSiloLabelA} to
+        keep liquidity in range. Blend replicates Uniswap V2 payoffs with
+        extreme capital efficiency, so most tokens can earn yield in{' '}
+        {combinedSiloLabelB}. Value marked as <i>"Float"</i> helps facilitate
+        gas-efficient withdrawals.
+      </div>
     </div>
   );
 }

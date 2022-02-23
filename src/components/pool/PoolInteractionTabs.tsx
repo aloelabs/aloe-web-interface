@@ -19,7 +19,7 @@ export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
               key={tabName}
               className={({ selected }) =>
                 classNames(
-                  'w-full py-2.5 text-sm leading-5 m-0.5 font-medium rounded-md',
+                  'w-full py-2.5 text-sm m-0.5 font-medium rounded-md',
                   'focus:border-none',
                   selected
                     ? 'bg-grey-200 text-grey-1000'

@@ -142,8 +142,10 @@ export default function BlendStampHolo(props: BlendStampProps) {
         <div className='flex flex-row items-center justify-evenly w-full h-42'>
           <div className='flex flex-col items-center justify-evenly flex-initial mx-2 p-4'>
             <TokenPairLogos drawData={drawData} excludeNames={true} />
-            <div className='border-2 border-grey-400 rounded-md p-1 mt-4 text-center w-fit'>
-              <p className='text-xs text-grey-1000'>Uniswap&nbsp;Fee&nbsp;Tier</p>
+            <p className='text-xs text-grey-1000 mt-4 mb-1'>
+              Uniswap&nbsp;Fee&nbsp;Tier
+            </p>
+            <div className='border-2 border-grey-400 rounded-md p-0.5 text-center w-fit'>
               <p className='text-md text-grey-1000'>{drawData.feeTierText}</p>
             </div>
           </div>

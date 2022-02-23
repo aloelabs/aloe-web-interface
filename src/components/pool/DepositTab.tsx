@@ -282,6 +282,19 @@ export default function DepositTab(props: DepositTabProps) {
                   .div(mantissa1)
                   .toFixed(poolStats.token1Decimals)
               );
+            } else if (poolStats) {
+              // If inventory0 is 0
+              const amount0 = new Big(newValue);
+              const mantissa0 = String1E(poolStats.token0Decimals);
+              const mantissa1 = String1E(poolStats.token1Decimals);
+
+              setToken1Amount(
+                amount0
+                  .mul(mantissa0)
+                  .mul(poolStats.token1OverToken0)
+                  .div(mantissa1)
+                  .toFixed(poolStats.token1Decimals)
+              );
             }
             setToken0Amount(newValue);
           }}
@@ -303,6 +316,18 @@ export default function DepositTab(props: DepositTabProps) {
                   .mul(mantissa1)
                   .mul(poolStats.inventory0.total)
                   .div(poolStats.inventory1.total)
+                  .div(mantissa0)
+                  .toFixed(poolStats.token0Decimals)
+              );
+            } else if (poolStats) {
+              // If inventory1 is 0
+              const amount1 = new Big(newValue);
+              const mantissa0 = String1E(poolStats.token0Decimals);
+              const mantissa1 = String1E(poolStats.token1Decimals);
+              setToken0Amount(
+                amount1
+                  .mul(mantissa1)
+                  .div(poolStats.token1OverToken0)
                   .div(mantissa0)
                   .toFixed(poolStats.token0Decimals)
               );
