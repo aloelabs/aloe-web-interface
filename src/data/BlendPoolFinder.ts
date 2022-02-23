@@ -19,23 +19,23 @@ export async function fetchBlendPoolData(
   promises.push(
     blend.UNI_POOL().then((poolAddress: string) => {
       const pair = new ethers.Contract(poolAddress, UniswapV3PoolABI, provider);
-      return pair.tickSpacing();
+      return pair.fee();
     })
   );
 
   const results = await Promise.all(promises);
   let feeTier: FeeTier;
   switch (results[4]) {
-    case 1:
+    case 100:
       feeTier = FeeTier.ZERO_ZERO_ONE;
       break;
-    case 10:
+    case 500:
       feeTier = FeeTier.ZERO_ZERO_FIVE;
       break;
-    case 30:
+    case 3000:
       feeTier = FeeTier.ZERO_THREE;
       break;
-    case 100:
+    case 10000:
       feeTier = FeeTier.ONE;
       break;
     default:

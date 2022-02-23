@@ -4,6 +4,7 @@ import {
   WbtcLogo,
   WethLogo,
   TribeLogo,
+  RaiLogo,
 } from '../assets/svg/tokens';
 
 export type TokenData = {
@@ -67,6 +68,17 @@ const TokenDataMap = new Map<string, TokenData>([
       name: 'Tribe',
       ticker: 'TRIBE',
       iconPath: TribeLogo,
+      decimals: 18,
+    },
+  ],
+  // Rai
+  [
+    '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919',
+    {
+      address: '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919',
+      name: 'Rai Reflex Index',
+      ticker: 'RAI',
+      iconPath: RaiLogo,
       decimals: 18,
     },
   ],
