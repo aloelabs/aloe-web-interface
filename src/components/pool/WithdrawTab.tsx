@@ -112,13 +112,13 @@ export default function WithdrawTab(props: WithdrawTabProps) {
     if (estimated0Label.length > 9) {
       estimated0Label = estimated0
         .div(String1E(poolStats.token0Decimals))
-        .toExponential(4);
+        .toExponential(2);
     }
 
     if (estimated1Label.length > 9) {
       estimated1Label = estimated1
         .div(String1E(poolStats.token1Decimals))
-        .toExponential(4);
+        .toExponential(2);
     }
 
     setToken0Estimate(estimated0Label);
@@ -225,12 +225,12 @@ export default function WithdrawTab(props: WithdrawTabProps) {
           <LinkButtonWithIcon
             icon={GearIconPurple}
             className='flex flex-row items-center justify-center'
-            name='Advanced'
+            name=''
             onClick={() => {
               setAdvOptionsClosed(!advOptionsClosed);
             }}
           >
-            <div className=''>Advanced</div>
+            <div className=''></div>
           </LinkButtonWithIcon>
         </div>
         <div className='w-full mt-3 overflow-hidden'>
