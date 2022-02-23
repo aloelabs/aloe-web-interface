@@ -68,6 +68,15 @@ const SiloDataMap = new Map<string, SiloData>([
       shortName: 'Yearn',
     },
   ],
+  // Rari Fuse 9 RAI Silo
+  [
+    '0xf70fc6b694d911b1f665b754f77ec5e83d340594',
+    {
+      address: '0xf70fc6b694d911b1f665b754f77ec5e83d340594',
+      name: 'Rari Fuse 9 RAI Silo',
+      shortName: 'Rari Fuse 9',
+    },
+  ],
 ]);
 
 export function GetSiloData(address: string): SiloData {

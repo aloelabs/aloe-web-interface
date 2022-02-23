@@ -63,6 +63,7 @@ export default function BlendPoolSelectPage() {
           href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
           target='_blank'
           rel='noopener noreferrer'
+          tabIndex={-1}
         >
           <TertiaryButton
             name='Deploy New Pool'
@@ -104,9 +105,9 @@ export default function BlendPoolSelectPage() {
           </tbody>
         </table>
       </div>
-      <div className='w-full h-10 bg-grey-200 rounded-md mt-8 flex flex-row items-center justify-between text-sm text-grey-800 select-none'>
+      <div className='w-full h-10 bg-grey-200 rounded-md mt-8 pl-4 flex flex-row items-center justify-between text-sm text-grey-800 select-none'>
         <button>
-          <img className='pl-4' alt='More' src={EllipsesIcon} />
+          <img alt='More' src={EllipsesIcon} />
         </button>
         <div className='flex flex-row items-center justify-between space-x-8 mr-4'>
           <button className='text-grey-800'>
