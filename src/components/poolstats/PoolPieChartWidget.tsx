@@ -178,30 +178,32 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
     const float1 = poolStats.inventory1.float;
     const silo1 = poolStats.inventory1.silo;
 
-    slices[0] = {
-      percent: float0_1.div(poolStats.tvl_1).toNumber(),
-      color: TOKEN0_COLOR_FLOAT,
-    };
-    slices[1] = {
-      percent: silo0_1.div(poolStats.tvl_1).toNumber(),
-      color: TOKEN0_COLOR_SILO,
-    };
-    slices[2] = {
-      percent: uni0_1.div(poolStats.tvl_1).toNumber(),
-      color: TOKEN0_COLOR_UNISWAP,
-    };
-    slices[3] = {
-      percent: uni1.div(poolStats.tvl_1).toNumber(),
-      color: TOKEN1_COLOR_UNISWAP,
-    };
-    slices[4] = {
-      percent: silo1.div(poolStats.tvl_1).toNumber(),
-      color: TOKEN1_COLOR_SILO,
-    };
-    slices[5] = {
-      percent: float1.div(poolStats.tvl_1).toNumber(),
-      color: TOKEN1_COLOR_FLOAT,
-    };
+    if (poolStats.tvl_1.gt(0)) {
+      slices[0] = {
+        percent: float0_1.div(poolStats.tvl_1).toNumber(),
+        color: TOKEN0_COLOR_FLOAT,
+      };
+      slices[1] = {
+        percent: silo0_1.div(poolStats.tvl_1).toNumber(),
+        color: TOKEN0_COLOR_SILO,
+      };
+      slices[2] = {
+        percent: uni0_1.div(poolStats.tvl_1).toNumber(),
+        color: TOKEN0_COLOR_UNISWAP,
+      };
+      slices[3] = {
+        percent: uni1.div(poolStats.tvl_1).toNumber(),
+        color: TOKEN1_COLOR_UNISWAP,
+      };
+      slices[4] = {
+        percent: silo1.div(poolStats.tvl_1).toNumber(),
+        color: TOKEN1_COLOR_SILO,
+      };
+      slices[5] = {
+        percent: float1.div(poolStats.tvl_1).toNumber(),
+        color: TOKEN1_COLOR_FLOAT,
+      };
+    }
   }
 
   let cumulativePercent = 0;

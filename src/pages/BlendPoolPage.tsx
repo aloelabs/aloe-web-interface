@@ -13,7 +13,6 @@ import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
-import PoolUniswapPositionWidget from '../components/poolstats/PoolUniswapPositionWidget';
 
 type PoolParams = {
   pooladdress: string;
@@ -84,7 +83,6 @@ export default function BlendPoolPage() {
           <div className='w-full pt-4'>
             {/*<BlendAllocationGraph />*/}
             <PoolPieChartWidget poolData={poolData} />
-            <PoolUniswapPositionWidget poolData={poolData} />
             <PoolStatsWidget poolData={poolData} />
           </div>
         </div>
