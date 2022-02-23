@@ -269,7 +269,7 @@ export default function DepositTab(props: DepositTabProps) {
           onChange={(newValue) => {
             if (newValue === '') {
               setToken1Amount('');
-            } else if (poolStats) {
+            } else if (poolStats && poolStats.inventory0.total.gt(0)) {
               const amount0 = new Big(newValue);
               const mantissa0 = String1E(poolStats.token0Decimals);
               const mantissa1 = String1E(poolStats.token1Decimals);
@@ -293,7 +293,7 @@ export default function DepositTab(props: DepositTabProps) {
           onChange={(newValue) => {
             if (newValue === '') {
               setToken0Amount('');
-            } else if (poolStats) {
+            } else if (poolStats && poolStats.inventory1.total.gt(0)) {
               const amount1 = new Big(newValue);
               const mantissa0 = String1E(poolStats.token0Decimals);
               const mantissa1 = String1E(poolStats.token1Decimals);
