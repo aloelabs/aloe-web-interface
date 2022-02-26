@@ -77,6 +77,15 @@ const SiloDataMap = new Map<string, SiloData>([
       shortName: 'Rari Fuse 9',
     },
   ],
+  // LooksRare Silo
+  [
+    '0x7a17db19e5bfe3e96d6a8da9c100ac86a4650d54',
+    {
+      address: '0x7a17db19e5bfe3e96d6a8da9c100ac86a4650d54',
+      name: 'LooksRare Staking LOOKS Silo',
+      shortName: 'LOOKS Staking',
+    },
+  ],
 ]);
 
 export function GetSiloData(address: string): SiloData {
