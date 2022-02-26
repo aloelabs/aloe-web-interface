@@ -5,6 +5,7 @@ import {
   WethLogo,
   TribeLogo,
   RaiLogo,
+  LooksLogo,
 } from '../assets/svg/tokens';
 
 export type TokenData = {
@@ -79,6 +80,17 @@ const TokenDataMap = new Map<string, TokenData>([
       name: 'Rai Reflex Index',
       ticker: 'RAI',
       iconPath: RaiLogo,
+      decimals: 18,
+    },
+  ],
+  // Looks
+  [
+    '0xf4d2888d29d722226fafa5d9b24f9164c092421e',
+    {
+      address: '0xf4d2888d29d722226fafa5d9b24f9164c092421e',
+      name: 'LooksRare Token',
+      ticker: 'LOOKS',
+      iconPath: LooksLogo,
       decimals: 18,
     },
   ],

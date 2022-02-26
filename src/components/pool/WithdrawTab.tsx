@@ -37,7 +37,7 @@ function printButtonState(
 ) {
   switch (buttonState) {
     case ButtonState.NO_WALLET:
-      return 'Deposit';
+      return 'Withdraw';
     case ButtonState.RATIO_CHANGE_TOO_LOW:
       return 'Ratio Change Too Low';
     case ButtonState.INSUFFICIENT_SHARES:
