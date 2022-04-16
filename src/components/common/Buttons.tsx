@@ -225,6 +225,16 @@ const ButtonWithIconWrapper = styled.div`
   cursor: pointer;
 `;
 
+export const SimpleButton = styled.button`
+  ${tw`rounded-md w-10 p-1 text-grey-600 bg-transparent font-medium disabled:text-grey-500`}
+  &.active {
+    ${tw`bg-grey-300 text-grey-900`}
+  }
+  :hover {
+    ${tw`bg-grey-300 text-grey-900`}
+  }
+`;
+
 export type ButtonWithIconProps = {
   icon: string;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;

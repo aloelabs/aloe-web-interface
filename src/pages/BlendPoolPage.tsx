@@ -8,7 +8,7 @@ import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
 import PoolInteractionTabs from '../components/pool/PoolInteractionTabs';
 import BackgroundBlobs from '../components/pool/BackgroundBlobs';
 import BlendStampHolo from '../components/common/BlendStampHolo';
-// import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
+import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
 import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
@@ -92,7 +92,7 @@ export default function BlendPoolPage() {
               <PoolInteractionTabs poolData={poolData} />
             </GridExpandingDiv>
             <div className='w-full py-4'>
-              {/*<BlendAllocationGraph />*/}
+              <BlendAllocationGraph />
               <PoolPieChartWidget poolData={poolData} />
               <PoolStatsWidget poolData={poolData} />
             </div>
