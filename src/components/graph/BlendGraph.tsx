@@ -1,126 +1,167 @@
-import React, { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
-import { add, differenceInDays } from 'date-fns';
-import 'chartjs-adapter-date-fns';
-
+import React from 'react';
 import {
-    Chart as ChartJS,
-    TimeScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    Filler,
-  } from 'chart.js';
+  Area,
+  AreaChart,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+} from 'recharts';
+import BlendGraphTooltip from './BlendGraphTooltip';
+import { differenceInDays, format, parseISO } from 'date-fns/esm';
+import styled from 'styled-components';
+import tw from 'twin.macro';
+import { getEvenlySpacedDates } from '../../util/Dates';
 
-ChartJS.register(
-    TimeScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    Filler,
-);
+const TEXT_COLOR = '#82a0b6';
+const TOTAL_RETURNS_GRADIENT_COLOR = '#59d67c';
+const TOTAL_RETURNS_STROKE_COLOR = '#00C143';
+const UNISWAP_V2_STROKE_COLOR = '#865EF2';
+const HODL_STROKE_COLOR = '#C2D1DD';
 
-// TODO: possibly average the data points to smooth the graph
+const LegendWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 8px;
+  margin-bottom: 24px;
+`;
 
-const generateData = (from : Date, to : Date, base : number) => {
-  // get an array of dates between the two dates with a 10 minute interval
-  let difference = differenceInDays(to, from);
-  let interval = {};
-  if (difference === 1) {
-    interval = { minutes: 30 };
-  } else if (difference === 7) {
-      interval = { hours: 6 };
-  } else if (difference >= 28 && difference <= 31) {
-      interval = { hours: 12 };
-  } else if (difference >= 364 && difference <= 367) {
-      interval = { weeks: 1 };
-  } else if (difference > 367) {
-    interval = { months: 1 };
-  } else {
-      // Shouldn't happen
-      interval = { days: 1 };
-  }
-  let data = [];
-  let currentDate = from;
-  while (currentDate <= to) {
-    base += Math.random() * 0.3;
-    base -= Math.random() * 0.3;
-    base = Math.abs(base);
-    data.push({'y': base, 'x': currentDate.toISOString()});
-    
-    currentDate = add(currentDate, interval);
-  }
-  return data;
+const LegendItem = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+`;
+
+const LegendItemBox = styled.div`
+  width: 16px;
+  height: 8px;
+  background-color: ${(props) => props.color};
+  border-radius: 8px;
+`;
+
+const LegendItemText = styled.div`
+  ${tw`text-sm`}
+  color: ${TEXT_COLOR};
+`;
+
+function BlendGraphLegend() {
+  return (
+    <LegendWrapper>
+      <LegendItem>
+        <LegendItemBox color={TOTAL_RETURNS_STROKE_COLOR} />
+        <LegendItemText>Pool Returns</LegendItemText>
+      </LegendItem>
+      <LegendItem>
+        <LegendItemBox color={UNISWAP_V2_STROKE_COLOR} />
+        <LegendItemText>Uniswap V2</LegendItemText>
+      </LegendItem>
+      <LegendItem>
+        <LegendItemBox color={HODL_STROKE_COLOR} />
+        <LegendItemText>50/50 HODL</LegendItemText>
+      </LegendItem>
+    </LegendWrapper>
+  );
 }
 
 export type BlendGraphProps = {
-    options: any,
-    fromDate: Date,
-    toDate: Date,
+  data: any;
+  fromDate: Date;
+  toDate: Date;
 };
 
 export default function BlendGraph(props: BlendGraphProps) {
-  const [gradient, setGradient] = useState<CanvasGradient | undefined>(undefined);
-  useEffect(() => {
-    let chart = ChartJS.getChart('chart');
-    if (chart) {
-      let tempGradient = chart.ctx.createLinearGradient(0, 0, 0, chart.chartArea.bottom);
-      tempGradient.addColorStop(0, "rgba(89, 214, 124, 0.5)");
-      tempGradient.addColorStop(0.5, "rgba(89, 214, 124, 0.25)");
-      tempGradient.addColorStop(1, "rgba(89, 214, 124, 0.05)");
-      setGradient(tempGradient);
-    }
-  }, []);
-
-  let data = {
-    datasets: [
-      {
-        label: 'Total Returns',
-        data: generateData(props.fromDate, props.toDate, 6.5),
-        borderColor: 'rgb(89, 214, 124)',
-        backgroundColor: gradient,
-        tension: 0.4,
-        pointRadius: 0,
-        //cubicInterpolationMode: "monotone" as any,
-        pointHoverRadius: 3,
-        fill: true,
-      },
-      {
-        label: 'Uniswap V2',
-        data: generateData(props.fromDate, props.toDate, 5),
-        borderColor: 'rgb(179, 73, 240)',
-        backgroundColor: 'rgba(179, 73, 240, 0.1)',
-        borderDash: [5, 2],
-        tension: 0.4,
-        pointRadius: 0,
-        borderWidth: 1.5,
-        pointHoverRadius: 3,
-        fill: false,
-      },
-      {
-        label: '50/50 HODL',
-        data: generateData(props.fromDate, props.toDate, 4),
-        borderColor: 'rgb(255,255,255)',
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        borderDash: [5, 2],
-        tension: 0.4,
-        pointRadius: 0,
-        borderWidth: 1.5,
-        pointHoverRadius: 3,
-        fill: false,
-      },
-    ],
-  };
-
+  const { data, fromDate, toDate } = props;
+  const dates = data.map((d: any) => d.x) as string[];
+  const numberOfUniqueYears = new Set(
+    dates.map((d) => parseISO(d).getFullYear())
+  ).size;
+  let step = 3;
+  let dateFormat = 'MMM yyyy';
+  if (differenceInDays(toDate, fromDate) <= 1) {
+    step = 5;
+    dateFormat = 'ha';
+  } else if (differenceInDays(toDate, fromDate) <= 7) {
+    step = 5;
+    dateFormat = 'iii';
+  } else if (differenceInDays(toDate, fromDate) <= 31 * 3) {
+    step = 4;
+    dateFormat = 'MMM dd';
+  } else if (differenceInDays(toDate, fromDate) <= 366) {
+    step = 4;
+    dateFormat = 'MMM';
+  } else {
+    step = numberOfUniqueYears - 1 - 2; // Subtract 2 because we don't want to show the first and last year
+    dateFormat = 'yyyy';
+  }
+  const ticks = getEvenlySpacedDates(dates, step).slice(1);
   return (
-    <div className='w-full'>
-      <Line id="chart" options={props.options} data={data} />
-    </div>
+    <ResponsiveContainer width='100%' height={300}>
+      <AreaChart
+        width={600}
+        height={300}
+        data={data}
+        margin={{ top: 0, left: 0, bottom: 0, right: 0 }}
+      >
+        <defs>
+          <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>
+            <stop
+              offset='-29%'
+              stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+              stopOpacity={0.25}
+            />
+            <stop
+              offset='99.93%'
+              stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+              stopOpacity={0}
+            />
+          </linearGradient>
+        </defs>
+        <XAxis
+          dataKey='x'
+          axisLine={false}
+          domain={['auto', 'auto']}
+          interval={0}
+          ticks={ticks}
+          tick={{ fill: TEXT_COLOR }}
+          tickFormatter={(tickString) =>
+            format(parseISO(tickString), dateFormat)
+          }
+          tickLine={false}
+        />
+        <Tooltip
+          content={<BlendGraphTooltip />}
+          allowEscapeViewBox={{ x: true, y: false }}
+          isAnimationActive={false}
+        />
+        <Area
+          type='monotone'
+          dataKey='Total Returns'
+          stroke={TOTAL_RETURNS_STROKE_COLOR}
+          fillOpacity={1}
+          fill='url(#totalReturnsGradient)'
+          isAnimationActive={false}
+        />
+        <Area
+          type='monotone'
+          dataKey='Uniswap V2'
+          stroke={UNISWAP_V2_STROKE_COLOR}
+          fillOpacity={0}
+          strokeDasharray='5 5'
+          isAnimationActive={false}
+        />
+        <Area
+          type='monotone'
+          dataKey='50/50 HODL'
+          stroke={HODL_STROKE_COLOR}
+          fillOpacity={0}
+          strokeDasharray='5 5'
+          isAnimationActive={false}
+        />
+        <Legend iconType='rect' content={BlendGraphLegend}></Legend>
+      </AreaChart>
+    </ResponsiveContainer>
   );
 }
