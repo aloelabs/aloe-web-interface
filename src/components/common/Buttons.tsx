@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { classNames } from '../../util/ClassNames';
+import MigrateIcon from '../../assets/svg/migrate.svg';
 
 export const PrimaryButton = styled.button`
   ${tw`rounded-md text-grey-0 font-medium`}
@@ -216,6 +217,44 @@ export const WarningButton = styled.button`
     box-shadow: none;
     color: #ff912e;
     //outline: none;
+  }
+`;
+
+export const MigrateButton = styled.button`
+  display: inline-flex;
+  position: relative;
+  width: fit-content;
+  gap: 14.7px;
+  padding: 16px 24px;
+  line-height: 24px;
+  border-radius: 8px;
+  user-select: none;
+  cursor: pointer;
+  &:before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    padding: 1.5px;
+    background: linear-gradient(90deg, #9baaf3 0%, #7bd8c0 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    border-radius: 8px;
+  }
+  &:hover {
+    box-shadow: 0px 8px 16px -4px rgba(126, 213, 197, 0.08);
+    box-shadow: 0px 8px 24px -4px rgba(154, 173, 241, 0.12);
+  }
+  &:after {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url(${MigrateIcon});
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
   }
 `;
 
