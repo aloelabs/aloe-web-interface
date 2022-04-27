@@ -7,10 +7,11 @@ import LeftArrow from '../assets/svg/left_arrow.svg';
 import RightArrow from '../assets/svg/right_arrow.svg';
 import { TextInput } from '../components/common/Input';
 import SearchIcon from '../assets/svg/search.svg';
-import AppPage from '../components/common/AppPage';
+import WideAppPage from '../components/common/WideAppPage';
 import PageHeading from '../components/common/PageHeading';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
+import BrowseCard from '../components/browse/BrowseCard';
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
@@ -46,9 +47,14 @@ export default function BlendPoolSelectPage() {
   }
 
   return (
-    <AppPage>
+    <WideAppPage>
       <div>
         <PageHeading>Browse Deployed Pools</PageHeading>
+      </div>
+      <div className='grid grid-cols-2 justify-center items-center gap-4'>
+        {pools.map((pool, index, array) => {
+          return <BrowseCard blendPoolMarkers={pool} key={index} />;
+        })}
       </div>
       <div className='py-4 flex flex-row items-center justify-between text-lg'>
         <TextInput
@@ -121,6 +127,6 @@ export default function BlendPoolSelectPage() {
           </button>
         </div>
       </div>
-    </AppPage>
+    </WideAppPage>
   );
 }
