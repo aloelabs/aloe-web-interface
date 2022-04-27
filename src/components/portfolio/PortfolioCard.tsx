@@ -10,7 +10,7 @@ import { SiloData } from '../../data/SiloData';
 import { prominent } from 'color.js';
 
 export const RESPONSIVE_BREAKPOINT_MEDIUM = '1200px';
-export const RESPONSIVE_BREAKPOINT_SMALL = '600px';
+export const RESPONSIVE_BREAKPOINT_SMALL = '768px';
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
 const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
@@ -73,6 +73,7 @@ export const CardSubTitleWrapper = styled.div`
   gap: 16px;
   @media (max-width: ${RESPONSIVE_BREAKPOINT_SMALL}) {
     flex-direction: column;
+    align-items: start;
   }
 `;
 
