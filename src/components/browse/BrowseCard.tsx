@@ -1,4 +1,3 @@
-import { prominent } from 'color.js';
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -6,8 +5,16 @@ import tw from 'twin.macro';
 import { BlendPoolMarkers, PrintFeeTier } from '../../data/BlendPoolMarkers';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
+import { prominent } from 'color.js';
 
-const TOKEN_SKELETON_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAmCAYAAACoPemuAAAAOElEQVR42u3OAQ0AMAgAoJvnJYxg/zJaw01IQPysfguFmJiYmJiYmJiYmJiYmJiYmJiYmJjYvdgAy45BwxmPiQIAAAAASUVORK5CYII=';
+const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
+const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
+const FEE_TIER_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
+const FEE_TIER_OUTLINE_COLOR = 'rgba(13, 23, 30, 1)';
+const TOKEN_PAIR_FIGURE_COLOR = 'background: rgba(43, 64, 80, 1);';
+const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
+const BODY_DIVIDER_BG_COLOR = 'rgba(26, 41, 52, 1)';
+const INFO_CATEGORY_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 const CardWrapper = styled(NavLink).attrs((props: { border: string, shadow: string }) => props)`
   ${tw`flex flex-col items-start justify-evenly`}
@@ -33,7 +40,7 @@ const CardWrapper = styled(NavLink).attrs((props: { border: string, shadow: stri
   }
 `;
 
-const CardHeader = styled.div.attrs((props: { gradient: string }) => props)`
+const CardTitleWrapper = styled.div.attrs((props: { gradient: string }) => props)`
   ${tw`flex flex-col items-start justify-start`}
   padding: 32px 32px 40px 32px;
   position: relative;
@@ -41,7 +48,7 @@ const CardHeader = styled.div.attrs((props: { gradient: string }) => props)`
   width: 100%;
 `;
 
-const CardHeaderLower = styled.div`
+const CardSubTitleWrapper = styled.div`
   ${tw`flex flex-row items-center justify-between`}
   position: absolute;
   left: 0;
@@ -61,20 +68,22 @@ const TokenIcon = styled.img`
   box-shadow: 0 0 0 3px black;
 `;
 
-const FeeContainer = styled.div`
+const FeeTierContainer = styled.div`
+  ${tw`flex flex-col items-center justify-center`}
   line-height: 20px;
   padding: 8px 16px;
-  background: rgba(26, 41, 52, 1);
-  outline: 2px solid rgba(13, 23, 30, 1);
+  background: ${FEE_TIER_BG_COLOR};
+  color: ${FEE_TIER_TEXT_COLOR};
+  outline: 2px solid ${FEE_TIER_OUTLINE_COLOR};
   border-radius: 100px;
 `;
 
-const CardBody = styled.div`
+const CardBodyWrapper = styled.div`
   ${tw`flex flex-col items-start justify-start`}
   width: 100%;
   padding: 42px 32px 24px 32px;
   gap: 24px;
-  background: rgba(13, 23, 30, 1);
+  background: ${CARD_BODY_BG_COLOR};
 `;
 
 const BodySubContainer = styled.div`
@@ -102,7 +111,7 @@ const InvestedType = styled.div`
     width: 8px;
     height: 8px;
     border-radius: 100%;
-    background: rgba(43, 64, 80, 1);
+    background: ${TOKEN_PAIR_FIGURE_COLOR};
   }
   &:first-child::after {
     content: '';
@@ -111,7 +120,7 @@ const InvestedType = styled.div`
     top: 16px;
     width: 2px;
     height: 24px;
-    background: rgba(43, 64, 80, 1);
+    background: ${TOKEN_PAIR_FIGURE_COLOR};
   }
 `;
 
@@ -127,14 +136,14 @@ const DashedDivider = styled.div`
     top: calc(50% - 1px);
     width: 100%;
     height: 1px;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.6);
+    border-bottom: 1px dashed ${DASHED_DIVIDER_BORDER_COLOR};
   }
 `;
 
 const BodyDivider = styled.div`
   width: 100%;
   height: 1px;
-  background: rgba(26, 41, 52, 1);
+  background: ${BODY_DIVIDER_BG_COLOR};
 `;
 
 const InfoCategoryContainer = styled.div`
@@ -144,7 +153,7 @@ const InfoCategoryContainer = styled.div`
 
 const InfoCategory = styled.span`
   ${tw`text-sm`}
-  color: rgba(130, 160, 182, 1);
+  color: ${INFO_CATEGORY_TEXT_COLOR};
 `;
 
 // My simple solution to determining the prominent color of the icon
@@ -185,6 +194,10 @@ export default function BrowseCard(props: BrowseCardProps) {
   const silo0 = GetSiloData(blendPoolMarkers.silo0Address.toLocaleLowerCase());
   const silo1 = GetSiloData(blendPoolMarkers.silo1Address.toLocaleLowerCase());
   const feeTier = PrintFeeTier(blendPoolMarkers.feeTier);
+  const pricePerShare = 729.48;
+  const aprFee = '10%';
+  const totalValueLocked = '$379M';
+
   const [token0Color, setToken0Color] = useState<string>('');
   const [token1Color, setToken1Color] = useState<string>('');
   useEffect(() => {
@@ -198,6 +211,7 @@ export default function BrowseCard(props: BrowseCardProps) {
       setToken1Color(color);
     });
   });
+
   // Create the variables for the gradients.
   const cardTitleBackgroundGradient = `linear-gradient(90deg, ${rgba(
     token0Color,
@@ -210,23 +224,24 @@ export default function BrowseCard(props: BrowseCardProps) {
     getBrighterColor(token0Color, token1Color),
     0.16
   );
+
   return(
     <CardWrapper to={link} border={cardBorderGradient} shadow={cardShadowColor}>
-      <CardHeader gradient={cardTitleBackgroundGradient}>
+      <CardTitleWrapper gradient={cardTitleBackgroundGradient}>
         <span className='text-2xl font-bold'>
           {token0.ticker}-{token1.ticker}
         </span>
-        <CardHeaderLower>
+        <CardSubTitleWrapper>
           <TokenIconsWrapper>
             <TokenIcon src={token0.iconPath} alt='' />
             <TokenIcon src={token1.iconPath} alt='' />
           </TokenIconsWrapper>
-          <FeeContainer>
+          <FeeTierContainer>
             Uniswap Fee Tier - {feeTier}
-          </FeeContainer>
-        </CardHeaderLower>
-      </CardHeader>
-      <CardBody>
+          </FeeTierContainer>
+        </CardSubTitleWrapper>
+      </CardTitleWrapper>
+      <CardBodyWrapper>
         <BodySubContainer>
             <span>Invest your</span>
             <InvestedTypesContainer>
@@ -246,18 +261,18 @@ export default function BrowseCard(props: BrowseCardProps) {
         <BodySubContainer>
           <InfoCategoryContainer>
             <InfoCategory>Price per Share</InfoCategory>
-            <span className='text-2xl'>$729.48 USD</span>
+            <span className='text-2xl'>${pricePerShare.toLocaleString('en-US')} USD</span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <InfoCategory>APR Fee</InfoCategory>
-            <span className='text-2xl'>10%</span>
+            <span className='text-2xl'>{aprFee}</span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <InfoCategory>TVL</InfoCategory>
-            <span className='text-2xl'>$379M</span>
+            <span className='text-2xl'>{totalValueLocked}</span>
           </InfoCategoryContainer>
         </BodySubContainer>
-      </CardBody>
+      </CardBodyWrapper>
     </CardWrapper>
   );
 }
