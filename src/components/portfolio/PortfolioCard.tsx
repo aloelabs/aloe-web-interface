@@ -220,7 +220,6 @@ export const NegativePercentChangeContainer = styled(PercentChangeContainer)`
 `;
 
 export type PortfolioCardProps = {
-  // Use BlendPoolMarkers instead? Would that be better?
   token0: TokenData;
   token1: TokenData;
   silo0: SiloData;
