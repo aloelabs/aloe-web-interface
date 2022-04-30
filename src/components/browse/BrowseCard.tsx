@@ -16,7 +16,9 @@ const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(26, 41, 52, 1)';
 const INFO_CATEGORY_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
-const CardWrapper = styled(NavLink).attrs((props: { border: string, shadow: string }) => props)`
+const CardWrapper = styled(NavLink).attrs(
+  (props: { border: string; shadow: string }) => props
+)`
   ${tw`flex flex-col items-start justify-evenly`}
   width: 580px;
   border-radius: 8px;
@@ -40,7 +42,9 @@ const CardWrapper = styled(NavLink).attrs((props: { border: string, shadow: stri
   }
 `;
 
-const CardTitleWrapper = styled.div.attrs((props: { gradient: string }) => props)`
+const CardTitleWrapper = styled.div.attrs(
+  (props: { gradient: string }) => props
+)`
   ${tw`flex flex-col items-start justify-start`}
   padding: 32px 32px 40px 32px;
   position: relative;
@@ -183,17 +187,25 @@ const getBrighterColor = (color0: string, color1: string) => {
 };
 
 export type BrowseCardProps = {
-  blendPoolMarkers: BlendPoolMarkers
+  blendPoolMarkers: BlendPoolMarkers;
 };
 
 export default function BrowseCard(props: BrowseCardProps) {
   const { blendPoolMarkers } = props;
   const link = `/blend/pool/${blendPoolMarkers.poolAddress}`;
-  const token0 = GetTokenData(blendPoolMarkers.token0Address.toLocaleLowerCase());
-  const token1 = GetTokenData(blendPoolMarkers.token1Address.toLocaleLowerCase());
+  const token0 = GetTokenData(
+    blendPoolMarkers.token0Address.toLocaleLowerCase()
+  );
+  const token1 = GetTokenData(
+    blendPoolMarkers.token1Address.toLocaleLowerCase()
+  );
   const silo0 = GetSiloData(blendPoolMarkers.silo0Address.toLocaleLowerCase());
   const silo1 = GetSiloData(blendPoolMarkers.silo1Address.toLocaleLowerCase());
   const feeTier = PrintFeeTier(blendPoolMarkers.feeTier);
+
+  /**
+   * Placeholders until we have the actual data
+   */
   const pricePerShare = 729.48;
   const aprFee = '10%';
   const totalValueLocked = '$379M';
@@ -225,7 +237,7 @@ export default function BrowseCard(props: BrowseCardProps) {
     0.16
   );
 
-  return(
+  return (
     <CardWrapper to={link} border={cardBorderGradient} shadow={cardShadowColor}>
       <CardTitleWrapper gradient={cardTitleBackgroundGradient}>
         <span className='text-2xl font-bold'>
@@ -236,32 +248,32 @@ export default function BrowseCard(props: BrowseCardProps) {
             <TokenIcon src={token0.iconPath} alt='' />
             <TokenIcon src={token1.iconPath} alt='' />
           </TokenIconsWrapper>
-          <FeeTierContainer>
-            Uniswap Fee Tier - {feeTier}
-          </FeeTierContainer>
+          <FeeTierContainer>Uniswap Fee Tier - {feeTier}</FeeTierContainer>
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
-            <span>Invest your</span>
-            <InvestedTypesContainer>
-              <InvestedType>
-                <span>{token0.ticker}</span>
-                <DashedDivider />
-                <span className='text-xs'>{silo0.shortName}</span>
-              </InvestedType>
-              <InvestedType>
-                <span>{token1.ticker}</span>
-                <DashedDivider />
-                <span className='text-xs'>{silo1.shortName}</span>
-              </InvestedType>
-            </InvestedTypesContainer>
+          <span>Invest your</span>
+          <InvestedTypesContainer>
+            <InvestedType>
+              <span>{token0.ticker}</span>
+              <DashedDivider />
+              <span className='text-xs'>{silo0.shortName}</span>
+            </InvestedType>
+            <InvestedType>
+              <span>{token1.ticker}</span>
+              <DashedDivider />
+              <span className='text-xs'>{silo1.shortName}</span>
+            </InvestedType>
+          </InvestedTypesContainer>
         </BodySubContainer>
         <BodyDivider />
         <BodySubContainer>
           <InfoCategoryContainer>
             <InfoCategory>Price per Share</InfoCategory>
-            <span className='text-2xl'>${pricePerShare.toLocaleString('en-US')} USD</span>
+            <span className='text-2xl'>
+              ${pricePerShare.toLocaleString('en-US')} USD
+            </span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <InfoCategory>APR Fee</InfoCategory>
