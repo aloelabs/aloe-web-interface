@@ -7,7 +7,7 @@ import NegativeChangeIcon from '../../assets/svg/negative_change_chevron.svg';
 import { TokenData } from '../../data/TokenData';
 import { FeeTier, PrintFeeTier } from '../../data/BlendPoolMarkers';
 import { SiloData } from '../../data/SiloData';
-import { prominent } from 'color.js';
+import { getBrighterColor, getProminentColor, rgb, rgba } from '../../util/Colors';
 
 export const RESPONSIVE_BREAKPOINT_MEDIUM = '1200px';
 export const RESPONSIVE_BREAKPOINT_SMALL = '768px';
@@ -218,32 +218,6 @@ export const NegativePercentChangeContainer = styled(PercentChangeContainer)`
     background-image: url(${NegativeChangeIcon});
   }
 `;
-
-// My simple solution to determining the prominent color of the icon
-// (Uses external library)
-// Feel free to replace this with something more robust if need be
-const getProminentColor = async (path: string) => {
-  const values = await prominent(path, { amount: 1 });
-  return `${values[0]}, ${values[1]}, ${values[2]}`;
-};
-
-const rgb = (color: string) => {
-  return `rgb(${color})`;
-};
-
-const rgba = (color: string, alpha: number) => {
-  return `rgba(${color}, ${alpha})`;
-};
-
-// Very naive logic to get the brighter color used to pick which color to
-// use for the shadow
-const getBrighterColor = (color0: string, color1: string) => {
-  const values0 = color0.split(',').map((v) => parseInt(v.trim()));
-  const values1 = color1.split(',').map((v) => parseInt(v.trim()));
-  const avg0 = (values0[0] + values0[1] + values0[2]) / 3;
-  const avg1 = (values1[0] + values1[1] + values1[2]) / 3;
-  return avg0 > avg1 ? color0 : color1;
-};
 
 export type PortfolioCardProps = {
   // Use BlendPoolMarkers instead? Would that be better?
