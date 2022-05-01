@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { TertiaryButton } from '../components/common/Buttons';
 import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
 import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTableRow';
@@ -11,39 +11,99 @@ import AppPage from '../components/common/AppPage';
 import PageHeading from '../components/common/PageHeading';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
+import {
+  DropdownOption,
+  DropdownWithPlaceholder,
+  MultiDropdown,
+  MultiDropdownOption,
+} from '../components/common/Dropdown';
+import { GetTokenData } from '../data/TokenData';
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
+  const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
+  const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
+  const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
+  const [activeTokenOptions, setActiveTokenOptions] = useState<
+    MultiDropdownOption[]
+  >([]);
+  const sortByOptions = [
+    {
+      label: 'Default',
+      value: 'default',
+      isDefault: true,
+    },
+    {
+      label: 'Newest First',
+      value: 'newest',
+      isDefault: false,
+    },
+    {
+      label: 'Oldest First',
+      value: 'oldest',
+      isDefault: false,
+    }
+  ] as DropdownOption[];
+  const [selectedSortByOption, setSelectedSortByOption] = useState<DropdownOption>(sortByOptions[0]);
 
   const { poolDataMap } = useContext(BlendTableContext);
+  const loadData = useCallback(async () => {
+    let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
+    setPools(poolData);
+    let tokenAddresses = Array.from(
+      new Set(
+        poolData.flatMap((pool) => [
+          pool.token0Address.toLowerCase(),
+          pool.token1Address.toLocaleLowerCase(),
+        ])
+      )
+    );
+    let tokenData = tokenAddresses.map((address) => GetTokenData(address));
+    let tokenOptionData = tokenData.map(
+      (data) =>
+        ({
+          label: data.ticker,
+          value: data.address,
+          icon: data.iconPath,
+        } as MultiDropdownOption)
+    );
+    setTokenOptions(tokenOptionData);
+    setActiveTokenOptions(tokenOptionData);
+  }, [poolDataMap]);
 
-  let pools: BlendPoolMarkers[] = Array.from(poolDataMap.values());
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
-  if (searchText.length > 0) {
-    pools = pools.filter((pool) => {
-      const {
-        silo0Name,
-        silo1Name,
-        silo0Label,
-        silo1Label,
-        token0Label,
-        token1Label,
-      } = ResolveBlendPoolDrawData(pool);
-
-      return (
-        [
+  useEffect(() => {
+    if (searchText.length > 0 && pools.length > 0) {
+      setFilteredPools(pools.filter((pool) => {
+        const {
           silo0Name,
           silo1Name,
           silo0Label,
           silo1Label,
           token0Label,
           token1Label,
-        ].findIndex((field) => {
-          return field.toLowerCase().includes(searchText.toLowerCase());
-        }) !== -1
-      );
-    });
-  }
+        } = ResolveBlendPoolDrawData(pool);
+  
+        return (
+          [
+            silo0Name,
+            silo1Name,
+            silo0Label,
+            silo1Label,
+            token0Label,
+            token1Label,
+          ].findIndex((field) => {
+            return field.toLowerCase().includes(searchText.toLowerCase());
+          }) !== -1
+        );
+      }));
+    } else if (pools.length > 0) {
+      setFilteredPools(pools);
+    }
+  }, [searchText, pools]);
 
   return (
     <AppPage>
@@ -57,6 +117,24 @@ export default function BlendPoolSelectPage() {
           placeholder='Search by name or symbol'
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
+        />
+
+        <MultiDropdown
+          options={tokenOptions}
+          activeOptions={activeTokenOptions}
+          handleChange={(selectedOptions) => {
+            setActiveTokenOptions(selectedOptions);
+          }}
+          placeholder='All Tokens'
+          selectedText='Tokens'
+        />
+        <DropdownWithPlaceholder
+          options={sortByOptions}
+          selectedOption={selectedSortByOption}
+          onSelect={(option: DropdownOption) => {
+            setSelectedSortByOption(option);
+          }}
+          placeholder='Sort By'
         />
 
         <a
@@ -87,7 +165,7 @@ export default function BlendPoolSelectPage() {
             </tr>
           </thead>
           <tbody className=''>
-            {pools.map((pool, index, array) => {
+            {filteredPools.map((pool, index, array) => {
               return (
                 <React.Fragment key={index}>
                   <BlendPoolSelectTableRow poolData={pool} />
