@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
-import { TertiaryButton } from '../components/common/Buttons';
+import { OutlinedGradientButtonWithTrailingIcon } from '../components/common/Buttons';
 import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
 import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTableRow';
 import EllipsesIcon from '../assets/svg/more_ellipses.svg';
 import LeftArrow from '../assets/svg/left_arrow.svg';
 import RightArrow from '../assets/svg/right_arrow.svg';
-import { TextInput } from '../components/common/Input';
 import SearchIcon from '../assets/svg/search.svg';
+import PlusIcon from '../assets/svg/plus.svg';
+import PlusGradientIcon from '../assets/svg/plus_gradient.svg';
+import { TextInput } from '../components/common/Input';
 import AppPage from '../components/common/AppPage';
 import PageHeading from '../components/common/PageHeading';
 import { BlendTableContext } from '../data/context/BlendTableContext';
@@ -65,12 +67,15 @@ export default function BlendPoolSelectPage() {
           rel='noopener noreferrer'
           tabIndex={-1}
         >
-          <TertiaryButton
+          <OutlinedGradientButtonWithTrailingIcon icon={PlusIcon} gradientIcon={PlusGradientIcon} rounded={true}>
+            <span>Deploy&nbsp;New&nbsp;Pool</span>
+          </OutlinedGradientButtonWithTrailingIcon>
+          {/* <TertiaryButton
             name='Deploy New Pool'
             className='flex-none px-8 py-3'
           >
             Deploy&nbsp;New&nbsp;Pool
-          </TertiaryButton>
+          </TertiaryButton> */}
         </a>
       </div>
       <div className='text-left rounded-md border-2 border-grey-200'>
