@@ -5,12 +5,11 @@ import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTab
 import EllipsesIcon from '../assets/svg/more_ellipses.svg';
 import LeftArrow from '../assets/svg/left_arrow.svg';
 import RightArrow from '../assets/svg/right_arrow.svg';
-import { TextInput } from '../components/common/Input';
-import SearchIcon from '../assets/svg/search.svg';
 import AppPage from '../components/common/AppPage';
 import PageHeading from '../components/common/PageHeading';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
+import Search from '../components/browse/Search';
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
@@ -51,13 +50,14 @@ export default function BlendPoolSelectPage() {
         <PageHeading>Browse Deployed Pools</PageHeading>
       </div>
       <div className='py-4 flex flex-row items-center justify-between text-lg'>
-        <TextInput
+        <Search value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+        {/*<TextInput
           className='lg:basis-5/12 md:basis-1/2 md:grow-0 sm:basis-0 sm:grow sm:mr-12'
           icon={SearchIcon}
           placeholder='Search by name or symbol'
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-        />
+        />*/}
 
         <a
           href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
