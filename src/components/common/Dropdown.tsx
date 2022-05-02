@@ -7,8 +7,9 @@ import { CheckIcon } from '@heroicons/react/solid';
 import useClickOutside from '../../data/hooks/UseClickOutside';
 
 const DROPDOWN_HEADER_BORDER_COLOR = 'rgba(34, 54, 69, 1)';
-const DROPDOWN_LIST_BG_COLOR = 'rgb(17, 34, 46)';
+const DROPDOWN_LIST_BG_COLOR = 'rgba(7, 14, 18, 1)';
 const DROPDOWN_LIST_BORDER_COLOR = 'rgba(56, 82, 101, 1)';
+const DROPDOWN_LIST_SHADOW_COLOR = 'rgba(0, 0, 0, 0.12)';
 const DROPDOWN_OPTION_BG_COLOR_HOVER = 'rgba(255, 255, 255, 0.04)';
 const DROPDOWN_OPTION_BG_COLOR_ACTIVE = 'rgba(255, 255, 255, 0.1)';
 const CHECKBOX_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
@@ -30,12 +31,6 @@ const DropdownHeader = styled.button`
   border-radius: 100px;
 `;
 
-const DropdownHeaderLabel = styled.div.attrs(
-  (props: { numberOfCharacters: number }) => props
-)`
-  min-width: ${(props) => props.numberOfCharacters}ch;
-`;
-
 const DropdownList = styled.div`
   ${tw`flex flex-col`}
   position: absolute;
@@ -48,21 +43,11 @@ const DropdownList = styled.div`
   background-color: ${DROPDOWN_LIST_BG_COLOR};
   border-radius: 8px;
   border: 1px solid ${DROPDOWN_LIST_BORDER_COLOR};
+  box-shadow: 0px 8px 32px 0px ${DROPDOWN_LIST_SHADOW_COLOR};
 `;
 
-const MultiDropdownList = styled.div`
-  ${tw`flex flex-col`}
-  position: absolute;
-  right: 0px;
-  top: calc(100% + 10px);
-  z-index: 10;
+const MultiDropdownList = styled(DropdownList)`
   box-sizing: content-box;
-  min-width: 100%;
-  padding: 12px;
-  gap: 8px;
-  background-color: ${DROPDOWN_LIST_BG_COLOR};
-  border-radius: 8px;
-  border: 1px solid ${DROPDOWN_LIST_BORDER_COLOR};
 `;
 
 const DropdownOptionContainer = styled.button`
@@ -79,19 +64,9 @@ const DropdownOptionContainer = styled.button`
   }
 `;
 
-const MultiDropdownOptionContainer = styled.button`
+const MultiDropdownOptionContainer = styled(DropdownOptionContainer)`
   ${tw`w-full flex flex-row items-center justify-start`}
   gap: 8px;
-  text-align: start;
-  padding: 6px 12px;
-  white-space: nowrap;
-  border-radius: 8px;
-  &:hover {
-    background-color: ${DROPDOWN_OPTION_BG_COLOR_HOVER};
-  }
-  &.active {
-    background-color: ${DROPDOWN_OPTION_BG_COLOR_ACTIVE};
-  }
 `;
 
 const CheckContainer = styled.div`
@@ -132,11 +107,6 @@ export function DropdownWithPlaceholder(props: DropdownProps) {
     onSelect(option);
     setIsOpen(false);
   };
-
-  // const numberOfPossibleCharacters = options.reduce(
-  //   (acc, curr) => Math.max(acc, curr.length),
-  //   placeholder.length
-  // );
 
   return (
     <DropdownWrapper ref={dropdownRef}>
@@ -183,20 +153,12 @@ export function MultiDropdown(props: MultiDropdownProps) {
   const { options, activeOptions, handleChange, placeholder, selectedText } =
     props;
   const [isOpen, setIsOpen] = useState(false);
-  // const [selectedOptions, setSelectedOptions] = useState(
-  //   [] as MultiDropdownOption[]
-  // );
-
-  // useEffect(() => {
-  //   setSelectedOptions(activeOptions);
-  // }, [activeOptions]);
 
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   useClickOutside(
     dropdownRef,
     () => {
       setIsOpen(false);
-      // setSelectedOptions(activeOptions);
     },
     isOpen
   );
@@ -215,23 +177,11 @@ export function MultiDropdown(props: MultiDropdownProps) {
       updatedOptions = activeOptions.filter(
         (currentOption) => currentOption.value !== option.value
       );
-      // setSelectedOptions([
-      //   ...selectedOptions.filter(
-      //     (currentOption) => currentOption.value !== option.value
-      //   ),
-      // ]);
     } else {
       updatedOptions = [...activeOptions, option];
-      //setSelectedOptions([...selectedOptions, option]);
     }
     handleChange(updatedOptions);
   };
-
-  const numberOfPossibleDigits = Math.floor((activeOptions.length - 1) / 10);
-  const numberOfPossibleCharacters = Math.max(
-    placeholder.length,
-    selectedText.length + numberOfPossibleDigits + 3
-  );
 
   let dropdownLabel =
     activeOptions.length === options.length
@@ -241,9 +191,7 @@ export function MultiDropdown(props: MultiDropdownProps) {
   return (
     <DropdownWrapper ref={dropdownRef}>
       <DropdownHeader onClick={toggleList}>
-        <DropdownHeaderLabel numberOfCharacters={numberOfPossibleCharacters}>
-          {dropdownLabel}
-        </DropdownHeaderLabel>
+        {dropdownLabel}
         <img
           className='absolute right-6'
           src={isOpen ? DropdownArrowUp : DropdownArrowDown}
