@@ -12,20 +12,41 @@ import { BlendTableContext } from '../data/context/BlendTableContext';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
 import BrowseCard from '../components/browse/BrowseCard';
 import styled from 'styled-components';
+import {
+  BROWSE_CARD_WIDTH_LG,
+  BROWSE_CARD_WIDTH_MD,
+  BROWSE_CARD_WIDTH_XL,
+  RESPONSIVE_BREAKPOINT_LG,
+  RESPONSIVE_BREAKPOINT_MD,
+} from '../data/constants/Breakpoints';
+
+const BROWSE_CARD_GAP = '24px';
+const MAX_WIDTH_XL =
+  parseInt(BROWSE_CARD_WIDTH_XL) * 2 + parseInt(BROWSE_CARD_GAP) + 'px';
+const MAX_WIDTH_L =
+  parseInt(BROWSE_CARD_WIDTH_LG) * 2 + parseInt(BROWSE_CARD_GAP) + 'px';
+const MAX_WIDTH_M =
+  parseInt(BROWSE_CARD_WIDTH_MD) * 2 + parseInt(BROWSE_CARD_GAP) + 'px';
 
 const PageWrapper = styled.div`
   min-width: 300px;
   width: 100%;
   /* The width of the 2 cards + the gap between */
-  max-width: 1184px;
+  max-width: ${MAX_WIDTH_XL};
   margin: 0 auto;
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_LG}) {
+    max-width: ${MAX_WIDTH_L};
+  }
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
+    max-width: ${MAX_WIDTH_M};
+  }
 `;
 
 const BrowseCards = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(580px, 1fr));
-  grid-gap: 24px;
-  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${BROWSE_CARD_GAP};
+  justify-content: start;
   align-items: center;
 `;
 

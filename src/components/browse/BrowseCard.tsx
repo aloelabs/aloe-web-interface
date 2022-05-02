@@ -6,6 +6,13 @@ import { BlendPoolMarkers, PrintFeeTier } from '../../data/BlendPoolMarkers';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
 import { prominent } from 'color.js';
+import {
+  BROWSE_CARD_WIDTH_LG,
+  BROWSE_CARD_WIDTH_MD,
+  BROWSE_CARD_WIDTH_XL,
+  RESPONSIVE_BREAKPOINT_LG,
+  RESPONSIVE_BREAKPOINT_MD,
+} from '../../data/constants/Breakpoints';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -20,7 +27,7 @@ const CardWrapper = styled(NavLink).attrs(
   (props: { border: string; shadow: string }) => props
 )`
   ${tw`flex flex-col items-start justify-evenly`}
-  width: 580px;
+  width: ${BROWSE_CARD_WIDTH_XL};
   border-radius: 8px;
   overflow: hidden;
   position: relative;
@@ -39,6 +46,13 @@ const CardWrapper = styled(NavLink).attrs(
       -webkit-mask-composite: xor;
       mask-composite: exclude;
     }
+  }
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_LG}) {
+    width: ${BROWSE_CARD_WIDTH_LG};
+  }
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
+    width: ${BROWSE_CARD_WIDTH_MD};
+    margin: 0 auto;
   }
 `;
 
@@ -94,6 +108,14 @@ const BodySubContainer = styled.div`
   ${tw`flex flex-row items-center justify-between`}
   width: 100%;
   gap: 16px;
+`;
+
+const ResponsiveBodySubContainer = styled(BodySubContainer)`
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+  }
 `;
 
 const InvestedTypesContainer = styled.div`
@@ -268,7 +290,7 @@ export default function BrowseCard(props: BrowseCardProps) {
           </InvestedTypesContainer>
         </BodySubContainer>
         <BodyDivider />
-        <BodySubContainer>
+        <ResponsiveBodySubContainer>
           <InfoCategoryContainer>
             <InfoCategory>Price per Share</InfoCategory>
             <span className='text-2xl'>
@@ -283,7 +305,7 @@ export default function BrowseCard(props: BrowseCardProps) {
             <InfoCategory>TVL</InfoCategory>
             <span className='text-2xl'>{totalValueLocked}</span>
           </InfoCategoryContainer>
-        </BodySubContainer>
+        </ResponsiveBodySubContainer>
       </CardBodyWrapper>
     </CardWrapper>
   );
