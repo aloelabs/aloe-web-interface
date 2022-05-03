@@ -244,8 +244,8 @@ export const MigrateButton = styled.button`
     border-radius: 8px;
   }
   &:hover {
-    box-shadow: 0px 8px 16px -4px rgba(126, 213, 197, 0.08);
-    box-shadow: 0px 8px 24px -4px rgba(154, 173, 241, 0.12);
+    box-shadow: 0px 8px 16px -4px rgba(126, 213, 197, 0.08),
+      0px 8px 24px -4px rgba(154, 173, 241, 0.12);
   }
   &:after {
     content: '';
