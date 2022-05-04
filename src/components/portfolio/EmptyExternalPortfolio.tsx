@@ -34,7 +34,8 @@ export default function EmptyExternalPortfolio() {
           Your external positions will appear here.
         </EmptyExternalPortfolioText>
         <EmptyExternalPortfolioSubText>
-          Aloe allows you to import your existing external positions with just one click.
+          Aloe allows you to import your existing external positions with just
+          one click.
         </EmptyExternalPortfolioSubText>
       </div>
       <ExternalPortfolioCardSkeleton />

@@ -7,10 +7,17 @@ import NegativeChangeIcon from '../../assets/svg/negative_change_chevron.svg';
 import { TokenData } from '../../data/TokenData';
 import { FeeTier, PrintFeeTier } from '../../data/BlendPoolMarkers';
 import { SiloData } from '../../data/SiloData';
-import { getBrighterColor, getProminentColor, rgb, rgba } from '../../util/Colors';
+import {
+  getBrighterColor,
+  getProminentColor,
+  rgb,
+  rgba,
+} from '../../util/Colors';
+import {
+  RESPONSIVE_BREAKPOINT_SM,
+  RESPONSIVE_BREAKPOINT_MD,
+} from '../../data/constants/Breakpoints';
 
-export const RESPONSIVE_BREAKPOINT_MEDIUM = '1200px';
-export const RESPONSIVE_BREAKPOINT_SMALL = '768px';
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
 const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
@@ -51,7 +58,7 @@ export const CardWrapper = styled.div.attrs(
     }
   }
 
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_MEDIUM}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
     grid-template-columns: 1fr;
   }
 `;
@@ -63,7 +70,7 @@ export const CardTitleWrapper = styled.div.attrs(
   padding: 32px;
   gap: 18px;
   background: ${(props) => props.backgroundGradient};
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_SMALL}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     padding: 32px 16px;
   }
 `;
@@ -71,7 +78,7 @@ export const CardTitleWrapper = styled.div.attrs(
 export const CardSubTitleWrapper = styled.div`
   ${tw`flex flex-row items-center`}
   gap: 16px;
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_SMALL}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     flex-direction: column;
     align-items: start;
   }
@@ -81,7 +88,7 @@ export const CardBodyWrapper = styled.div`
   display: flex;
   align-items: center;
   background: ${CARD_BODY_BG_COLOR};
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_SMALL}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -89,6 +96,8 @@ export const CardBodyWrapper = styled.div`
 
 export const TokenIconsWrapper = styled.div`
   ${tw`flex flex-row items-center justify-start -space-x-2`}
+  width: 56px;
+  height: 32px;
 `;
 
 export const TokenIcon = styled.img`
@@ -115,11 +124,11 @@ const BodySubContainer = styled.div`
   padding-left: 40px;
   padding-right: 48px;
   height: 88px;
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_MEDIUM}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
     padding: 20px 32px;
     height: auto;
   }
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_SMALL}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     width: 100%;
   }
 `;
@@ -175,7 +184,7 @@ const BodyDivider = styled.div`
   width: 1px;
   height: 88px;
   background-color: ${BODY_DIVIDER_BG_COLOR};
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_SMALL}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     width: 100%;
     height: 1px;
   }

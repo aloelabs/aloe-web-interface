@@ -15,9 +15,12 @@ import {
 } from './PortfolioCard';
 import { MigrateButton } from '../common/Buttons';
 import { roundPercentage } from '../../util/Numbers';
-import { RESPONSIVE_BREAKPOINT_MEDIUM, RESPONSIVE_BREAKPOINT_SMALL } from './PortfolioCard';
 import { TokenData } from '../../data/TokenData';
 import { FeeTier, PrintFeeTier } from '../../data/BlendPoolMarkers';
+import {
+  RESPONSIVE_BREAKPOINT_SM,
+  RESPONSIVE_BREAKPOINT_MD,
+} from '../../data/constants/Breakpoints';
 
 const EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR = 'rgba(26, 41, 52, 0.65)';
 const EXTERNAL_CARD_WRAPPER_HOVER_OUTLINE_COLOR = 'rgba(56, 82, 101, 1)';
@@ -37,22 +40,22 @@ const BodySubContainer = styled.div`
   height: 88px;
   padding-left: 40px;
   padding-right: 48px;
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_MEDIUM}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
     padding: 20px 32px;
     height: auto;
   }
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_SMALL}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     width: 100%;
   }
 `;
 
 export const ValuePercentContainer = styled.div`
   ${tw`flex gap-2 items-center`}
-`;  
+`;
 
 const EndAlignedBodySubContainer = styled(BodySubContainer)`
   ${tw`justify-center items-end`}
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_SMALL}) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     align-items: start;
   }
 `;
@@ -65,8 +68,11 @@ export type ExternalPortfolioCardProps = {
   percentageChange: number;
 };
 
-export default function ExternalPortfolioCard(props: ExternalPortfolioCardProps) {
-  const { token0, token1, uniswapFeeTier, estimatedValue, percentageChange } = props;
+export default function ExternalPortfolioCard(
+  props: ExternalPortfolioCardProps
+) {
+  const { token0, token1, uniswapFeeTier, estimatedValue, percentageChange } =
+    props;
   return (
     <ExternalCardWrapper>
       <CardTitleWrapper backgroundGradient={CARD_TITLE_BG_COLOR}>
@@ -90,7 +96,8 @@ export default function ExternalPortfolioCard(props: ExternalPortfolioCardProps)
             <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
             {percentageChange >= 0 && (
               <PositivePercentChangeContainer>
-                +{roundPercentage(percentageChange, PERCENT_ROUNDING_PRECISION)}%
+                +{roundPercentage(percentageChange, PERCENT_ROUNDING_PRECISION)}
+                %
               </PositivePercentChangeContainer>
             )}
             {percentageChange < 0 && (
