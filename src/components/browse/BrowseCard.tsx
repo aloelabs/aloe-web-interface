@@ -13,13 +13,13 @@ import {
   RESPONSIVE_BREAKPOINT_LG,
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import InvestedTypes from '../common/InvestedTypes';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
 const FEE_TIER_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
 const FEE_TIER_OUTLINE_COLOR = 'rgba(13, 23, 30, 1)';
-const TOKEN_PAIR_FIGURE_COLOR = 'background: rgba(43, 64, 80, 1);';
-const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
+const TOKEN_PAIR_FIGURE_COLOR = 'rgba(43, 64, 80, 1);';
 const BODY_DIVIDER_BG_COLOR = 'rgba(26, 41, 52, 1)';
 const INFO_CATEGORY_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -115,54 +115,6 @@ const ResponsiveBodySubContainer = styled(BodySubContainer)`
     flex-direction: column;
     justify-content: start;
     align-items: start;
-  }
-`;
-
-const InvestedTypesContainer = styled.div`
-  ${tw`flex flex-col`}
-  flex-grow: 1;
-  gap: 8px;
-`;
-
-const InvestedType = styled.div`
-  display: flex;
-  align-items: center;
-  padding-left: 24px;
-  position: relative;
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0px;
-    top: calc(50% - 4px);
-    width: 8px;
-    height: 8px;
-    border-radius: 100%;
-    background: ${TOKEN_PAIR_FIGURE_COLOR};
-  }
-  &:first-child::after {
-    content: '';
-    position: absolute;
-    left: 3px;
-    top: 16px;
-    width: 2px;
-    height: 24px;
-    background: ${TOKEN_PAIR_FIGURE_COLOR};
-  }
-`;
-
-const DashedDivider = styled.div`
-  margin-left: 8px;
-  margin-right: 8px;
-  position: relative;
-  flex-grow: 1;
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: calc(50% - 1px);
-    width: 100%;
-    height: 1px;
-    border-bottom: 1px dashed ${DASHED_DIVIDER_BORDER_COLOR};
   }
 `;
 
@@ -276,18 +228,7 @@ export default function BrowseCard(props: BrowseCardProps) {
       <CardBodyWrapper>
         <BodySubContainer>
           <span>Invest your</span>
-          <InvestedTypesContainer>
-            <InvestedType>
-              <span>{token0.ticker}</span>
-              <DashedDivider />
-              <span className='text-xs'>{silo0.shortName}</span>
-            </InvestedType>
-            <InvestedType>
-              <span>{token1.ticker}</span>
-              <DashedDivider />
-              <span className='text-xs'>{silo1.shortName}</span>
-            </InvestedType>
-          </InvestedTypesContainer>
+          <InvestedTypes token0={token0} token1={token1} silo0={silo0} silo1={silo1} figureColor={TOKEN_PAIR_FIGURE_COLOR} shouldGrow={true} />
         </BodySubContainer>
         <BodyDivider />
         <ResponsiveBodySubContainer>
