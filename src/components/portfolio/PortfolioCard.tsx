@@ -18,10 +18,10 @@ import {
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
 import InvestedTypes from '../common/InvestedTypes';
+import TokenPairIcons from '../common/TokenPairIcons';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
-const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const FEE_TIER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const FEE_TIER_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
@@ -92,20 +92,6 @@ export const CardBodyWrapper = styled.div`
     flex-direction: column;
     align-items: flex-start;
   }
-`;
-
-export const TokenIconsWrapper = styled.div`
-  ${tw`flex flex-row items-center justify-start -space-x-2`}
-  width: 56px;
-  height: 32px;
-`;
-
-export const TokenIcon = styled.img`
-  ${tw`rounded-full bg-white`}
-  position: relative;
-  width: 32px;
-  height: 32px;
-  box-shadow: 0 0 0 3px ${TOKEN_ICON_BORDER_COLOR};
 `;
 
 export const FeeTierContainer = styled.div`
@@ -236,10 +222,12 @@ export default function PortfolioCard(props: PortfolioCardProps) {
           {token0.ticker} - {token1.ticker}
         </span>
         <CardSubTitleWrapper>
-          <TokenIconsWrapper>
-            <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
-            <TokenIcon src={token1.iconPath} alt=''></TokenIcon>
-          </TokenIconsWrapper>
+          <TokenPairIcons
+            token0IconPath={token0.iconPath}
+            token1IconPath={token1.iconPath}
+            token0AltText={`${token0.name}'s Icon`}
+            token1AltText={`${token1.name}'s Icon`}
+          />
           <FeeTierContainer>
             Uniswap Fee Tier - {PrintFeeTier(uniswapFeeTier)}
           </FeeTierContainer>
@@ -248,7 +236,13 @@ export default function PortfolioCard(props: PortfolioCardProps) {
       <CardBodyWrapper>
         <BodySubContainer>
           <span>Invested</span>
-          <InvestedTypes token0={token0} token1={token1} silo0={silo0} silo1={silo1} figureColor={TOKEN_PAIR_FIGURE_COLOR} />
+          <InvestedTypes
+            token0={token0}
+            token1={token1}
+            silo0={silo0}
+            silo1={silo1}
+            figureColor={TOKEN_PAIR_FIGURE_COLOR}
+          />
         </BodySubContainer>
         <BodyDivider />
         <BodySubContainer>

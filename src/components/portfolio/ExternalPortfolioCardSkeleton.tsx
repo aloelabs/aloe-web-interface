@@ -7,13 +7,13 @@ import {
   CardTitleWrapper,
   CardWrapper,
   PositivePercentChangeContainer,
-  TokenIconsWrapper,
   CardSubTitleWrapper,
 } from './PortfolioCard';
 import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import TokenPairIcons from '../common/TokenPairIcons';
 
 const SKELETON_BG_COLOR = 'rgba(43, 64, 80, 1)';
 const CARD_TITLE_SKELETON_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -49,13 +49,6 @@ const TokenTextSkeleton = styled.div`
   height: 30px;
   background-color: ${SKELETON_BG_COLOR};
   border-radius: 8px;
-`;
-
-const TokenIconSkeleton = styled.img`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px ${TOKEN_ICON_SKELETON_BORDER_COLOR};
 `;
 
 const FeeTierContainerSkeleton = styled.div`
@@ -94,10 +87,12 @@ export default function ExternalPortfolioCardSkeleton() {
           <TokenTextSkeleton /> <TokenTextSkeleton />
         </div>
         <CardSubTitleWrapper>
-          <TokenIconsWrapper>
-            <TokenIconSkeleton src={TOKEN_SKELETON_URL} alt='' />
-            <TokenIconSkeleton src={TOKEN_SKELETON_URL} alt='' />
-          </TokenIconsWrapper>
+          <TokenPairIcons
+            token0IconPath={TOKEN_SKELETON_URL}
+            token1IconPath={TOKEN_SKELETON_URL}
+            iconBorderColor={TOKEN_ICON_SKELETON_BORDER_COLOR}
+            omitBackground={true}
+          />
           <FeeTierContainerSkeleton />
         </CardSubTitleWrapper>
       </CardTitleWrapper>

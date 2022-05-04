@@ -14,6 +14,7 @@ import {
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
 import InvestedTypes from '../common/InvestedTypes';
+import TokenPairIcons from '../common/TokenPairIcons';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -75,15 +76,6 @@ const CardSubTitleWrapper = styled.div`
   height: 36px;
   margin-left: 40px;
   margin-right: 32px;
-`;
-
-const TokenIconsWrapper = styled.div`
-  ${tw`flex flex-row items-center justify-start -space-x-2`}
-`;
-
-const TokenIcon = styled.img`
-  ${tw`w-8 h-8 rounded-full bg-white`}
-  box-shadow: 0 0 0 3px black;
 `;
 
 const FeeTierContainer = styled.div`
@@ -218,17 +210,26 @@ export default function BrowseCard(props: BrowseCardProps) {
           {token0.ticker}-{token1.ticker}
         </span>
         <CardSubTitleWrapper>
-          <TokenIconsWrapper>
-            <TokenIcon src={token0.iconPath} alt='' />
-            <TokenIcon src={token1.iconPath} alt='' />
-          </TokenIconsWrapper>
+          <TokenPairIcons
+            token0IconPath={token0.iconPath}
+            token1IconPath={token1.iconPath}
+            token0AltText={`${token0.name}'s Icon`}
+            token1AltText={`${token1.name}'s Icon`}
+          />
           <FeeTierContainer>Uniswap Fee Tier - {feeTier}</FeeTierContainer>
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
           <span>Invest your</span>
-          <InvestedTypes token0={token0} token1={token1} silo0={silo0} silo1={silo1} figureColor={TOKEN_PAIR_FIGURE_COLOR} shouldGrow={true} />
+          <InvestedTypes
+            token0={token0}
+            token1={token1}
+            silo0={silo0}
+            silo1={silo1}
+            figureColor={TOKEN_PAIR_FIGURE_COLOR}
+            shouldGrow={true}
+          />
         </BodySubContainer>
         <BodyDivider />
         <ResponsiveBodySubContainer>
