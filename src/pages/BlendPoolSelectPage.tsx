@@ -2,18 +2,18 @@ import React, { useContext, useState } from 'react';
 import { TertiaryButton } from '../components/common/Buttons';
 import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
 import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTableRow';
-import EllipsesIcon from '../assets/svg/more_ellipses.svg';
-import LeftArrow from '../assets/svg/left_arrow.svg';
-import RightArrow from '../assets/svg/right_arrow.svg';
 import { TextInput } from '../components/common/Input';
 import SearchIcon from '../assets/svg/search.svg';
 import AppPage from '../components/common/AppPage';
 import PageHeading from '../components/common/PageHeading';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
+import Pagination from '../components/common/Pagination';
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
   const { poolDataMap } = useContext(BlendTableContext);
 
@@ -44,6 +44,14 @@ export default function BlendPoolSelectPage() {
       );
     });
   }
+
+  const handlePageChange = (page: number) => {
+    setPage(page);
+  };
+
+  const handleItemsPerPageChange = (itemsPerPage: number) => {
+    setItemsPerPage(itemsPerPage);
+  };
 
   return (
     <AppPage>
@@ -107,20 +115,13 @@ export default function BlendPoolSelectPage() {
           </tbody>
         </table>
       </div>
-      <div className='w-full h-10 bg-grey-200 rounded-md mt-8 pl-4 flex flex-row items-center justify-between text-sm text-grey-800 select-none'>
-        <button>
-          <img alt='More' src={EllipsesIcon} />
-        </button>
-        <div className='flex flex-row items-center justify-between space-x-8 mr-4'>
-          <button className='text-grey-800'>
-            <img alt='Prev' src={LeftArrow} />
-          </button>
-          <span>Page&nbsp;1&nbsp;of&nbsp;1</span>
-          <button className=''>
-            <img className='' alt='Prev' src={RightArrow} />
-          </button>
-        </div>
-      </div>
+      <Pagination
+        currentPage={page}
+        itemsPerPage={itemsPerPage}
+        totalItems={100}
+        onPageChange={handlePageChange}
+        onItemsPerPageChange={handleItemsPerPageChange}
+      />
     </AppPage>
   );
 }
