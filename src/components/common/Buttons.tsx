@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import { classNames } from '../../util/ClassNames';
 import MigrateIcon from '../../assets/svg/migrate.svg';
+import LeftChevron from '../../assets/svg/left_chevron.svg';
 
 export const PrimaryButton = styled.button`
   ${tw`rounded-md text-grey-0 font-medium`}
@@ -258,6 +259,19 @@ export const MigrateButton = styled.button`
   }
 `;
 
+const PreviousPageButtonWrapper = styled.button`
+  ${tw`flex items-center justify-center`}
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  background-color: rgba(26, 41, 52, 1);
+`;
+
+const PreviousPageIcon = styled.img`
+  width: 19px;
+  height: 19px;
+`;
+
 const ButtonWithIconWrapper = styled.div`
   ${tw`flex flex-row items-center justify-start`}
   position: relative;
@@ -347,5 +361,18 @@ export function SecondaryButtonWithIcon(props: ButtonWithIconProps) {
         {props.children}
       </SecondaryButton>
     </ButtonWithIconWrapper>
+  );
+}
+
+export type PreviousPageButtonProps = {
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+};
+
+export function PreviousPageButton(props: PreviousPageButtonProps) {
+  const { onClick } = props;
+  return (
+    <PreviousPageButtonWrapper onClick={onClick}>
+      <PreviousPageIcon src={LeftChevron} alt='Previous Page' />
+    </PreviousPageButtonWrapper>
   );
 }
