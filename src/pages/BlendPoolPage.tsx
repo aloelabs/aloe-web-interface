@@ -14,6 +14,7 @@ import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
+import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
 
 type PoolParams = {
   pooladdress: string;
@@ -93,6 +94,7 @@ export default function BlendPoolPage() {
             </GridExpandingDiv>
             <div className='w-full py-4'>
               {/*<BlendAllocationGraph />*/}
+              <PoolPositionWidget poolData={poolData} />
               <PoolPieChartWidget poolData={poolData} />
               <PoolStatsWidget poolData={poolData} />
             </div>

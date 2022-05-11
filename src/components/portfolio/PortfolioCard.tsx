@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { roundPercentage } from '../../util/Numbers';
-import PositiveChangeIcon from '../../assets/svg/positive_change_chevron.svg';
-import NegativeChangeIcon from '../../assets/svg/negative_change_chevron.svg';
 import { TokenData } from '../../data/TokenData';
 import { FeeTier, PrintFeeTier } from '../../data/BlendPoolMarkers';
 import { SiloData } from '../../data/SiloData';
@@ -17,6 +14,7 @@ import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import PercentChange from '../common/PercentChange';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
@@ -25,11 +23,6 @@ const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const FEE_TIER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const FEE_TIER_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
-const POSITIVE_PERCENT_BG_COLOR = 'rgba(0, 193, 67, 0.1)';
-const POSITIVE_PERCENT_TEXT_COLOR = 'rgb(0, 193, 67)';
-const NEGATIVE_PERCENT_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const NEGATIVE_PERCENT_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
-const PERCENT_ROUNDING_PRECISION = 2;
 
 export const CardWrapper = styled.div.attrs(
   (props: { borderGradient: string; shadowColor: string }) => props
@@ -194,40 +187,6 @@ export const ValueText = styled.span`
   font-size: 32px;
 `;
 
-const PercentChangeContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  height: 28px;
-  border-radius: 8px;
-  padding: 6px;
-  font-size: 12px;
-  &:after {
-    content: '';
-    width: 14px;
-    height: 14px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
-`;
-
-export const PositivePercentChangeContainer = styled(PercentChangeContainer)`
-  background: ${POSITIVE_PERCENT_BG_COLOR};
-  color: ${POSITIVE_PERCENT_TEXT_COLOR};
-  &:after {
-    background-image: url(${PositiveChangeIcon});
-  }
-`;
-
-export const NegativePercentChangeContainer = styled(PercentChangeContainer)`
-  background: ${NEGATIVE_PERCENT_BG_COLOR};
-  color: ${NEGATIVE_PERCENT_TEXT_COLOR};
-  &:after {
-    background-image: url(${NegativeChangeIcon});
-  }
-`;
-
 export type PortfolioCardProps = {
   token0: TokenData;
   token1: TokenData;
@@ -313,17 +272,7 @@ export default function PortfolioCard(props: PortfolioCardProps) {
           <span>Estimated Value</span>
           <div className='flex gap-2 items-center'>
             <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
-            {percentageChange >= 0 && (
-              <PositivePercentChangeContainer>
-                +{roundPercentage(percentageChange, PERCENT_ROUNDING_PRECISION)}
-                %
-              </PositivePercentChangeContainer>
-            )}
-            {percentageChange < 0 && (
-              <NegativePercentChangeContainer>
-                {roundPercentage(percentageChange, PERCENT_ROUNDING_PRECISION)}%
-              </NegativePercentChangeContainer>
-            )}
+            <PercentChange percent={percentageChange} />
           </div>
         </BodySubContainer>
       </CardBodyWrapper>
