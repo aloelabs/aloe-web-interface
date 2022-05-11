@@ -41,7 +41,7 @@ const DropdownList = styled.div`
   padding: 12px;
   gap: 8px;
   background-color: ${DROPDOWN_LIST_BG_COLOR};
-  border-radius: 8px;
+  border-radius: 16px;
   border: 1px solid ${DROPDOWN_LIST_BORDER_COLOR};
   box-shadow: 0px 8px 32px 0px ${DROPDOWN_LIST_SHADOW_COLOR};
 `;
