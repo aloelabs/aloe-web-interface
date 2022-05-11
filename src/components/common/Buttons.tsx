@@ -276,8 +276,23 @@ export const OutlinedGradientButton = styled.button.attrs(
     box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 0.2);
     outline: none;
     background-color: rgba(13, 23, 30, 1);
+
+    background: linear-gradient(90deg, #9BAAF3 0%, #7BD8C0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    
     &:before {
       background: rgba(7, 14, 18, 1);
+    }
+
+    & ~ img {
+      display: none;
+    }
+
+    & ~ img.gradient {
+      display: block;
     }
   }
 
