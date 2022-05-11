@@ -23,6 +23,7 @@ const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
 const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
 const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
+const SILO_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const POSITIVE_PERCENT_BG_COLOR = 'rgba(0, 193, 67, 0.1)';
 const POSITIVE_PERCENT_TEXT_COLOR = 'rgb(0, 193, 67)';
@@ -91,6 +92,13 @@ export const CardBodyWrapper = styled.div`
     flex-direction: column;
     align-items: flex-start;
   }
+`;
+
+export const TokenPairTickers = styled.div`
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+  font-family: 'ClashDisplay-Variable';
 `;
 
 export const TokenIconsWrapper = styled.div`
@@ -181,8 +189,20 @@ const BodyDivider = styled.div`
   }
 `;
 
+export const TokenTickerText = styled.span`
+  font-size: 16px;
+  line-height: 24px;
+`;
+
+export const SiloText = styled.span`
+  font-size: 14px;
+  line-height: 20px;
+  color: ${SILO_TEXT_COLOR};
+`;
+
 export const ValueText = styled.span`
   font-size: 32px;
+  font-weight: 700;
 `;
 
 const PercentChangeContainer = styled.div`
@@ -270,9 +290,9 @@ export default function PortfolioCard(props: PortfolioCardProps) {
       shadowColor={cardShadowColor}
     >
       <CardTitleWrapper backgroundGradient={cardTitleBackgroundGradient}>
-        <span className='text-2xl font-bold'>
+        <TokenPairTickers>
           {token0.ticker} - {token1.ticker}
-        </span>
+        </TokenPairTickers>
         <CardSubTitleWrapper>
           <TokenIconsWrapper>
             <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
@@ -286,14 +306,14 @@ export default function PortfolioCard(props: PortfolioCardProps) {
           <span>Invested</span>
           <InvestedTypesContainer>
             <InvestedType>
-              <span>{token0.ticker}</span>
+              <TokenTickerText>{token0.ticker}</TokenTickerText>
               <DashedDivider />
-              <span className='text-xs'>via {silo0.shortName}</span>
+              <SiloText>via {silo0.shortName}</SiloText>
             </InvestedType>
             <InvestedType>
-              <span>{token1.ticker}</span>
+              <TokenTickerText>{token1.ticker}</TokenTickerText>
               <DashedDivider />
-              <span className='text-xs'>via {silo1.shortName}</span>
+              <SiloText>via {silo1.shortName}</SiloText>
             </InvestedType>
           </InvestedTypesContainer>
         </BodySubContainer>

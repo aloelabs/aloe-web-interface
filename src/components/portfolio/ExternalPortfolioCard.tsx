@@ -11,6 +11,7 @@ import {
   TokenIconsWrapper,
   CardSubTitleWrapper,
   TokenIcon,
+  TokenPairTickers,
 } from './PortfolioCard';
 import { MigrateButton } from '../common/Buttons';
 import { roundPercentage } from '../../util/Numbers';
@@ -76,9 +77,9 @@ export default function ExternalPortfolioCard(
   return (
     <ExternalCardWrapper>
       <CardTitleWrapper backgroundGradient={CARD_TITLE_BG_COLOR}>
-        <span className='text-2xl font-bold'>
+        <TokenPairTickers>
           {token0.ticker} - {token1.ticker}
-        </span>
+        </TokenPairTickers>
         <CardSubTitleWrapper>
           <TokenIconsWrapper>
             <TokenIcon src={token0.iconPath} alt=''></TokenIcon>

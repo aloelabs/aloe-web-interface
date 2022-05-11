@@ -229,6 +229,9 @@ export const MigrateButton = styled.button`
   padding: 16px 24px;
   line-height: 24px;
   border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24.3px;
   user-select: none;
   cursor: pointer;
   &:before {

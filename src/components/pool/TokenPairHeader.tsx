@@ -28,6 +28,7 @@ const TokenTicker = styled.span`
   font-size: 32px;
   font-weight: 600;
   line-height: 40px;
+  font-family: 'ClashDisplay-Variable';
 `;
 
 const SiloName = styled.span`

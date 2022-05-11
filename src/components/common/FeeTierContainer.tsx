@@ -12,6 +12,10 @@ const Wrapper = styled.div`
   border-radius: 100px;
 `;
 
+const FeeTierText = styled.span`
+  font-size: 14px;
+`;
+
 export type FeeTierProps = {
   feeTier: FeeTier;
   className?: string;
@@ -21,7 +25,7 @@ export default function FeeTierContainer(props: FeeTierProps) {
   const { feeTier, className } = props;
   return (
     <Wrapper className={className}>
-      <span>Uniswap Fee Tier - {PrintFeeTier(feeTier)}</span>
+      <FeeTierText>Uniswap Fee Tier - {PrintFeeTier(feeTier)}</FeeTierText>
     </Wrapper>
   );
 }
