@@ -172,6 +172,5 @@ export default function BlendGraph(props: BlendGraphProps) {
         </AreaChart>
       </ResponsiveContainer>
     </ResponsiveContainerStyled>
-    
   );
 }

@@ -184,7 +184,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   return (
     <Wrapper>
       <Container>
-        <div className='w-full p-4 flex gap-4 justify-end'>
+        <div className='w-full flex justify-end gap-4 pr-16 pb-16'>
           {graphButtons.map((props: any) => {
             props.active = props.idx === activeButton;
             return BlendAllocationGraphButton(props);
