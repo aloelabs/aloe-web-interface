@@ -19,6 +19,13 @@ const TOTAL_RETURNS_STROKE_COLOR = '#00C143';
 const UNISWAP_V2_STROKE_COLOR = '#865EF2';
 const HODL_STROKE_COLOR = '#C2D1DD';
 
+const ResponsiveContainerStyled = styled.div`
+  position: relative;
+  left: -32px;
+  width: calc(100% + 64px);
+  height: 300px;
+`;
+
 const LegendWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -98,70 +105,73 @@ export default function BlendGraph(props: BlendGraphProps) {
   }
   const ticks = getEvenlySpacedDates(dates, step).slice(1);
   return (
-    <ResponsiveContainer width='100%' height={300}>
-      <AreaChart
-        width={600}
-        height={300}
-        data={data}
-        margin={{ top: 0, left: 0, bottom: 0, right: 0 }}
-      >
-        <defs>
-          <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>
-            <stop
-              offset='-29%'
-              stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
-              stopOpacity={0.25}
-            />
-            <stop
-              offset='99.93%'
-              stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
-              stopOpacity={0}
-            />
-          </linearGradient>
-        </defs>
-        <XAxis
-          dataKey='x'
-          axisLine={false}
-          domain={['auto', 'auto']}
-          interval={0}
-          ticks={ticks}
-          tick={{ fill: TEXT_COLOR }}
-          tickFormatter={(tickString) =>
-            format(parseISO(tickString), dateFormat)
-          }
-          tickLine={false}
-        />
-        <Tooltip
-          content={<BlendGraphTooltip />}
-          allowEscapeViewBox={{ x: true, y: false }}
-          isAnimationActive={false}
-        />
-        <Area
-          type='monotone'
-          dataKey='Total Returns'
-          stroke={TOTAL_RETURNS_STROKE_COLOR}
-          fillOpacity={1}
-          fill='url(#totalReturnsGradient)'
-          isAnimationActive={false}
-        />
-        <Area
-          type='monotone'
-          dataKey='Uniswap V2'
-          stroke={UNISWAP_V2_STROKE_COLOR}
-          fillOpacity={0}
-          strokeDasharray='5 5'
-          isAnimationActive={false}
-        />
-        <Area
-          type='monotone'
-          dataKey='50/50 HODL'
-          stroke={HODL_STROKE_COLOR}
-          fillOpacity={0}
-          strokeDasharray='5 5'
-          isAnimationActive={false}
-        />
-        <Legend iconType='rect' content={BlendGraphLegend}></Legend>
-      </AreaChart>
-    </ResponsiveContainer>
+    <ResponsiveContainerStyled>
+      <ResponsiveContainer>
+        <AreaChart
+          width={964}
+          height={300}
+          data={data}
+          margin={{ top: 0, left: 0, bottom: 0, right: 0 }}
+        >
+          <defs>
+            <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>
+              <stop
+                offset='-29%'
+                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+                stopOpacity={0.25}
+              />
+              <stop
+                offset='99.93%'
+                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+                stopOpacity={0}
+              />
+            </linearGradient>
+          </defs>
+          <XAxis
+            dataKey='x'
+            axisLine={false}
+            domain={['auto', 'auto']}
+            interval={0}
+            ticks={ticks}
+            tick={{ fill: TEXT_COLOR }}
+            tickFormatter={(tickString) =>
+              format(parseISO(tickString), dateFormat)
+            }
+            tickLine={false}
+          />
+          <Tooltip
+            content={<BlendGraphTooltip />}
+            allowEscapeViewBox={{ x: false, y: false }}
+            isAnimationActive={false}
+          />
+          <Area
+            type='monotone'
+            dataKey='Total Returns'
+            stroke={TOTAL_RETURNS_STROKE_COLOR}
+            fillOpacity={1}
+            fill='url(#totalReturnsGradient)'
+            isAnimationActive={false}
+          />
+          <Area
+            type='monotone'
+            dataKey='Uniswap V2'
+            stroke={UNISWAP_V2_STROKE_COLOR}
+            fillOpacity={0}
+            strokeDasharray='5 5'
+            isAnimationActive={false}
+          />
+          <Area
+            type='monotone'
+            dataKey='50/50 HODL'
+            stroke={HODL_STROKE_COLOR}
+            fillOpacity={0}
+            strokeDasharray='5 5'
+            isAnimationActive={false}
+          />
+          <Legend iconType='rect' content={BlendGraphLegend}></Legend>
+        </AreaChart>
+      </ResponsiveContainer>
+    </ResponsiveContainerStyled>
+    
   );
 }
