@@ -5,7 +5,6 @@ import tw from 'twin.macro';
 import { BlendPoolMarkers, PrintFeeTier } from '../../data/BlendPoolMarkers';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
-import { prominent } from 'color.js';
 import {
   BROWSE_CARD_WIDTH_LG,
   BROWSE_CARD_WIDTH_MD,
@@ -15,6 +14,7 @@ import {
 } from '../../data/constants/Breakpoints';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
+import { getProminentColor } from '../../util/Colors';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -126,14 +126,6 @@ const InfoCategory = styled.span`
   color: ${INFO_CATEGORY_TEXT_COLOR};
 `;
 
-// My simple solution to determining the prominent color of the icon
-// (Uses external library)
-// Feel free to replace this with something more robust if need be
-const getProminentColor = async (path: string) => {
-  const values = await prominent(path, { amount: 1 });
-  return `${values[0]}, ${values[1]}, ${values[2]}`;
-};
-
 const rgb = (color: string) => {
   return `rgb(${color})`;
 };
@@ -240,7 +232,7 @@ export default function BrowseCard(props: BrowseCardProps) {
             </span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
-            <InfoCategory>APR Fee</InfoCategory>
+            <InfoCategory>APR</InfoCategory>
             <span className='text-2xl'>{aprFee}</span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
