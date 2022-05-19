@@ -1,5 +1,5 @@
 import { BLOCKS_TO_WAIT } from '../data/constants/Values';
-import { Contract, ContractReceipt, Signer } from 'ethers';
+import { BigNumber, Contract, ContractReceipt, Signer } from 'ethers';
 
 import BlendPoolAbi from '../assets/abis/AloeBlend.json';
 import Big from 'big.js';
@@ -25,11 +25,29 @@ export async function withdraw(
   const amount0Min = estimated0.mul(1 - ratioChange / 100);
   const amount1Min = estimated1.mul(1 - ratioChange / 100);
 
+  let transactionOptions: any = {};
+
+  try {
+    const estimatedGas = (
+      (await tokenContract.estimateGas.withdraw(
+        shares.toFixed(0),
+        amount0Min.toFixed(0),
+        amount1Min.toFixed(0)
+      )) as BigNumber
+    ).toNumber();
+
+    transactionOptions['gasLimit'] = (estimatedGas * 1.1).toFixed(0);
+  } catch (e) {
+    console.error('Error while estimating gas');
+    console.error(e);
+  }
+
   try {
     const transactionResponse = await tokenContract.withdraw(
       shares.toFixed(0),
       amount0Min.toFixed(0),
-      amount1Min.toFixed(0)
+      amount1Min.toFixed(0),
+      transactionOptions
     );
     const receipt = await transactionResponse.wait(BLOCKS_TO_WAIT);
     completionCallback(receipt);
