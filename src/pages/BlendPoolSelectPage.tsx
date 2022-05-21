@@ -11,6 +11,14 @@ import AppPage from '../components/common/AppPage';
 import PageHeading from '../components/common/PageHeading';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
+import styled from 'styled-components';
+import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
+
+const BrowseTitle = styled.span`
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 40px;
+`;
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
@@ -47,6 +55,10 @@ export default function BlendPoolSelectPage() {
 
   return (
     <AppPage>
+      <div className='flex flex-col gap-6'>
+        <BrowseTitle>Aloe's Performance</BrowseTitle>
+        <BrowsePoolsPerformance poolData={pools} />
+      </div>
       <div>
         <PageHeading>Browse Deployed Pools</PageHeading>
       </div>
