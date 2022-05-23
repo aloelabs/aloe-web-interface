@@ -57,7 +57,7 @@ const Nav = styled.nav`
 
 export default function Header() {
   return (
-    <Nav className='fixed top-0 left-0 right-0 z-10 flex items-center justify-between h-16 px-6 lg:px-20 bg-grey-25 border-b-2 border-b-grey-100'>
+    <Nav className='fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-16 px-6 lg:px-20 bg-grey-25 border-b-2 border-b-grey-100'>
       <div className='flex flex-row align-middle items-center'>
         <a href='..' className='flex flex-row items-center justify-center'>
           <img src={AloeLogo} className='h-9 w-auto p-2' alt='' />
