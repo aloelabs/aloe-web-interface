@@ -5,6 +5,11 @@ import tw from 'twin.macro';
 import { SectionLabel } from './DepositTab';
 import InfoIcon from '../../assets/svg/info.svg';
 
+const PREDEFINED_MAX_SLIPPAGE_OPTIONS = [
+  {label: 'Low (5%)', value: '5.0'},
+  {label: 'Med (10%)', value: '10.0'},
+]
+
 const SlippageTabsWrapper = styled.div`
   ${tw`w-full flex`}
   border: 1px solid rgba(26, 41, 52, 1);
@@ -104,26 +109,18 @@ export default function MaxSlippageInput(props: MaxSlippageInputProps) {
       <Tab.Group>
         <Tab.List>
           <SlippageTabsWrapper>
-            <Tab as={Fragment} key='5%'>
-              {({ selected }) => (
-                <SlippageButton
-                  className={selected ? 'selected' : ''}
-                  onClick={() => updateMaxSlippage('5.0')}
-                >
-                  <span>Low (5%)</span>
-                </SlippageButton>
-              )}
-            </Tab>
-            <Tab as={Fragment} key='10%'>
-              {({ selected }) => (
-                <SlippageButton
-                  className={selected ? 'selected' : ''}
-                  onClick={() => updateMaxSlippage('10.0')}
-                >
-                  <span>Med (10%)</span>
-                </SlippageButton>
-              )}
-            </Tab>
+            {PREDEFINED_MAX_SLIPPAGE_OPTIONS.map(({ label, value }) => (
+              <Tab as={Fragment} key={value}>
+                {({ selected }) => (
+                  <SlippageButton
+                    className={selected ? 'selected' : ''}
+                    onClick={() => updateMaxSlippage(value)}
+                  >
+                    <span>{label}</span>
+                  </SlippageButton>)
+                }
+              </Tab>
+            ))}
             <Tab as={Fragment} key='Custom'>
               {({ selected }) => {
                 if (selected) {
