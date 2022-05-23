@@ -1,4 +1,4 @@
-import { BLOCKS_TO_WAIT } from '../data/constants/Values';
+import { BLOCKS_TO_WAIT, GAS_ESTIMATION_SCALING } from '../data/constants/Values';
 import { BigNumber, Contract, ContractReceipt, Signer } from 'ethers';
 
 import BlendPoolAbi from '../assets/abis/AloeBlend.json';
@@ -36,7 +36,7 @@ export async function withdraw(
       )) as BigNumber
     ).toNumber();
 
-    transactionOptions['gasLimit'] = (estimatedGas * 1.1).toFixed(0);
+    transactionOptions['gasLimit'] = (estimatedGas * GAS_ESTIMATION_SCALING).toFixed(0);
   } catch (e) {
     console.error('Error while estimating gas');
     console.error(e);
