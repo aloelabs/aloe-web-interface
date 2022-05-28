@@ -14,6 +14,7 @@ import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
+import RiskCard from '../components/common/RiskCard';
 
 type PoolParams = {
   pooladdress: string;
@@ -22,6 +23,13 @@ type PoolParams = {
 const GridExpandingDiv = styled.div`
   grid-row: 1 / span 2;
   grid-column: 2 / span 1;
+`;
+
+const SectionHeading = styled.div`
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  color: rgba(255, 255, 255, 1);
 `;
 
 export default function BlendPoolPage() {
@@ -48,7 +56,7 @@ export default function BlendPoolPage() {
   return (
     <BlendPoolProvider poolData={poolData}>
       <div className='flex flex-row justify-center'>
-        <div className='h-full max-w-[600px] md:max-w-[1260px] flex flex-row flex-nowrap gap-12 pt-10 px-12 md:px-36'>
+        <div className='h-full flex flex-row flex-nowrap gap-12 pt-10 px-12 md:px-36'>
           {/* max-w-screen-sm px-6 sm:px-10 md:px-20 */}
           <div className='flex flex-col md:grid md:gap-x-10 md:grid-cols-[3fr_2fr]'>
             {/* using relative so that BackgroundBlobs behave */}
@@ -95,6 +103,10 @@ export default function BlendPoolPage() {
               {/*<BlendAllocationGraph />*/}
               <PoolPieChartWidget poolData={poolData} />
               <PoolStatsWidget poolData={poolData} />
+              <div className='flex flex-col gap-y-6 mt-16'>
+                <SectionHeading>Investing Risk</SectionHeading>
+                <RiskCard />
+              </div>
             </div>
           </div>
         </div>
