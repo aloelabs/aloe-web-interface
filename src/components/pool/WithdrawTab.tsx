@@ -18,6 +18,10 @@ import {
 } from '../../data/constants/Values';
 import { withdraw } from '../../connector/BlendWithdrawActions';
 import Pending from '../common/Pending';
+import ConfirmWithdrawalModal from './modal/ConfirmWithdrawalModal';
+import SharesWithdrawnModal from './modal/SharesWithdrawnModal';
+import SubmittingOrderModal from './modal/SubmittingOrderModal';
+import TransactionFailedModal from './modal/TransactionFailedModal';
 
 export type WithdrawTabProps = {
   poolData: BlendPoolMarkers;
@@ -48,6 +52,10 @@ function printButtonState(
 }
 
 export default function WithdrawTab(props: WithdrawTabProps) {
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailedModal, setShowFailedModal] = useState(false);
+  const [showSubmittingModal, setShowSubmittingModal] = useState(false);
   const drawData = ResolveBlendPoolDrawData(props.poolData);
   const [sharesAmount, setSharesAmount] = useState('');
 
@@ -164,20 +172,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
             return;
           }
           setIsTransactionPending(true);
-
-          const shares = new Big(sharesAmount).mul(String1E(18));
-
-          withdraw(
-            signer,
-            props.poolData.poolAddress,
-            shares,
-            Number(ratioChange),
-            poolStats,
-            (receipt) => {
-              setIsTransactionPending(false);
-              console.log(receipt);
-            }
-          );
+          setShowConfirmModal(true);
         };
       case ButtonState.NO_WALLET:
       case ButtonState.RATIO_CHANGE_TOO_LOW:
@@ -272,6 +267,65 @@ export default function WithdrawTab(props: WithdrawTabProps) {
           </PrimaryButton>
         </div>
       </div>
+      <ConfirmWithdrawalModal
+        open={showConfirmModal}
+        setOpen={setShowConfirmModal}
+        onConfirm={() => {
+          setShowConfirmModal(false);
+          setShowSubmittingModal(true);
+          if (!signer || !poolStats) {
+            setIsTransactionPending(false);
+            return;
+          }
+          const shares = new Big(sharesAmount).mul(String1E(18));
+          withdraw(
+            signer,
+            props.poolData.poolAddress,
+            shares,
+            Number(ratioChange),
+            poolStats,
+            (receipt) => {
+              setShowSubmittingModal(false);
+              if (receipt?.status === 1) {
+                setShowSuccessModal(true);
+              } else {
+                setShowFailedModal(true);
+              }
+              setIsTransactionPending(false);
+              console.log(receipt);
+            }
+          );
+        }}
+        onCancel={() => {
+          setIsTransactionPending(false);
+        }}
+        estimatedReturn='$204.94'
+        token0Ticker={drawData.token0Label}
+        token1Ticker={drawData.token1Label}
+        token0Estimate={token0Estimate}
+        token1Estimate={token1Estimate}
+        numberOfShares={sharesAmount}
+        maxSlippage={ratioChange}
+        networkFee='0.01'
+      />
+      <SharesWithdrawnModal
+        open={showSuccessModal}
+        setOpen={setShowSuccessModal}
+        estimatedValue='$204.94'
+        token0Ticker={drawData.token0Label}
+        token1Ticker={drawData.token1Label}
+        token0Estimate={token0Estimate}
+        token1Estimate={token1Estimate}
+        numberOfShares={sharesAmount}
+      />
+      <TransactionFailedModal
+        open={showFailedModal}
+        setOpen={setShowFailedModal}
+      />
+      <SubmittingOrderModal
+        open={showSubmittingModal}
+        setOpen={setShowSubmittingModal}
+      />
     </div>
   );
 }

@@ -26,6 +26,10 @@ import {
   DEFAULT_RATIO_CHANGE,
   RATIO_CHANGE_CUTOFF,
 } from '../../data/constants/Values';
+import ConfirmDepositModal from './modal/ConfirmDepositModal';
+import TokensDepositedModal from './modal/TokensDepositedModal';
+import TransactionFailedModal from './modal/TransactionFailedModal';
+import SubmittingOrderModal from './modal/SubmittingOrderModal';
 
 export type DepositTabProps = {
   poolData: BlendPoolMarkers;
@@ -68,6 +72,10 @@ function printButtonState(
 }
 
 export default function DepositTab(props: DepositTabProps) {
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailedModal, setShowFailedModal] = useState(false);
+  const [showSubmittingModal, setShowSubmittingModal] = useState(false);
   const drawData = ResolveBlendPoolDrawData(props.poolData);
 
   const { poolStats } = useContext(BlendPoolContext);
@@ -228,25 +236,7 @@ export default function DepositTab(props: DepositTabProps) {
             return;
           }
           setIsTransactionPending(true);
-
-          const amount0Max = new Big(token0Amount).mul(
-            String1E(depositData.token0Decimals)
-          );
-          const amount1Max = new Big(token1Amount).mul(
-            String1E(depositData.token1Decimals)
-          );
-
-          deposit(
-            signer,
-            props.poolData.poolAddress,
-            amount0Max,
-            amount1Max,
-            Number(ratioChange),
-            (receipt) => {
-              setIsTransactionPending(false);
-              console.log(receipt);
-            }
-          );
+          setShowConfirmModal(true);
         };
       case ButtonState.NO_WALLET:
       case ButtonState.RATIO_CHANGE_TOO_LOW:
@@ -390,6 +380,69 @@ export default function DepositTab(props: DepositTabProps) {
           </div>
         </PrimaryButton>
       </div>
+      <ConfirmDepositModal
+        open={showConfirmModal}
+        setOpen={setShowConfirmModal}
+        onConfirm={() => {
+          setShowConfirmModal(false);
+          setShowSubmittingModal(true);
+          if (!signer || !depositData) {
+            setIsTransactionPending(false);
+            return;
+          }
+          const amount0Max = new Big(token0Amount).mul(
+            String1E(depositData.token0Decimals)
+          );
+          const amount1Max = new Big(token1Amount).mul(
+            String1E(depositData.token1Decimals)
+          );
+          deposit(
+            signer,
+            props.poolData.poolAddress,
+            amount0Max,
+            amount1Max,
+            Number(ratioChange),
+            (receipt) => {
+              setShowSubmittingModal(false);
+              if (receipt?.status === 1) {
+                setShowSuccessModal(true);
+              } else {
+                setShowFailedModal(true);
+              }
+              setIsTransactionPending(false);
+              console.log(receipt);
+            }
+          );
+        }}
+        onCancel={() => {
+          setIsTransactionPending(false);
+        }}
+        estimatedTotal='$5,038'
+        token0Ticker={drawData.token0Label}
+        token1Ticker={drawData.token1Label}
+        token0Estimate={token0Amount}
+        token1Estimate={token1Amount}
+        numberOfShares='2'
+        maxSlippage={ratioChange}
+        networkFee='0.01'
+      />
+      <TokensDepositedModal
+        open={showSuccessModal}
+        setOpen={setShowSuccessModal}
+        totalEstimatedValue='$5,038'
+        token0Ticker={drawData.token0Label}
+        token1Ticker={drawData.token1Label}
+        token0Estimate={token0Amount}
+        token1Estimate={token1Amount}
+      />
+      <TransactionFailedModal
+        open={showFailedModal}
+        setOpen={setShowFailedModal}
+      />
+      <SubmittingOrderModal
+        open={showSubmittingModal}
+        setOpen={setShowSubmittingModal}
+      />
     </div>
   );
 }

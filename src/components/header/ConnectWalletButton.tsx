@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PrimaryButton, SecondaryButton } from '../common/Buttons';
-import Modal from '../common/Modal';
+import { CloseableModal } from '../common/Modal';
 
 import { useAccount, useConnect } from 'wagmi';
 import { FormatAddress } from '../../util/FormatAddress';
@@ -31,7 +31,7 @@ export default function ConnectWalletButton() {
       >
         {buttonText}
       </PrimaryButton>
-      <Modal open={modalOpen} setOpen={setModalOpen} title={'Connect Wallet'}>
+      <CloseableModal open={modalOpen} setOpen={setModalOpen} title={'Connect Wallet'}>
         <div className='w-full'>
           {accountData ? (
             // We have an account connected
@@ -109,7 +109,7 @@ export default function ConnectWalletButton() {
             </div>
           )}
         </div>
-      </Modal>
+      </CloseableModal>
     </div>
   );
 }
