@@ -12,6 +12,7 @@ import {
   FeeTierContainer,
   CardSubTitleWrapper,
   TokenIcon,
+  FEE_TIER_TEXT_COLOR,
 } from './PortfolioCard';
 import { MigrateButton } from '../common/Buttons';
 import { roundPercentage } from '../../util/Numbers';
@@ -21,6 +22,7 @@ import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import { Display, Text } from '../common/Typography';
 
 const EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR = 'rgba(26, 41, 52, 0.65)';
 const EXTERNAL_CARD_WRAPPER_HOVER_OUTLINE_COLOR = 'rgba(56, 82, 101, 1)';
@@ -76,22 +78,26 @@ export default function ExternalPortfolioCard(
   return (
     <ExternalCardWrapper>
       <CardTitleWrapper backgroundGradient={CARD_TITLE_BG_COLOR}>
-        <span className='text-2xl font-bold'>
+        <Display size='M' weight='semibold'>
           {token0.ticker} - {token1.ticker}
-        </span>
+        </Display>
         <CardSubTitleWrapper>
           <TokenIconsWrapper>
             <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
             <TokenIcon src={token1.iconPath} alt=''></TokenIcon>
           </TokenIconsWrapper>
           <FeeTierContainer>
-            Uniswap Fee Tier - {PrintFeeTier(uniswapFeeTier)}
+            <Text size='S' weight='medium' color={FEE_TIER_TEXT_COLOR}>
+              Uniswap Fee Tier - {PrintFeeTier(uniswapFeeTier)}
+            </Text>
           </FeeTierContainer>
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
-          <span>Estimated Value</span>
+          <Text size='M' weight='medium'>
+            Estimated Value
+          </Text>
           <ValuePercentContainer>
             <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
             {percentageChange >= 0 && (

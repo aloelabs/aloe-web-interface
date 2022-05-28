@@ -17,6 +17,7 @@ import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import { Display, Text } from '../common/Typography';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
@@ -24,11 +25,12 @@ const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
 const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const FEE_TIER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const FEE_TIER_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
+export const FEE_TIER_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
 const POSITIVE_PERCENT_BG_COLOR = 'rgba(0, 193, 67, 0.1)';
 const POSITIVE_PERCENT_TEXT_COLOR = 'rgb(0, 193, 67)';
 const NEGATIVE_PERCENT_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const NEGATIVE_PERCENT_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
+const SILO_NAME_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 const PERCENT_ROUNDING_PRECISION = 2;
 
 export const CardWrapper = styled.div.attrs(
@@ -279,38 +281,58 @@ export default function PortfolioCard(props: PortfolioCardProps) {
       shadowColor={cardShadowColor}
     >
       <CardTitleWrapper backgroundGradient={cardTitleBackgroundGradient}>
-        <span className='text-2xl font-bold'>
+        <Display size='M' weight='semibold'>
           {token0.ticker} - {token1.ticker}
-        </span>
+        </Display>
         <CardSubTitleWrapper>
           <TokenIconsWrapper>
-            <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
-            <TokenIcon src={token1.iconPath} alt=''></TokenIcon>
+            <TokenIcon
+              src={token0.iconPath}
+              alt={token0.ticker + "'s Icon"}
+            ></TokenIcon>
+            <TokenIcon
+              src={token1.iconPath}
+              alt={token1.ticker + "'s Icon"}
+            ></TokenIcon>
           </TokenIconsWrapper>
           <FeeTierContainer>
-            Uniswap Fee Tier - {PrintFeeTier(uniswapFeeTier)}
+            <Text size='S' weight='medium' color={FEE_TIER_TEXT_COLOR}>
+              Uniswap Fee Tier - {PrintFeeTier(uniswapFeeTier)}
+            </Text>
           </FeeTierContainer>
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
-          <span>Invested</span>
+          <Text size='M' weight='medium'>
+            Invested
+          </Text>
           <InvestedTypesContainer>
             <InvestedType>
-              <span>{token0.ticker}</span>
+              <Text size='M' weight='medium'>
+                {token0.ticker}
+              </Text>
               <DashedDivider />
-              <span className='text-xs'>via {silo0.shortName}</span>
+              <Text size='S' weight='medium' color={SILO_NAME_TEXT_COLOR}>
+                via {silo0.shortName}
+              </Text>
             </InvestedType>
             <InvestedType>
-              <span>{token1.ticker}</span>
+              <Text size='M' weight='medium'>
+                {token1.ticker}
+              </Text>
               <DashedDivider />
-              <span className='text-xs'>via {silo1.shortName}</span>
+              <Text size='S' weight='medium' color={SILO_NAME_TEXT_COLOR}>
+                via {silo1.shortName}
+              </Text>
             </InvestedType>
           </InvestedTypesContainer>
         </BodySubContainer>
         <BodyDivider />
         <BodySubContainer>
-          <span>Estimated Value</span>
+          <Text size='M' weight='medium'>
+            Estimated Value
+          </Text>
           <div className='flex gap-2 items-center'>
             <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
             {percentageChange >= 0 && (
