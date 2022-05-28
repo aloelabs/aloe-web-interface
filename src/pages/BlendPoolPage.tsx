@@ -14,6 +14,7 @@ import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
+import tw from 'twin.macro';
 
 type PoolParams = {
   pooladdress: string;
@@ -22,6 +23,21 @@ type PoolParams = {
 const GridExpandingDiv = styled.div`
   grid-row: 1 / span 2;
   grid-column: 2 / span 1;
+`;
+
+const SectionHeading = styled.div`
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  color: rgba(255, 255, 255, 1);
+`;
+
+const AboutMessage = styled.div`
+  ${tw`flex flex-col gap-y-6`}
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: rgba(130, 160, 182, 1);
 `;
 
 export default function BlendPoolPage() {
@@ -95,6 +111,26 @@ export default function BlendPoolPage() {
               {/*<BlendAllocationGraph />*/}
               <PoolPieChartWidget poolData={poolData} />
               <PoolStatsWidget poolData={poolData} />
+              <div className='flex flex-col gap-y-6 mt-16'>
+                <SectionHeading>About Aloe Blend Pool</SectionHeading>
+                <AboutMessage>
+                  <p>
+                    Placing funds into a Blend Vault will allow Aloe to use
+                    Uniswap V3 and yield-earning silos on your behalf.
+                  </p>
+                  <p>
+                    When you deposit to the vault, your tokens are pooled
+                    together with all other users. Once conditions are right,
+                    the vault can be "rebalanced". some tokens get placed in
+                    Uniswap, and some in the token's silo. Blend is designed to
+                    allocate tokens such that overall value will be split 50/50
+                    between the two tokens, just like Uniswap V2. In Aloe Blend,
+                    you earn yield from both Uniswap V3 and the silos, unlike
+                    Uniswap V2.
+                  </p>
+                  <p>Convert between ETH and WETH on Uniswap.</p>
+                </AboutMessage>
+              </div>
             </div>
           </div>
         </div>
