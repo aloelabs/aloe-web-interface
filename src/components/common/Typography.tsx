@@ -53,6 +53,7 @@ export const Display = styled.div.attrs(
     color?: string;
   }) => props
 )`
+  /* font-family: 'ClashDisplay-Variable'; */
   font-size: ${(props) => DISPLAY_FONT_SIZES[props.size]};
   font-weight: ${(props) => DISPLAY_FONT_WEIGHTS[props.weight]};
   line-height: ${(props) => DISPLAY_LINE_HEIGHTS[props.size]};
@@ -66,6 +67,7 @@ export const Text = styled.div.attrs(
     color?: string;
   }) => props
 )`
+  /* font-family: 'Satoshi-Variable'; */
   font-size: ${(props) => TEXT_FONT_SIZES[props.size]};
   font-weight: ${(props) => TEXT_FONT_WEIGHTS[props.weight]};
   line-height: ${(props) => TEXT_LINE_HEIGHTS[props.size]};
