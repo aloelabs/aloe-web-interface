@@ -48,7 +48,7 @@ export default function BlendPoolPage() {
   return (
     <BlendPoolProvider poolData={poolData}>
       <div className='flex flex-row justify-center'>
-        <div className='h-full max-w-[600px] md:max-w-[1260px] flex flex-row flex-nowrap gap-12 pt-10 px-12 md:px-36'>
+        <div className='h-full max-w-[600px] md:max-w-[1260px] flex flex-row flex-nowrap gap-12 pt-10 px-12'>
           {/* max-w-screen-sm px-6 sm:px-10 md:px-20 */}
           <div className='flex flex-col md:grid md:gap-x-10 md:grid-cols-[3fr_2fr]'>
             {/* using relative so that BackgroundBlobs behave */}
