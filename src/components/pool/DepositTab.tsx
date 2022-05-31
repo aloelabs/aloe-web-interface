@@ -1,31 +1,31 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
-import {
-  BlendPoolDrawData,
-  logBig,
-  ResolveBlendPoolDrawData,
-} from '../../data/BlendPoolDataResolver';
-import TokenAmountInput from '../common/TokenAmountInput';
-import { LinkButtonWithIcon, PrimaryButton } from '../common/Buttons';
-import GearIconPurple from '../../assets/svg/gear_purple.svg';
-import ToggleableRatioChange from './ToggleableRatioChange';
-import RiskNotices from '../common/RiskNotices';
-import { String1E } from '../../util/Numbers';
-import { WETH_9_MAINNET_ADDRESS } from '../../data/constants/Addresses';
 import Big from 'big.js';
-import { useDeposit } from '../../data/hooks/UseDeposit';
-import { BlendPoolContext } from '../../data/context/BlendPoolContext';
+import React, { useContext, useEffect, useState } from 'react';
+import { useSigner } from 'wagmi';
+import GearIconPurple from '../../assets/svg/gear_purple.svg';
 import {
   approve,
   deposit,
-  mintWeth,
+  mintWeth
 } from '../../connector/BlendDepositActions';
-import Pending from '../common/Pending';
-import { useSigner } from 'wagmi';
+import {
+  BlendPoolDrawData,
+  logBig,
+  ResolveBlendPoolDrawData
+} from '../../data/BlendPoolDataResolver';
+import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
+import { WETH_9_MAINNET_ADDRESS } from '../../data/constants/Addresses';
 import {
   DEFAULT_RATIO_CHANGE,
-  RATIO_CHANGE_CUTOFF,
+  RATIO_CHANGE_CUTOFF
 } from '../../data/constants/Values';
+import { BlendPoolContext } from '../../data/context/BlendPoolContext';
+import { useDeposit } from '../../data/hooks/UseDeposit';
+import { String1E } from '../../util/Numbers';
+import { FilledStylizedButton, LinkButtonWithIcon } from '../common/Buttons';
+import Pending from '../common/Pending';
+import RiskNotices from '../common/RiskNotices';
+import TokenAmountInput from '../common/TokenAmountInput';
+import ToggleableRatioChange from './ToggleableRatioChange';
 
 export type DepositTabProps = {
   poolData: BlendPoolMarkers;
@@ -370,10 +370,13 @@ export default function DepositTab(props: DepositTabProps) {
         </ToggleableRatioChange>
       </div>
       <div className='w-full'>
-        <PrimaryButton
-          className='w-full py-2 mt-2'
+        <FilledStylizedButton
           name={buttonLabel}
+          size='M'
           onClick={onButtonClick}
+          backgroundColor={'rgba(26, 41, 52, 1)'}
+          color={'rgba(255, 255, 255, 1)'}
+          fill={true}
           disabled={[
             ButtonState.INSUFFICIENT_TOKEN_0,
             ButtonState.INSUFFICIENT_TOKEN_1,
@@ -388,7 +391,7 @@ export default function DepositTab(props: DepositTabProps) {
               <span>{buttonLabel}</span>
             )}
           </div>
-        </PrimaryButton>
+        </FilledStylizedButton>
       </div>
     </div>
   );

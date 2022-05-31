@@ -1,23 +1,23 @@
+import Big from 'big.js';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import TokenAmountInput from '../common/TokenAmountInput';
-import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
+import { useAccount, useBalance, useSigner } from 'wagmi';
+import GearIconPurple from '../../assets/svg/gear_purple.svg';
+import { withdraw } from '../../connector/BlendWithdrawActions';
 import {
   BlendPoolDrawData,
-  ResolveBlendPoolDrawData,
+  ResolveBlendPoolDrawData
 } from '../../data/BlendPoolDataResolver';
-import { LinkButtonWithIcon, PrimaryButton } from '../common/Buttons';
-import GearIconPurple from '../../assets/svg/gear_purple.svg';
-import ToggleableRatioChange from './ToggleableRatioChange';
-import { BlendPoolContext } from '../../data/context/BlendPoolContext';
-import { useAccount, useBalance, useSigner } from 'wagmi';
-import Big from 'big.js';
-import { prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
+import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import {
   DEFAULT_RATIO_CHANGE,
-  RATIO_CHANGE_CUTOFF,
+  RATIO_CHANGE_CUTOFF
 } from '../../data/constants/Values';
-import { withdraw } from '../../connector/BlendWithdrawActions';
+import { BlendPoolContext } from '../../data/context/BlendPoolContext';
+import { prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
+import { FilledStylizedButton, LinkButtonWithIcon } from '../common/Buttons';
 import Pending from '../common/Pending';
+import TokenAmountInput from '../common/TokenAmountInput';
+import ToggleableRatioChange from './ToggleableRatioChange';
 
 export type WithdrawTabProps = {
   poolData: BlendPoolMarkers;
@@ -252,10 +252,13 @@ export default function WithdrawTab(props: WithdrawTabProps) {
           </ToggleableRatioChange>
         </div>
         <div className='w-full'>
-          <PrimaryButton
-            className='w-full py-2 mt-2'
+          <FilledStylizedButton
             name={buttonLabel}
+            size='M'
             onClick={onButtonClick}
+            backgroundColor={'rgba(26, 41, 52, 1)'}
+            color={'rgba(255, 255, 255, 1)'}
+            fill={true}
             disabled={[
               ButtonState.INSUFFICIENT_SHARES,
               ButtonState.PENDING_TRANSACTION,
@@ -269,7 +272,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
                 <span>{buttonLabel}</span>
               )}
             </div>
-          </PrimaryButton>
+          </FilledStylizedButton>
         </div>
       </div>
     </div>

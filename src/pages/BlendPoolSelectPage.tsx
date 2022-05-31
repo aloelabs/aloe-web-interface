@@ -1,16 +1,17 @@
 import React, { useContext, useState } from 'react';
-import { TertiaryButton } from '../components/common/Buttons';
-import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
-import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTableRow';
-import EllipsesIcon from '../assets/svg/more_ellipses.svg';
 import LeftArrow from '../assets/svg/left_arrow.svg';
+import EllipsesIcon from '../assets/svg/more_ellipses.svg';
+import { ReactComponent as PlusIcon } from '../assets/svg/white_plus.svg';
 import RightArrow from '../assets/svg/right_arrow.svg';
-import { TextInput } from '../components/common/Input';
 import SearchIcon from '../assets/svg/search.svg';
 import AppPage from '../components/common/AppPage';
+import { OutlinedGradientRoundedButtonWithIcon } from '../components/common/Buttons';
+import { TextInput } from '../components/common/Input';
 import PageHeading from '../components/common/PageHeading';
-import { BlendTableContext } from '../data/context/BlendTableContext';
+import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTableRow';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
+import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
+import { BlendTableContext } from '../data/context/BlendTableContext';
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
@@ -65,12 +66,16 @@ export default function BlendPoolSelectPage() {
           rel='noopener noreferrer'
           tabIndex={-1}
         >
-          <TertiaryButton
+          <OutlinedGradientRoundedButtonWithIcon
+            size='L'
+            position='trailing'
+            activeGradientId='#plus-icon-gradient'
+            svgColorType='stroke'
             name='Deploy New Pool'
-            className='flex-none px-8 py-3'
+            Icon={<PlusIcon />}
           >
-            Deploy&nbsp;New&nbsp;Pool
-          </TertiaryButton>
+            <span>Deploy&nbsp;New&nbsp;Pool</span>
+          </OutlinedGradientRoundedButtonWithIcon>
         </a>
       </div>
       <div className='text-left rounded-md border-2 border-grey-200'>

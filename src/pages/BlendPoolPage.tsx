@@ -1,19 +1,21 @@
 import React, { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import PageHeading from '../components/common/PageHeading';
-import { LinkButtonWithIcon } from '../components/common/Buttons';
+import styled from 'styled-components';
 import BackArrowPurple from '../assets/svg/back_arrow_purple.svg';
 import OpenIcon from '../assets/svg/open.svg';
-import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
-import PoolInteractionTabs from '../components/pool/PoolInteractionTabs';
-import BackgroundBlobs from '../components/pool/BackgroundBlobs';
 import BlendStampHolo from '../components/common/BlendStampHolo';
+import {
+  LinkButtonWithIcon
+} from '../components/common/Buttons';
+import PageHeading from '../components/common/PageHeading';
+import BackgroundBlobs from '../components/pool/BackgroundBlobs';
+import PoolInteractionTabs from '../components/pool/PoolInteractionTabs';
+import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 // import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
 import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
-import { BlendTableContext } from '../data/context/BlendTableContext';
+import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
-import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
-import styled from 'styled-components';
+import { BlendTableContext } from '../data/context/BlendTableContext';
 
 type PoolParams = {
   pooladdress: string;

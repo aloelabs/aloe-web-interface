@@ -1,26 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import {
-  CardBodyWrapper,
-  CardTitleWrapper,
-  CardWrapper,
-  PositivePercentChangeContainer,
-  NegativePercentChangeContainer,
-  ValueText,
-  TokenIconsWrapper,
-  FeeTierContainer,
-  CardSubTitleWrapper,
-  TokenIcon,
-} from './PortfolioCard';
-import { MigrateButton } from '../common/Buttons';
-import { roundPercentage } from '../../util/Numbers';
-import { TokenData } from '../../data/TokenData';
+import { ReactComponent as MigrateIcon } from '../../assets/svg/migrate.svg';
 import { FeeTier, PrintFeeTier } from '../../data/BlendPoolMarkers';
 import {
-  RESPONSIVE_BREAKPOINT_SM,
-  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_SM
 } from '../../data/constants/Breakpoints';
+import { TokenData } from '../../data/TokenData';
+import { roundPercentage } from '../../util/Numbers';
+import { OutlinedGradientButtonWithIcon } from '../common/Buttons';
+import {
+  CardBodyWrapper, CardSubTitleWrapper, CardTitleWrapper,
+  CardWrapper, FeeTierContainer, NegativePercentChangeContainer, PositivePercentChangeContainer, TokenIcon, TokenIconsWrapper, ValueText
+} from './PortfolioCard';
 
 const EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR = 'rgba(26, 41, 52, 0.65)';
 const EXTERNAL_CARD_WRAPPER_HOVER_OUTLINE_COLOR = 'rgba(56, 82, 101, 1)';
@@ -108,7 +100,15 @@ export default function ExternalPortfolioCard(
           </ValuePercentContainer>
         </BodySubContainer>
         <EndAlignedBodySubContainer>
-          <MigrateButton>Migrate to Aloe</MigrateButton>
+          <OutlinedGradientButtonWithIcon
+            Icon={<MigrateIcon />}
+            position='trailing'
+            size='L'
+            activeGradientId='#migrate-icon-gradient'
+            svgColorType='fill'
+          >
+            <span>Migrate to Aloe</span>
+          </OutlinedGradientButtonWithIcon>
         </EndAlignedBodySubContainer>
       </CardBodyWrapper>
     </ExternalCardWrapper>
