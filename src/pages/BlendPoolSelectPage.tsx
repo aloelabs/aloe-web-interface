@@ -18,6 +18,7 @@ import {
   MultiDropdownOption,
 } from '../components/common/Dropdown';
 import { GetTokenData } from '../data/TokenData';
+import { FilterBadge } from '../components/common/FilterBadge';
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
@@ -105,10 +106,27 @@ export default function BlendPoolSelectPage() {
     }
   }, [searchText, pools]);
 
+  /* Calculating the number of applied filters */
+  let numberOfFiltersApplied = 0;
+  if (activeTokenOptions.length < tokenOptions.length) {
+    numberOfFiltersApplied++;
+  }
+  if (selectedSortByOption.value !== 'default') {
+    numberOfFiltersApplied++;
+  }
+  if (searchText.length > 0) {
+    numberOfFiltersApplied++;
+  }
+
   return (
     <AppPage>
-      <div>
+      <div className='flex items-center gap-6'>
         <PageHeading>Browse Deployed Pools</PageHeading>
+        {numberOfFiltersApplied > 0 && (
+          <FilterBadge>
+            {numberOfFiltersApplied} {numberOfFiltersApplied === 1 ? 'Filter' : 'Filters'} Applied
+          </FilterBadge>
+        )}
       </div>
       <div className='py-4 flex flex-row items-center justify-between text-lg'>
         <TextInput
