@@ -67,8 +67,8 @@ export default function BrowsePoolsPerformance(
       </div>
       <VerticalDivider />
       <div className='flex flex-col gap-3 flex-grow p-4'>
-        <MetricLabel>Total Value Invested</MetricLabel>
-        <MetricValue>$1.394M</MetricValue>
+        <MetricLabel>Total Aloe Users</MetricLabel>
+        <MetricValue>1001</MetricValue>
       </div>
     </Wrapper>
   );
