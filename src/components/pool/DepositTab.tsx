@@ -6,10 +6,6 @@ import {
   ResolveBlendPoolDrawData,
 } from '../../data/BlendPoolDataResolver';
 import TokenAmountInput from '../common/TokenAmountInput';
-import { LinkButtonWithIcon, PrimaryButton } from '../common/Buttons';
-import GearIconPurple from '../../assets/svg/gear_purple.svg';
-import ToggleableRatioChange from './ToggleableRatioChange';
-import RiskNotices from '../common/RiskNotices';
 import { String1E } from '../../util/Numbers';
 import { WETH_9_MAINNET_ADDRESS } from '../../data/constants/Addresses';
 import Big from 'big.js';
@@ -26,6 +22,10 @@ import {
   DEFAULT_RATIO_CHANGE,
   RATIO_CHANGE_CUTOFF,
 } from '../../data/constants/Values';
+import styled from 'styled-components';
+import tw from 'twin.macro';
+import { PrimaryButton } from '../common/Buttons';
+import MaxSlippageInput from './MaxSlippageInput';
 
 export type DepositTabProps = {
   poolData: BlendPoolMarkers;
@@ -67,6 +67,18 @@ function printButtonState(
   }
 }
 
+export const TabWrapper = styled.div`
+  ${tw`flex flex-col items-center justify-center`}
+  padding: 24px;
+`;
+
+export const SectionLabel = styled.div`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(130, 160, 182, 1);
+`;
+
 export default function DepositTab(props: DepositTabProps) {
   const drawData = ResolveBlendPoolDrawData(props.poolData);
 
@@ -77,8 +89,7 @@ export default function DepositTab(props: DepositTabProps) {
   const [token0Amount, setToken0Amount] = useState('');
   const [token1Amount, setToken1Amount] = useState('');
 
-  const [advOptionsClosed, setAdvOptionsClosed] = useState<boolean>(true);
-  const [ratioChange, setRatioChange] = useState(DEFAULT_RATIO_CHANGE);
+  const [maxSlippage, setMaxSlippage] = useState(DEFAULT_RATIO_CHANGE);
 
   const [buttonState, setButtonState] = useState<ButtonState>(
     ButtonState.NO_WALLET
@@ -115,12 +126,11 @@ export default function DepositTab(props: DepositTabProps) {
       token1Amount === '' || !depositData
         ? new Big(0)
         : new Big(token1Amount).mul(String1E(depositData.token1Decimals));
-
     if (isTransactionPending) {
       setButtonState(ButtonState.PENDING_TRANSACTION);
     } else if (!depositData || amount0.eq(0) || amount1.eq(0)) {
       setButtonState(ButtonState.NO_WALLET);
-    } else if (Number(ratioChange) <= RATIO_CHANGE_CUTOFF) {
+    } else if (Number(maxSlippage) <= RATIO_CHANGE_CUTOFF) {
       setButtonState(ButtonState.RATIO_CHANGE_TOO_LOW);
     } else if (amount0.gt(depositData.maxToken0)) {
       setButtonState(ButtonState.INSUFFICIENT_TOKEN_0);
@@ -146,7 +156,7 @@ export default function DepositTab(props: DepositTabProps) {
     isTransactionPending,
     props.poolData.token0Address,
     props.poolData.token1Address,
-    ratioChange,
+    maxSlippage,
     token0Amount,
     token1Amount,
     signer,
@@ -241,7 +251,7 @@ export default function DepositTab(props: DepositTabProps) {
             props.poolData.poolAddress,
             amount0Max,
             amount1Max,
-            Number(ratioChange),
+            Number(maxSlippage),
             (receipt) => {
               setIsTransactionPending(false);
               console.log(receipt);
@@ -258,14 +268,16 @@ export default function DepositTab(props: DepositTabProps) {
   };
 
   const onButtonClick: () => void = constructButtonAction(buttonState);
-
   return (
-    <div className='flex flex-col items-center justify-center pt-4'>
-      <div className='w-full'>
+    <TabWrapper>
+      <div className='w-full flex flex-col gap-y-4'>
         <TokenAmountInput
           value={token0Amount}
           tokenLabel={drawData.token0Label}
           max={maxToken0String}
+          maxed={
+            token0Amount === maxToken0String || token1Amount === maxToken1String
+          }
           onChange={(newValue) => {
             if (newValue === '') {
               setToken1Amount('');
@@ -298,11 +310,16 @@ export default function DepositTab(props: DepositTabProps) {
             }
             setToken0Amount(newValue);
           }}
+          error={false}
+          errorMessage='Error message'
         />
         <TokenAmountInput
           value={token1Amount}
           tokenLabel={drawData.token1Label}
           max={maxToken1String}
+          maxed={
+            token0Amount === maxToken0String || token1Amount === maxToken1String
+          }
           onChange={(newValue) => {
             if (newValue === '') {
               setToken0Amount('');
@@ -335,43 +352,14 @@ export default function DepositTab(props: DepositTabProps) {
 
             setToken1Amount(newValue);
           }}
+          error={false}
+          errorMessage='Error message'
         />
       </div>
-      {/*<div className='w-full px-4 mt-2 mb-4 border-t-2 border-t-grey-100 h-0'/>*/}
-      <div className='flex flex-row items-center justify-between w-full h-8 my-2'>
-        <RiskNotices />
-        <LinkButtonWithIcon
-          icon={GearIconPurple}
-          className='flex flex-row items-center justify-center'
-          name='Advanced'
-          onClick={() => {
-            setAdvOptionsClosed(!advOptionsClosed);
-          }}
-        >
-          <div className=''>Advanced</div>
-        </LinkButtonWithIcon>
-      </div>
-      <div className='w-full overflow-hidden mt-2'>
-        <ToggleableRatioChange
-          closed={advOptionsClosed}
-          value={ratioChange}
-          onChange={(newValue) => {
-            setRatioChange(newValue);
-          }}
-        >
-          <div className='py-1'>
-            Because of price movements, the ratio between the two assets might
-            change as the deposit is confirmed.
-          </div>
-          <div className='py-1'>
-            Transaction reverts if the total change is greater than this limit
-            for either token.
-          </div>
-        </ToggleableRatioChange>
-      </div>
-      <div className='w-full'>
+      <MaxSlippageInput updateMaxSlippage={(updatedMaxSlippage) => setMaxSlippage(updatedMaxSlippage)} />
+      <div className='w-full mt-8'>
         <PrimaryButton
-          className='w-full py-2 mt-2'
+          className='w-full py-2'
           name={buttonLabel}
           onClick={onButtonClick}
           disabled={[
@@ -390,6 +378,6 @@ export default function DepositTab(props: DepositTabProps) {
           </div>
         </PrimaryButton>
       </div>
-    </div>
+    </TabWrapper>
   );
 }

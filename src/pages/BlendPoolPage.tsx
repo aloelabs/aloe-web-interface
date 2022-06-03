@@ -1,19 +1,24 @@
 import React, { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import PageHeading from '../components/common/PageHeading';
-import { LinkButtonWithIcon } from '../components/common/Buttons';
-import BackArrowPurple from '../assets/svg/back_arrow_purple.svg';
-import OpenIcon from '../assets/svg/open.svg';
-import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
 import PoolInteractionTabs from '../components/pool/PoolInteractionTabs';
-import BackgroundBlobs from '../components/pool/BackgroundBlobs';
-import BlendStampHolo from '../components/common/BlendStampHolo';
 // import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
 import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
+import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
+import TokenPairHeader from '../components/pool/TokenPairHeader';
+import { GetTokenData } from '../data/TokenData';
+import { GetSiloData } from '../data/SiloData';
+import { PreviousPageButton } from '../components/common/Buttons';
+import FeeTierContainer from '../components/common/FeeTierContainer';
+
+const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
+  position: absolute;
+  bottom: -56px;
+  left: 67px;
+`;
 
 type PoolParams = {
   pooladdress: string;
@@ -37,13 +42,6 @@ export default function BlendPoolPage() {
     }
     return <div>Finding pool...</div>;
   }
-  const poolDrawData = ResolveBlendPoolDrawData(poolData);
-
-  const combinedSiloLabel = poolDrawData.silo0Label.concat(
-    poolDrawData.silo0Label === poolDrawData.silo1Label
-      ? ''
-      : ` and ${poolDrawData.silo1Label}`
-  );
 
   return (
     <BlendPoolProvider poolData={poolData}>
@@ -51,50 +49,24 @@ export default function BlendPoolPage() {
         <div className='h-full max-w-[600px] md:max-w-[1260px] flex flex-row flex-nowrap gap-12 pt-10 px-12 md:px-36'>
           {/* max-w-screen-sm px-6 sm:px-10 md:px-20 */}
           <div className='flex flex-col md:grid md:gap-x-10 md:grid-cols-[3fr_2fr]'>
-            {/* using relative so that BackgroundBlobs behave */}
-            <div className='relative'>
-              <LinkButtonWithIcon
-                onClick={() => {
-                  navigate('../pools');
-                }}
-                icon={BackArrowPurple}
-                buttonClassName='py-1 px-2 text-md'
-                className='p-1'
-              >
-                Go back
-              </LinkButtonWithIcon>
-              <PageHeading>
-                <div className='flex flex-row items-center justify-start mb-4'>
-                  Aloe&nbsp;Blend&nbsp;Pool
-                  <a
-                    href={`https://etherscan.io/address/${params.pooladdress}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='ml-3'
-                  >
-                    <img src={OpenIcon} alt='' className='h-5 w-5' />
-                  </a>
-                </div>
-              </PageHeading>
-              <BackgroundBlobs />
-              <BlendStampHolo poolData={poolData} />
-              <div className='text-grey-700 pt-8 pb-4'>
-                <p>
-                  This pool provides liquidity to the {poolDrawData.token0Label}
-                  /{poolDrawData.token1Label} pair on Uniswap&nbsp;V3. It
-                  maintains the same liquidity density as a full&#8209;width
-                  position, and liquidity far from the current price is
-                  deposited to {combinedSiloLabel} to earn extra yield.
-                </p>
-              </div>
+            <div className='flex items-center gap-8 relative'>
+              <PreviousPageButton onClick={() => navigate('../pools')} />
+              <TokenPairHeader
+                token0={GetTokenData(poolData.token0Address.toLowerCase())}
+                token1={GetTokenData(poolData.token1Address.toLowerCase())}
+                silo0={GetSiloData(poolData.silo0Address.toLowerCase())}
+                silo1={GetSiloData(poolData.silo1Address.toLowerCase())}
+              />
+              <AbsoluteFeeTierContainer feeTier={poolData.feeTier} />
             </div>
-            <GridExpandingDiv className='w-full min-w-[340px] md:mt-24 md:grid-flow-row-dense'>
+            <GridExpandingDiv className='w-full min-w-[340px] md:mt-24 sm:mt-24 md:grid-flow-row-dense'>
               <PoolInteractionTabs poolData={poolData} />
             </GridExpandingDiv>
-            <div className='w-full py-4'>
+            <div className='w-full py-4 mt-16'>
               {/*<BlendAllocationGraph />*/}
-              <PoolPieChartWidget poolData={poolData} />
+              <PoolPositionWidget poolData={poolData} />
               <PoolStatsWidget poolData={poolData} />
+              <PoolPieChartWidget poolData={poolData} />
             </div>
           </div>
         </div>

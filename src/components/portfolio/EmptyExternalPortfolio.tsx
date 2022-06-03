@@ -17,12 +17,15 @@ const Container = styled.div`
 
 const EmptyExternalPortfolioText = styled.span`
   ${tw`text-center text-white`}
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 28px;
 `;
 
 const EmptyExternalPortfolioSubText = styled.span`
   ${tw`text-center text-white`}
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 24.3px;
   color: ${EMPTY_PORTFOLIO_SUB_TEXT_COLOR};
 `;
 

@@ -26,7 +26,7 @@ export default function ConnectWalletButton() {
     <div>
       <PrimaryButton
         name={buttonText}
-        className='py-2 px-8 whitespace-pre'
+        className='w-full py-2 px-8 whitespace-pre'
         onClick={() => setModalOpen(true)}
       >
         {buttonText}
