@@ -71,7 +71,7 @@ const PageButton = styled.button`
   }
 `;
 
-const Ellipsis = styled.span`
+const EllipsisWrapper = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -152,7 +152,7 @@ export default function Pagination(props: PaginationProps) {
         </ChevronButton>
         {paginationRange.map((page, index) => {
           if (page === ELLIPSIS) {
-            return <Ellipsis key={index}>&#8230;</Ellipsis>;
+            return <EllipsisWrapper key={index}>&#8230;</EllipsisWrapper>;
           }
           return (
             <PageButton
