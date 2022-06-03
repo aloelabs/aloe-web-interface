@@ -1,68 +1,93 @@
 import React from 'react';
+import styled from 'styled-components';
+import tw from 'twin.macro';
+import DiscordFooterIcon from '../../assets/svg/discord_footer.svg';
+import TwitterFooterIcon from '../../assets/svg/twitter_footer.svg';
+import MediumFooterIcon from '../../assets/svg/medium_footer.svg';
+
+const StyledFooter = styled.footer`
+  ${tw`fixed bottom-0 left-0 right-0 flex flex-row items-center justify-between`}
+  min-height: 60px;
+  background-color: rgba(6, 11, 15, 1);
+  border-top: 1px solid rgba(18, 29, 37, 1);
+  padding-left: 188px;
+  padding-right: 180px;
+  z-index: 40;
+`;
+
+const FooterLink = styled.a`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(75, 105, 128, 1);
+
+  &:hover {
+    color: rgba(255, 255, 255, 1);
+  }
+`;
+
+const VerticalDivider = styled.div`
+  width: 1px;
+  height: 12px;
+  margin-left: 16px;
+  margin-right: 16px;
+  background-color: rgba(34, 54, 69, 1);
+`;
 
 export default function Footer() {
   return (
-    <footer className='fixed bottom-0 left-0 right-0 z-40 flex flex-row items-center justify-between h-12 min-h-12 px-6 lg:px-20 bg-grey-25 border-t-2 border-t-grey-100 text-xs'>
-      <div className='flex flex-row space-x-8 text-grey-700'>
-        <a
-          href={'https://docs.aloe.capital'}
+    <StyledFooter>
+      <div className='flex flex-row items-center'>
+        <FooterLink
+          href={'https://aloe.capital/'}
           target='_blank'
           rel='noopener noreferrer'
-          className='hover:text-grey-1000'
+        >
+          Main site
+        </FooterLink>
+        <VerticalDivider />
+        <FooterLink
+          href={'https://docs.aloe.capital/'}
+          target='_blank'
+          rel='noopener noreferrer'
         >
           Docs
-        </a>
-        <a
+        </FooterLink>
+        <VerticalDivider />
+        <FooterLink
           href={'/terms.pdf'}
           target='_blank'
           rel='noopener noreferrer'
-          className='hover:text-grey-1000'
         >
           Terms
-        </a>
-        <a
-          href={'/privacy.pdf'}
-          target='_blank'
-          rel='noopener noreferrer'
-          className='hover:text-grey-1000'
-        >
-          Privacy
-        </a>
-        <a
-          href='https://github.com/aloelabs/aloe-blend/blob/master/audits/aloe_1.1_signed.pdf'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='hover:text-grey-1000'
-        >
-          Audit
-        </a>
+        </FooterLink>
       </div>
-      <div className='flex flex-row text-grey-900 items-center justify-between divide-x divide-x-2 divide-grey-600'>
+      <div className='flex flex-row items-center gap-x-6'>
         <a
-          className='text-center px-2'
-          href={'https://aloelabs.medium.com/'}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          blog
-        </a>
-        <a
-          className='text-center px-2 hover:text-grey-1000'
-          href={'https://twitter.com/AloeCapital'}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          twitter
-        </a>
-        <a
-          className='text-center px-2 hover:text-grey-1000'
           href={'https://discord.com/invite/gpt4sUv6sw'}
           target='_blank'
           rel='noopener noreferrer'
+          title='Join our Discord'
         >
-          discord
+          <img src={DiscordFooterIcon} alt='Discord Icon' width={14} height={11} />
+        </a>
+        <a
+          href={'https://discord.com/invite/gpt4sUv6sw'}
+          target='_blank'
+          rel='noopener noreferrer'
+          title='Follow us on Twitter'
+        >
+          <img src={TwitterFooterIcon} alt='Twitter Icon' width={15} height={11} />
+        </a>
+        <a
+          href={'https://discord.com/invite/gpt4sUv6sw'}
+          target='_blank'
+          rel='noopener noreferrer'
+          title='Connect with us on Medium'
+        >
+          <img src={MediumFooterIcon} alt='Medium Icon' width={21} height={11} />
         </a>
       </div>
-    </footer>
+    </StyledFooter>
   );
 }
