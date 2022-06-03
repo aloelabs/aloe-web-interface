@@ -12,6 +12,7 @@ const StyledFooter = styled.footer`
   border-top: 1px solid rgba(18, 29, 37, 1);
   padding-left: 188px;
   padding-right: 180px;
+  z-index: 40;
 `;
 
 const FooterLink = styled.a`

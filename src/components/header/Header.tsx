@@ -59,9 +59,10 @@ const StyledNavLink = styled(NavLink)`
 `;
 
 const Nav = styled.nav`
-  ${tw`fixed top-0 left-0 right-0 z-10 flex items-center justify-between h-16`}
+  ${tw`fixed top-0 left-0 right-0 flex items-center justify-between h-16`}
   border-bottom: 1px solid rgba(26, 41, 52, 1);
   background-color: rgba(6, 11, 15, 1);
+  z-index: 40;
 `;
 
 const VerticalDivider = styled.div`
