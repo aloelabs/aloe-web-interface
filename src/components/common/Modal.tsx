@@ -26,7 +26,7 @@ export default function Modal(props: ModalProps) {
       <Transition.Root show={props.open} as={Fragment}>
         <Dialog
           as='div'
-          className='fixed z-10 inset-0 overflow-y-auto'
+          className='fixed z-50 inset-0 overflow-y-auto'
           initialFocus={cancelButtonRef}
           onClose={props.setOpen}
         >

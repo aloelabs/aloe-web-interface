@@ -16,11 +16,18 @@ export function prettyFormatBalance(amount?: Big, decimals?: number): string {
   return amount.div(String1E(decimals)).toFixed(decimals > 6 ? 4 : 2);
 }
 
+export function formatUSD(amount: number): string {
+  return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+
 /**
  * @param percentage the percentage being rounded
  * @param precision the number of decimal places to round to
  * @returns the given percentage rounded to the given precision, without forcing a decimal point
  */
 export function roundPercentage(percentage: number, precision: number): number {
-  return Math.round((percentage + Number.EPSILON) * Math.pow(10, precision)) / Math.pow(10, precision);
+  return (
+    Math.round((percentage + Number.EPSILON) * Math.pow(10, precision)) /
+    Math.pow(10, precision)
+  );
 }
