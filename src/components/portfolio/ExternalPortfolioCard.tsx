@@ -7,18 +7,19 @@ import {
   CardWrapper,
   ValueText,
   TokenIconsWrapper,
-  FeeTierContainer,
   CardSubTitleWrapper,
   TokenIcon,
+  TokenPairTickers,
 } from './PortfolioCard';
 import { MigrateButton } from '../common/Buttons';
 import { TokenData } from '../../data/TokenData';
-import { FeeTier, PrintFeeTier } from '../../data/BlendPoolMarkers';
+import { FeeTier } from '../../data/BlendPoolMarkers';
 import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
 import PercentChange from '../common/PercentChange';
+import FeeTierContainer from '../common/FeeTierContainer';
 
 const EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR = 'rgba(26, 41, 52, 0.65)';
 const EXTERNAL_CARD_WRAPPER_HOVER_OUTLINE_COLOR = 'rgba(56, 82, 101, 1)';
@@ -73,17 +74,15 @@ export default function ExternalPortfolioCard(
   return (
     <ExternalCardWrapper>
       <CardTitleWrapper backgroundGradient={CARD_TITLE_BG_COLOR}>
-        <span className='text-2xl font-bold'>
+        <TokenPairTickers>
           {token0.ticker} - {token1.ticker}
-        </span>
+        </TokenPairTickers>
         <CardSubTitleWrapper>
           <TokenIconsWrapper>
             <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
             <TokenIcon src={token1.iconPath} alt=''></TokenIcon>
           </TokenIconsWrapper>
-          <FeeTierContainer>
-            Uniswap Fee Tier - {PrintFeeTier(uniswapFeeTier)}
-          </FeeTierContainer>
+          <FeeTierContainer feeTier={uniswapFeeTier} />
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
