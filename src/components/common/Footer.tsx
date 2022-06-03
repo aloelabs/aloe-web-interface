@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className='fixed bottom-0 left-0 right-0 flex flex-row items-center justify-between h-12 min-h-12 px-6 lg:px-20 bg-grey-25 border-t-2 border-t-grey-100 text-xs'>
+    <footer className='fixed bottom-0 left-0 right-0 z-40 flex flex-row items-center justify-between h-12 min-h-12 px-6 lg:px-20 bg-grey-25 border-t-2 border-t-grey-100 text-xs'>
       <div className='flex flex-row space-x-8 text-grey-700'>
         <a
           href={'https://docs.aloe.capital'}
