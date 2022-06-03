@@ -5,7 +5,7 @@ import { roundPercentage } from '../../util/Numbers';
 import PositiveChangeIcon from '../../assets/svg/positive_change_chevron.svg';
 import NegativeChangeIcon from '../../assets/svg/negative_change_chevron.svg';
 import { TokenData } from '../../data/TokenData';
-import { FeeTier, PrintFeeTier } from '../../data/BlendPoolMarkers';
+import { FeeTier } from '../../data/BlendPoolMarkers';
 import { SiloData } from '../../data/SiloData';
 import {
   getBrighterColor,
@@ -17,14 +17,14 @@ import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import FeeTierContainer from '../common/FeeTierContainer';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
 const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
 const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
+const SILO_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const FEE_TIER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const FEE_TIER_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
 const POSITIVE_PERCENT_BG_COLOR = 'rgba(0, 193, 67, 0.1)';
 const POSITIVE_PERCENT_TEXT_COLOR = 'rgb(0, 193, 67)';
 const NEGATIVE_PERCENT_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
@@ -94,6 +94,13 @@ export const CardBodyWrapper = styled.div`
   }
 `;
 
+export const TokenPairTickers = styled.div`
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+  font-family: 'ClashDisplay-Variable';
+`;
+
 export const TokenIconsWrapper = styled.div`
   ${tw`flex flex-row items-center justify-start -space-x-2`}
   width: 56px;
@@ -106,14 +113,6 @@ export const TokenIcon = styled.img`
   width: 32px;
   height: 32px;
   box-shadow: 0 0 0 3px ${TOKEN_ICON_BORDER_COLOR};
-`;
-
-export const FeeTierContainer = styled.div`
-  ${tw`flex flex-col items-center justify-center`}
-  padding: 8px 16px;
-  background: ${FEE_TIER_BG_COLOR};
-  color: ${FEE_TIER_TEXT_COLOR};
-  border-radius: 100px;
 `;
 
 const BodySubContainer = styled.div`
@@ -190,8 +189,20 @@ const BodyDivider = styled.div`
   }
 `;
 
+export const TokenTickerText = styled.span`
+  font-size: 16px;
+  line-height: 24px;
+`;
+
+export const SiloText = styled.span`
+  font-size: 14px;
+  line-height: 20px;
+  color: ${SILO_TEXT_COLOR};
+`;
+
 export const ValueText = styled.span`
   font-size: 32px;
+  font-weight: 700;
 `;
 
 const PercentChangeContainer = styled.div`
@@ -279,17 +290,15 @@ export default function PortfolioCard(props: PortfolioCardProps) {
       shadowColor={cardShadowColor}
     >
       <CardTitleWrapper backgroundGradient={cardTitleBackgroundGradient}>
-        <span className='text-2xl font-bold'>
+        <TokenPairTickers>
           {token0.ticker} - {token1.ticker}
-        </span>
+        </TokenPairTickers>
         <CardSubTitleWrapper>
           <TokenIconsWrapper>
             <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
             <TokenIcon src={token1.iconPath} alt=''></TokenIcon>
           </TokenIconsWrapper>
-          <FeeTierContainer>
-            Uniswap Fee Tier - {PrintFeeTier(uniswapFeeTier)}
-          </FeeTierContainer>
+          <FeeTierContainer feeTier={uniswapFeeTier} />
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
@@ -297,14 +306,14 @@ export default function PortfolioCard(props: PortfolioCardProps) {
           <span>Invested</span>
           <InvestedTypesContainer>
             <InvestedType>
-              <span>{token0.ticker}</span>
+              <TokenTickerText>{token0.ticker}</TokenTickerText>
               <DashedDivider />
-              <span className='text-xs'>via {silo0.shortName}</span>
+              <SiloText>via {silo0.shortName}</SiloText>
             </InvestedType>
             <InvestedType>
-              <span>{token1.ticker}</span>
+              <TokenTickerText>{token1.ticker}</TokenTickerText>
               <DashedDivider />
-              <span className='text-xs'>via {silo1.shortName}</span>
+              <SiloText>via {silo1.shortName}</SiloText>
             </InvestedType>
           </InvestedTypesContainer>
         </BodySubContainer>
