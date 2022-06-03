@@ -7,6 +7,7 @@ import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
+import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
 import TokenPairHeader from '../components/pool/TokenPairHeader';
 import { GetTokenData } from '../data/TokenData';
 import { GetSiloData } from '../data/SiloData';
@@ -63,6 +64,7 @@ export default function BlendPoolPage() {
             </GridExpandingDiv>
             <div className='w-full py-4 mt-16'>
               {/*<BlendAllocationGraph />*/}
+              <PoolPositionWidget poolData={poolData} />
               <PoolPieChartWidget poolData={poolData} />
               <PoolStatsWidget poolData={poolData} />
             </div>
