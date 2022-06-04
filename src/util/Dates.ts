@@ -6,7 +6,7 @@ import { add, addMinutes, subMinutes } from 'date-fns/esm';
  * @param step a duration to add to the date
  * @returns the date plus the duration that ignores timezone differences
  */
-export function agnosticAdd(date: Date, step: Duration) {
+export function agnosticAdd(date: Date, step: Duration) : Date {
   const originalTimezoneOffset = date.getTimezoneOffset();
   const updatedDate = add(date, step);
   const updatedTimezoneOffset = updatedDate.getTimezoneOffset();
@@ -23,7 +23,7 @@ export function agnosticAdd(date: Date, step: Duration) {
  * @param n number of dates to return (+/- 1)
  * @returns Array of dates (as string) that are evenly spaced throughout the given array of dates
  */
-export function getEvenlySpacedDates(dates: string[], n: number) {
+export function getEvenlySpacedDates(dates: string[], n: number) : string[] {
   n += 2;
   const offset = dates.length % n;
   const sliceStart = Math.floor(offset / 2);
