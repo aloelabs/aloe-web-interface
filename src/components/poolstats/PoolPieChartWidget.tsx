@@ -31,9 +31,12 @@ type PieChartSlice = {
   index: number;
   percent: number;
   color: string;
+};
+
+type AllocationPieChartSlice = PieChartSlice & {
   category: string;
   metric?: string;
-};
+}
 
 type PieChartSlicePath = {
   data: string;
@@ -111,6 +114,7 @@ const AllocationSection = styled.div<{ color: string }>`
   white-space: nowrap;
   padding-left: 24px;
 
+  /* The colored circles to the left of the label */
   :before {
     content: '';
     position: absolute;
@@ -127,33 +131,36 @@ const AllocationSection = styled.div<{ color: string }>`
     z-index: 5;
   }
 
+  /* The bar that connects the top circle to a middle circle (doesn't need to extend upwards) */
   :first-child:after {
     content: '';
     position: absolute;
     top: 50%;
-    left: 3px;
+    left: 3.5px;
     width: 2px;
     height: 50%;
     background: rgba(255, 255, 255, 0.4);
     z-index: 2;
   }
 
+  /* The bar that connects a middle circle to the surrounding circles */
   :not(:first-child):not(:last-child):after {
     content: '';
     position: absolute;
     top: 0%;
-    left: 3px;
+    left: 3.5px;
     width: 2px;
     height: 100%;
     background: rgba(255, 255, 255, 0.4);
     z-index: 2;
   }
 
+  /* The bar that connects the bottom circle to a middle circle (doesn't need to extend downwards) */
   :last-child:after {
     content: '';
     position: absolute;
     top: 0%;
-    left: 3px;
+    left: 3.5px;
     width: 2px;
     height: 50%;
     background: rgba(255, 255, 255, 0.4);
@@ -189,6 +196,7 @@ const DashedDivider = styled.div`
   margin-right: 8px;
   position: relative;
   flex-grow: 1;
+  /* The dashed line */
   &::before {
     content: '';
     position: absolute;
@@ -217,7 +225,7 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
 
   const { poolStats } = useContext(BlendPoolContext);
 
-  const slices: PieChartSlice[] = [];
+  const slices: AllocationPieChartSlice[] = [];
   if (drawData && poolStats) {
     const silo0_1 = poolStats.inventory0.silo.mul(poolStats.token1OverToken0);
     const float0_1 = poolStats.inventory0.float.mul(poolStats.token1OverToken0);
