@@ -1,33 +1,29 @@
 import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
+import { FeeTier } from '../../data/BlendPoolMarkers';
+import {
+  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_SM,
+} from '../../data/constants/Breakpoints';
+import { TokenData } from '../../data/TokenData';
+import { MigrateButton } from '../common/Buttons';
+import FeeTierContainer from '../common/FeeTierContainer';
+import PercentChange from '../common/PercentChange';
+import { Display, Text } from '../common/Typography';
 import {
   CardBodyWrapper,
+  CardSubTitleWrapper,
   CardTitleWrapper,
   CardWrapper,
-  PositivePercentChangeContainer,
-  NegativePercentChangeContainer,
-  ValueText,
-  TokenIconsWrapper,
-  FeeTierContainer,
-  CardSubTitleWrapper,
   TokenIcon,
-  FEE_TIER_TEXT_COLOR,
+  TokenIconsWrapper,
+  ValueText,
 } from './PortfolioCard';
-import { MigrateButton } from '../common/Buttons';
-import { roundPercentage } from '../../util/Numbers';
-import { TokenData } from '../../data/TokenData';
-import { FeeTier, PrintFeeTier } from '../../data/BlendPoolMarkers';
-import {
-  RESPONSIVE_BREAKPOINT_SM,
-  RESPONSIVE_BREAKPOINT_MD,
-} from '../../data/constants/Breakpoints';
-import { Display, Text } from '../common/Typography';
 
 const EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR = 'rgba(26, 41, 52, 0.65)';
 const EXTERNAL_CARD_WRAPPER_HOVER_OUTLINE_COLOR = 'rgba(56, 82, 101, 1)';
 const CARD_TITLE_BG_COLOR = 'rgba(26, 41, 52, 0.5)';
-const PERCENT_ROUNDING_PRECISION = 2;
 
 const ExternalCardWrapper = styled(CardWrapper)`
   &:hover {
@@ -86,11 +82,7 @@ export default function ExternalPortfolioCard(
             <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
             <TokenIcon src={token1.iconPath} alt=''></TokenIcon>
           </TokenIconsWrapper>
-          <FeeTierContainer>
-            <Text size='S' weight='medium' color={FEE_TIER_TEXT_COLOR}>
-              Uniswap Fee Tier - {PrintFeeTier(uniswapFeeTier)}
-            </Text>
-          </FeeTierContainer>
+          <FeeTierContainer feeTier={uniswapFeeTier} />
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
@@ -100,17 +92,7 @@ export default function ExternalPortfolioCard(
           </Text>
           <ValuePercentContainer>
             <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
-            {percentageChange >= 0 && (
-              <PositivePercentChangeContainer>
-                +{roundPercentage(percentageChange, PERCENT_ROUNDING_PRECISION)}
-                %
-              </PositivePercentChangeContainer>
-            )}
-            {percentageChange < 0 && (
-              <NegativePercentChangeContainer>
-                {roundPercentage(percentageChange, PERCENT_ROUNDING_PRECISION)}%
-              </NegativePercentChangeContainer>
-            )}
+            <PercentChange percent={percentageChange} />
           </ValuePercentContainer>
         </BodySubContainer>
         <EndAlignedBodySubContainer>
