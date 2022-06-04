@@ -8,6 +8,10 @@ import tw from 'twin.macro';
 const DEFAULT_BORDER_GRADIENT = 'linear-gradient(90deg, #9BAAF3 0%, #7BD8C0 100%)';
 const LOADING_BORDER_GRADIENT = 'rgba(43, 64, 80, 1)';
 
+const StyledDialog = styled.div`
+  z-index: 100;
+`;
+
 const ModalWrapper = styled.div.attrs(
   (props: { borderGradient: string; }) => props
 )`
@@ -18,6 +22,7 @@ const ModalWrapper = styled.div.attrs(
   background-color: rgba(13, 23, 30, 1);
   color: rgba(255, 255, 255, 1);
   position: relative;
+  z-index:
 
   &:before {
     content: '';
@@ -35,7 +40,7 @@ const ModalWrapper = styled.div.attrs(
 `;
 
 const ModalHeading = styled.div`
-  /* font-family: 'ClashDisplay-Variable'; */
+  font-family: 'ClashDisplay-Variable';
   font-size: 24px;
   font-weight: 600;
   line-height: 32px;
@@ -128,8 +133,8 @@ function ModalBase(props: ModalBaseProps) {
     <div>
       <Transition.Root show={props.open} as={Fragment}>
         <Dialog
-          as='div'
-          className='fixed z-10 inset-0 overflow-y-auto'
+          as={StyledDialog}
+          className='fixed inset-0 overflow-y-auto'
           initialFocus={props.initialFocusRef}
           onClose={() => {
             props.onClose && props.onClose();
