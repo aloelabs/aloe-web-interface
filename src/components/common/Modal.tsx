@@ -22,7 +22,6 @@ const ModalWrapper = styled.div.attrs(
   background-color: rgba(13, 23, 30, 1);
   color: rgba(255, 255, 255, 1);
   position: relative;
-  z-index:
 
   &:before {
     content: '';
