@@ -2,6 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import ErrorIcon from '../../assets/svg/interaction_error.svg';
+import { Text } from './Typography';
+
+const INPUT_LABEL_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
+const BALANCE_VALUE_TEXT_COLOR = 'rgba(75, 105, 128, 1)';
 
 export type TokenAmountInputProps = {
   onChange: (newValue: string) => void;
@@ -32,19 +36,6 @@ const formatNumberInput = (input: string, max?: string): string | null => {
     return input;
   } else return null;
 };
-
-const InputLabel = styled.div`
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-`;
-
-const BalanceValue = styled.div`
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-  color: rgba(75, 105, 128, 1);
-`;
 
 const InputWrapper = styled.div`
   position: relative;
@@ -99,8 +90,8 @@ export default function TokenAmountInput(props: TokenAmountInputProps) {
   return (
     <div className='w-full'>
         <div className='flex items-center justify-between mb-2'>
-          <InputLabel>{props.tokenLabel}</InputLabel>
-          <BalanceValue>Balance: {props?.max || '-'}</BalanceValue>
+          <Text size='M' weight='medium' color={INPUT_LABEL_TEXT_COLOR}>{props.tokenLabel}</Text>
+          <Text size='XS' weight='medium' color={BALANCE_VALUE_TEXT_COLOR}>Balance: {props?.max || '-'}</Text>
         </div>
         <InputWrapper>
           <AmountInput

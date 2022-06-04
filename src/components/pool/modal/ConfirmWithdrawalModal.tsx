@@ -4,10 +4,11 @@ import {
   CloseableModal,
   DashedDivider,
   HorizontalDivider,
-  Label,
-  Value,
+  LABEL_TEXT_COLOR,
+  VALUE_TEXT_COLOR,
 } from '../../common/Modal';
 import TokenBreakdown from '../../common/TokenBreakdown';
+import { Text } from '../../common/Typography';
 
 export type ConfirmWithdrawalModalProps = {
   open: boolean;
@@ -35,14 +36,14 @@ export default function ConfirmWithdrawalModal(props: ConfirmWithdrawalModalProp
     >
       <div className='flex flex-col gap-y-4 mb-4'>
         <div className='flex justify-between items-center'>
-          <Label>Shares</Label>
+          <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Shares</Text>
           <DashedDivider />
-          <Value>{numberOfShares} Shares</Value>
+          <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{numberOfShares} Shares</Text>
         </div>
         <div className='flex justify-between items-center'>
-          <Label>Estimated Return</Label>
+          <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Estimated Return</Text>
           <DashedDivider />
-          <Value>{estimatedReturn}</Value>
+          <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{estimatedReturn}</Text>
         </div>
       </div>
       <TokenBreakdown
@@ -54,21 +55,21 @@ export default function ConfirmWithdrawalModal(props: ConfirmWithdrawalModalProp
       <HorizontalDivider />
       <div className='flex flex-col gap-y-4'>
         <div className='flex justify-between items-center'>
-          <Label>Pool Selected</Label>
+          <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Pool Selected</Text>
           <DashedDivider />
-          <Value>{token0Ticker} - {token1Ticker}</Value>
+          <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{token0Ticker} - {token1Ticker}</Text>
         </div>
         <div className='flex justify-between items-center'>
-          <Label>Max Slippage</Label>
+          <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Max Slippage</Text>
           <DashedDivider />
-          <Value>{maxSlippage}%</Value>
+          <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{maxSlippage}%</Text>
         </div>
       </div>
       <HorizontalDivider />
       <div className='flex justify-between items-center mb-8'>
-        <Label>Network Fees</Label>
+        <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Network Fees</Text>
         <DashedDivider />
-        <Value>{networkFee} WETH</Value>
+        <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{networkFee} WETH</Text>
       </div>
       <PrimaryButton className='w-full py-3' onClick={onConfirm}>Confirm Withdrawal</PrimaryButton>
     </CloseableModal>

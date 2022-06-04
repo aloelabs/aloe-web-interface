@@ -5,7 +5,10 @@ import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { RESPONSIVE_BREAKPOINT_MD } from '../../data/constants/Breakpoints';
 import { formatUSD } from '../../util/Numbers';
 import PercentChange from '../common/PercentChange';
-import WidgetHeading from '../common/WidgetHeading';
+import { Display, Text } from '../common/Typography';
+
+const PERFORMANCE_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
+const PERFORMANCE_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
 
 const Wrapper = styled.div`
   ${tw`flex flex-col`}
@@ -34,19 +37,6 @@ const PerformanceCard = styled.div`
   background-color: rgba(13, 23, 30, 1);
 `;
 
-const PerformanceLabel = styled.span`
-  font-size: 16px;
-  line-height: 24px;
-  color: rgba(130, 160, 182, 1);
-`;
-
-const PerformanceValue = styled.span`
-  ${tw`flex items-center gap-4`}
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 40px;
-`;
-
 export type PoolPositionWidgetProps = {
   poolData: BlendPoolMarkers;
 };
@@ -55,27 +45,33 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
   // TODO: Incorporate the pool data into the widget
   return (
     <Wrapper>
-      <WidgetHeading>Your Position</WidgetHeading>
+      <Text size='L' weight='medium'>Your Position</Text>
       <PerformanceCardGrid>
         <PerformanceCard>
-          <PerformanceLabel>Total Value</PerformanceLabel>
-          <PerformanceValue>{formatUSD(0)}</PerformanceValue>
+          <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Total Value</Text>
+          <Display size='L' weight='semibold' color={PERFORMANCE_VALUE_TEXT_COLOR}>{formatUSD(0)}</Display>
         </PerformanceCard>
         <PerformanceCard>
-          <PerformanceLabel>Average Price Per Share</PerformanceLabel>
-          <PerformanceValue>{formatUSD(0)}</PerformanceValue>
+          <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Average Price Per Share</Text>
+          <Display size='L' weight='semibold' color={PERFORMANCE_VALUE_TEXT_COLOR}>{formatUSD(0)}</Display>
         </PerformanceCard>
         <PerformanceCard>
-          <PerformanceLabel>Today's Return</PerformanceLabel>
-          <PerformanceValue>
-            {formatUSD(0)} <PercentChange percent={0} />
-          </PerformanceValue>
+          <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Today's Return</Text>
+          <div className='flex items-center gap-4'>
+            <Display size='L' weight='semibold' color={PERFORMANCE_VALUE_TEXT_COLOR}>
+              {formatUSD(0)}
+            </Display>
+            <PercentChange percent={0} />
+          </div>
         </PerformanceCard>
         <PerformanceCard>
-          <PerformanceLabel>Total Returns</PerformanceLabel>
-          <PerformanceValue>
-            {formatUSD(0)} <PercentChange percent={0} />
-          </PerformanceValue>
+          <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Total Returns</Text>
+          <div className='flex items-center gap-4'>
+            <Display size='L' weight='semibold' color={PERFORMANCE_VALUE_TEXT_COLOR}>
+              {formatUSD(0)}
+            </Display>
+            <PercentChange percent={0} />
+          </div>
         </PerformanceCard>
       </PerformanceCardGrid>
     </Wrapper>

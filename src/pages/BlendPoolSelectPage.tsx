@@ -11,6 +11,7 @@ import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
 import Pagination from '../components/common/Pagination';
 import styled from 'styled-components';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
+import { Display } from '../components/common/Typography';
 
 const BrowseTitle = styled.span`
   font-size: 32px;
@@ -64,11 +65,11 @@ export default function BlendPoolSelectPage() {
   return (
     <AppPage>
       <div className='flex flex-col gap-6'>
-        <BrowseTitle>Aloe's Performance</BrowseTitle>
+        <Display size='L' weight='semibold'>Aloe's Performance</Display>
         <BrowsePoolsPerformance poolData={pools} />
       </div>
       <div>
-        <PageHeading>Browse Deployed Pools</PageHeading>
+        <Display size='L' weight='semibold'>Browse Deployed Pools</Display>
       </div>
       <div className='py-4 flex flex-row items-center justify-between text-lg'>
         <TextInput

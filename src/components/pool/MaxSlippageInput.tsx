@@ -4,6 +4,10 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import { SectionLabel } from './DepositTab';
 import InfoIcon from '../../assets/svg/info.svg';
+import { Text } from '../common/Typography';
+
+const LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
+const MESSAGE_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
 
 const PREDEFINED_MAX_SLIPPAGE_OPTIONS = [
   {label: 'Low (5%)', value: '5.0'},
@@ -88,13 +92,6 @@ const CustomSlippagePercent = styled.span`
   -webkit-text-fill-color: transparent;
 `;
 
-const SlippageMessage = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-  color: #ccdfed;
-`;
-
 export type MaxSlippageInputProps = {
   updateMaxSlippage: (value: string) => void;
 };
@@ -104,7 +101,7 @@ export default function MaxSlippageInput(props: MaxSlippageInputProps) {
   return (
     <div className='w-full flex flex-col gap-y-2 mt-6'>
       <SectionLabel className='flex gap-x-2 mb-1'>
-        Max Slippage <img src={InfoIcon} width={16} height={16} alt='info' />
+        <Text size='S' weight='medium' color={LABEL_TEXT_COLOR} className='inline'>Max Slippage</Text> <img src={InfoIcon} width={16} height={16} alt='info' />
       </SectionLabel>
       <Tab.Group>
         <Tab.List>
@@ -157,22 +154,22 @@ export default function MaxSlippageInput(props: MaxSlippageInputProps) {
         </Tab.List>
         <Tab.Panels as={Fragment}>
           <Tab.Panel>
-            <SlippageMessage>
-              <strong>Low slippage</strong> means lorem ipsum doler ilet
+            <Text size='XS' weight='regular' color={MESSAGE_TEXT_COLOR}>
+              <Text size='XS' weight='bold' color={MESSAGE_TEXT_COLOR} className='inline'>Low slippage</Text> means lorem ipsum doler ilet
               something something something.
-            </SlippageMessage>
+            </Text>
           </Tab.Panel>
           <Tab.Panel>
-            <SlippageMessage>
-              <strong>Medium slippage</strong> means lorem ipsum doler ilet
+            <Text size='XS' weight='regular' color={MESSAGE_TEXT_COLOR}>
+              <Text size='XS' weight='bold' color={MESSAGE_TEXT_COLOR} className='inline'>Medium slippage</Text> means lorem ipsum doler ilet
               something something something.
-            </SlippageMessage>
+            </Text>
           </Tab.Panel>
           <Tab.Panel>
-            <SlippageMessage>
-              <strong>Set a custom slippage</strong> means lorem ipsum doler
+            <Text size='XS' weight='regular' color={MESSAGE_TEXT_COLOR}>
+              <Text size='XS' weight='bold' color={MESSAGE_TEXT_COLOR} className='inline'>Set a custom slippage</Text> means lorem ipsum doler
               ilet something something something.
-            </SlippageMessage>
+            </Text>
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
