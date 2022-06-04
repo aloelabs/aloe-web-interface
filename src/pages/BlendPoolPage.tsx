@@ -55,7 +55,8 @@ const GridExpandingDiv = styled.div`
   @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
     grid-row: 2 / span 1;
     grid-column: 1 / span 1;
-    margin-top: 32px;
+    margin-top: 96px;
+    margin-bottom: 32px;
   }
 `;
 

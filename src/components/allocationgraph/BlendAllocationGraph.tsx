@@ -93,6 +93,7 @@ const Wrapper = styled.div`
   ${tw`flex flex-row items-center justify-start`}
   position: relative;
   height: 372px;
+  margin-bottom: 64px;
 `;
 
 const Container = styled.div`
