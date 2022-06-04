@@ -5,9 +5,7 @@ import {
   BlendPoolDrawData,
   ResolveBlendPoolDrawData,
 } from '../../data/BlendPoolDataResolver';
-import { LinkButtonWithIcon, PrimaryButton } from '../common/Buttons';
-import GearIconPurple from '../../assets/svg/gear_purple.svg';
-import ToggleableRatioChange from './ToggleableRatioChange';
+import { PrimaryButton } from '../common/Buttons';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { useAccount, useBalance, useSigner } from 'wagmi';
 import Big from 'big.js';
@@ -18,6 +16,15 @@ import {
 } from '../../data/constants/Values';
 import { withdraw } from '../../connector/BlendWithdrawActions';
 import Pending from '../common/Pending';
+import ConfirmWithdrawalModal from './modal/ConfirmWithdrawalModal';
+import SharesWithdrawnModal from './modal/SharesWithdrawnModal';
+import SubmittingOrderModal from './modal/SubmittingOrderModal';
+import TransactionFailedModal from './modal/TransactionFailedModal';
+import { SectionLabel, TabWrapper } from './DepositTab';
+import styled from 'styled-components';
+import tw from 'twin.macro';
+import { GetTokenData } from '../../data/TokenData';
+import MaxSlippageInput from './MaxSlippageInput';
 
 export type WithdrawTabProps = {
   poolData: BlendPoolMarkers;
@@ -47,12 +54,49 @@ function printButtonState(
   }
 }
 
+const HorizontalDivider = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: rgba(26, 41, 52, 1);
+`;
+
+const EstimatedReturnValue = styled.div`
+  /* font-family: 'ClashDisplay-Variable'; */
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 40px;
+`;
+
+const TokenBreakdown = styled.div`
+  ${tw`w-full flex flex-row items-center justify-between`}
+  padding: 16px;
+  border: 1px solid rgba(26, 41, 52, 1);
+  border-radius: 8px;
+`;
+
+const TokenBreakdownLabel = styled.div`
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: rgba(75, 105, 128, 1);
+`;
+
+const TokenBreakdownValue = styled.div`
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: rgba(255, 255, 255, 1);
+`;
+
 export default function WithdrawTab(props: WithdrawTabProps) {
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailedModal, setShowFailedModal] = useState(false);
+  const [showSubmittingModal, setShowSubmittingModal] = useState(false);
   const drawData = ResolveBlendPoolDrawData(props.poolData);
   const [sharesAmount, setSharesAmount] = useState('');
 
-  const [advOptionsClosed, setAdvOptionsClosed] = useState<boolean>(true);
-  const [ratioChange, setRatioChange] = useState(DEFAULT_RATIO_CHANGE);
+  const [maxSlippage, setMaxSlippage] = useState(DEFAULT_RATIO_CHANGE);
 
   const [token0Estimate, setToken0Estimate] = useState('-');
   const [token1Estimate, setToken1Estimate] = useState('-');
@@ -131,7 +175,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
       setButtonState(ButtonState.PENDING_TRANSACTION);
     } else if (!maxShares || !poolStats || sharesBig.eq(0)) {
       setButtonState(ButtonState.NO_WALLET);
-    } else if (Number(ratioChange) <= RATIO_CHANGE_CUTOFF) {
+    } else if (Number(maxSlippage) <= RATIO_CHANGE_CUTOFF) {
       setButtonState(ButtonState.RATIO_CHANGE_TOO_LOW);
     } else if (sharesBig.gt(maxShares)) {
       setButtonState(ButtonState.INSUFFICIENT_SHARES);
@@ -142,7 +186,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
     isTransactionPending,
     maxShares,
     poolStats,
-    ratioChange,
+    maxSlippage,
     sharesAmount,
     sharesBig,
   ]);
@@ -164,20 +208,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
             return;
           }
           setIsTransactionPending(true);
-
-          const shares = new Big(sharesAmount).mul(String1E(18));
-
-          withdraw(
-            signer,
-            props.poolData.poolAddress,
-            shares,
-            Number(ratioChange),
-            poolStats,
-            (receipt) => {
-              setIsTransactionPending(false);
-              console.log(receipt);
-            }
-          );
+          setShowConfirmModal(true);
         };
       case ButtonState.NO_WALLET:
       case ButtonState.RATIO_CHANGE_TOO_LOW:
@@ -190,70 +221,58 @@ export default function WithdrawTab(props: WithdrawTabProps) {
   const onButtonClick: () => void = constructButtonAction(buttonState);
 
   return (
-    <div className='flex flex-col items-center justify-center pt-4'>
-      <div className='w-full'>
-        <TokenAmountInput
-          onChange={(newValue) => setSharesAmount(newValue)}
-          max={maxSharesString}
-          value={sharesAmount}
-          tokenLabel='Shares'
-        />
-        {/*<WithdrawPreview token0Label={drawData.token0Label} token1Label={drawData.token1Label} token0Amount={'123.456'} token1Amount={'123.456'} />*/}
-        {/*<div className='w-full px-4 mt-2 mb-4 border-t-2 border-t-grey-200 h-0'/>*/}
-
-        <div className='w-full text-sm text-grey-800 pt-2 pl-2'>
-          The approximate return will be:
-        </div>
-        <div className='flex flex-row items-center justify-between w-full h-8 my-2 pl-2'>
-          <div className='h-full flex flex-row items-center justify-center'>
-            <div className='pr-4'>
-              <span className='text-grey-600'>{token0Estimate}</span>
-              &nbsp;
-              <span className='text-grey-900 font-semibold'>
-                {drawData.token0Label}
-              </span>
+    <TabWrapper>
+      <div className='w-full flex flex-col items-center justify-center'>
+        <div className='w-full flex flex-col gap-y-6'>
+          <TokenAmountInput
+            onChange={(newValue) => setSharesAmount(newValue)}
+            max={maxSharesString}
+            value={sharesAmount}
+            tokenLabel='Shares'
+          />
+          <HorizontalDivider />
+          <div className='w-full flex flex-col gap-y-6'>
+            <div className='w-full flex flex-col gap-y-3'>
+              <SectionLabel>Your estimated return</SectionLabel>
+              <EstimatedReturnValue>
+                {prettyFormatBalance()}
+              </EstimatedReturnValue>
             </div>
-            <div className='h-6 w-0 border-r-2 border-r-grey-400' />
-            <div className='pl-4'>
-              <span className='text-grey-600'>{token1Estimate}</span>
-              &nbsp;
-              <span className='text-grey-900 font-semibold'>
-                {drawData.token1Label}
-              </span>
+            <div className='w-full flex flex-col gap-y-3'>
+              <SectionLabel>Token Breakdown</SectionLabel>
+              <div className='flex gap-x-2'>
+                <TokenBreakdown>
+                  <TokenBreakdownLabel>
+                    {
+                      GetTokenData(
+                        props.poolData.token0Address.toLocaleLowerCase()
+                      ).ticker
+                    }
+                  </TokenBreakdownLabel>
+                  <TokenBreakdownValue>
+                    {token0Estimate}
+                  </TokenBreakdownValue>
+                </TokenBreakdown>
+                <TokenBreakdown>
+                  <TokenBreakdownLabel>
+                    {
+                      GetTokenData(
+                        props.poolData.token1Address.toLocaleLowerCase()
+                      ).ticker
+                    }
+                  </TokenBreakdownLabel>
+                  <TokenBreakdownValue>
+                    {token1Estimate}
+                  </TokenBreakdownValue>
+                </TokenBreakdown>
+              </div>
             </div>
           </div>
-          <LinkButtonWithIcon
-            icon={GearIconPurple}
-            className='flex flex-row items-center justify-center'
-            name=''
-            onClick={() => {
-              setAdvOptionsClosed(!advOptionsClosed);
-            }}
-          >
-            <div className=''></div>
-          </LinkButtonWithIcon>
         </div>
-        <div className='w-full mt-3 overflow-hidden'>
-          <ToggleableRatioChange
-            closed={advOptionsClosed}
-            value={ratioChange}
-            onChange={(newValue) => {
-              setRatioChange(newValue);
-            }}
-          >
-            <div className='py-1'>
-              Because of price movements, the ratio between the two assets might
-              change as the withdrawal is confirmed.
-            </div>
-            <div className='py-1'>
-              Transaction reverts if the total change is greater than this limit
-              for either token.
-            </div>
-          </ToggleableRatioChange>
-        </div>
-        <div className='w-full'>
+        <MaxSlippageInput updateMaxSlippage={(updatedMaxSlippage) => setMaxSlippage(updatedMaxSlippage)} />
+        <div className='w-full mt-8'>
           <PrimaryButton
-            className='w-full py-2 mt-2'
+            className='w-full py-2'
             name={buttonLabel}
             onClick={onButtonClick}
             disabled={[
@@ -272,6 +291,65 @@ export default function WithdrawTab(props: WithdrawTabProps) {
           </PrimaryButton>
         </div>
       </div>
-    </div>
+      <ConfirmWithdrawalModal
+        open={showConfirmModal}
+        setOpen={setShowConfirmModal}
+        onConfirm={() => {
+          setShowConfirmModal(false);
+          setShowSubmittingModal(true);
+          if (!signer || !poolStats) {
+            setIsTransactionPending(false);
+            return;
+          }
+          const shares = new Big(sharesAmount).mul(String1E(18));
+          withdraw(
+            signer,
+            props.poolData.poolAddress,
+            shares,
+            Number(maxSlippage),
+            poolStats,
+            (receipt) => {
+              setShowSubmittingModal(false);
+              if (receipt?.status === 1) {
+                setShowSuccessModal(true);
+              } else {
+                setShowFailedModal(true);
+              }
+              setIsTransactionPending(false);
+              console.log(receipt);
+            }
+          );
+        }}
+        onCancel={() => {
+          setIsTransactionPending(false);
+        }}
+        estimatedReturn='$204.94'
+        token0Ticker={drawData.token0Label}
+        token1Ticker={drawData.token1Label}
+        token0Estimate={token0Estimate}
+        token1Estimate={token1Estimate}
+        numberOfShares={sharesAmount}
+        maxSlippage={maxSlippage}
+        networkFee='0.01'
+      />
+      <SharesWithdrawnModal
+        open={showSuccessModal}
+        setOpen={setShowSuccessModal}
+        estimatedValue='$204.94'
+        token0Ticker={drawData.token0Label}
+        token1Ticker={drawData.token1Label}
+        token0Estimate={token0Estimate}
+        token1Estimate={token1Estimate}
+        numberOfShares={sharesAmount}
+      />
+      <TransactionFailedModal
+        open={showFailedModal}
+        setOpen={setShowFailedModal}
+      />
+      <SubmittingOrderModal
+        open={showSubmittingModal}
+        setOpen={setShowSubmittingModal}
+      />
+    </TabWrapper>
   );
 }
