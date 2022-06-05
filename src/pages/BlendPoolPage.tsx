@@ -128,7 +128,6 @@ export default function BlendPoolPage() {
                     you earn yield from both Uniswap V3 and the silos, unlike
                     Uniswap V2.
                   </p>
-                  <p>Convert between ETH and WETH on Uniswap.</p>
                 </AboutMessage>
               </div>
             </div>
