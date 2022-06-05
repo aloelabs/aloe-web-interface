@@ -10,33 +10,6 @@ import NextChevronInactive from '../../assets/svg/next_chevron_inactive.svg';
 import PreviousChevronActive from '../../assets/svg/previous_chevron_active.svg';
 import PreviousChevronInactive from '../../assets/svg/previous_chevron_inactive.svg';
 
-const RISK_CARDS = [
-  {
-    title: 'Execution Risk',
-    description:
-      'Though Aloe Blend has been audited, there’s always a chance that something goes wrong. The contract code is immutable, and there is no failsafe by which Aloe Labs or anyone else can pause execution.',
-    image: ExecutionRiskIcon,
-  },
-  {
-    title: 'Base Protocol Risk',
-    description:
-      'Though Aloe Blend has been audited, there’s always a chance that something goes wrong. The contract code is immutable, and there is no failsafe by which Aloe Labs or anyone else can pause execution.',
-    image: BaseProtocolRiskIcon,
-  },
-  {
-    title: 'Impermanent Loss',
-    description:
-      'Though Aloe Blend has been audited, there’s always a chance that something goes wrong. The contract code is immutable, and there is no failsafe by which Aloe Labs or anyone else can pause execution.',
-    image: ImpermanentLossIcon,
-  },
-  {
-    title: 'Tokens and Base Layer Risk',
-    description:
-      'Though Aloe Blend has been audited, there’s always a chance that something goes wrong. The contract code is immutable, and there is no failsafe by which Aloe Labs or anyone else can pause execution.',
-    image: TokenAndBaseLayerRiskIcon,
-  },
-];
-
 const Wrapper = styled.div`
   ${tw`w-full flex`}
   background-color: rgba(13, 23, 30, 1);
@@ -86,6 +59,33 @@ const NavigationDot = styled.div`
     background-color: rgba(255, 255, 255, 1);
   }
 `;
+
+const RISK_CARDS = [
+  {
+    title: 'Execution Risk',
+    description:
+      <Description>Though Aloe Blend has been <a href="https://github.com/aloelabs/aloe-blend/blob/master/audits/aloe_1.1_signed.pdf" className='underline'>audited</a>, there’s always a chance that something goes wrong. The contract code is immutable, and there is no failsafe by which Aloe Labs or anyone else can pause execution.</Description>,
+    image: ExecutionRiskIcon,
+  },
+  {
+    title: 'Base Protocol Risk',
+    description:
+      <Description>The underlying protocols (Uniswap and protocols used in silos) present risk from both their code and the potential for deleterious governance action.</Description>,
+    image: BaseProtocolRiskIcon,
+  },
+  {
+    title: 'Impermanent Loss',
+    description:
+      <Description>This pool is subject to similar impermanent loss as a standard Uniswap V2 position.</Description>,
+    image: ImpermanentLossIcon,
+  },
+  {
+    title: 'Tokens and Base Layer Risk',
+    description:
+      <Description>Risks associated with holding the underlying tokens are still present when depositing to this pool. Ethereum blockchain clients can break and bugs can be exploited. This interface may not always work.</Description>,
+    image: TokenAndBaseLayerRiskIcon,
+  },
+];
 
 export default function RiskCard() {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
