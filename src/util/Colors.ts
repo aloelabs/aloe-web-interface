@@ -1,5 +1,10 @@
 import { prominent } from 'color.js';
 
+/**
+ * Converts an RGB color to a hex color.
+ * @param rgb RGB color
+ * @returns HSV color
+ */
 function rgb_to_hsv(rgb: number[]) {
   // R, G, B values are divided by 255
   // to change the range from 0..255 to 0..1
@@ -15,16 +20,16 @@ function rgb_to_hsv(rgb: number[]) {
     s = -1;
 
   // if cmax and cmax are equal then h = 0
-  if (cmax == cmin) h = 0;
+  if (cmax === cmin) h = 0;
   // if cmax equal r then compute h
-  else if (cmax == r) h = (60 * ((g - b) / diff) + 360) % 360;
+  else if (cmax === r) h = (60 * ((g - b) / diff) + 360) % 360;
   // if cmax equal g then compute h
-  else if (cmax == g) h = (60 * ((b - r) / diff) + 120) % 360;
+  else if (cmax === g) h = (60 * ((b - r) / diff) + 120) % 360;
   // if cmax equal b then compute h
-  else if (cmax == b) h = (60 * ((r - g) / diff) + 240) % 360;
+  else if (cmax === b) h = (60 * ((r - g) / diff) + 240) % 360;
 
   // if cmax equal zero
-  if (cmax == 0) s = 0;
+  if (cmax === 0) s = 0;
   else s = (diff / cmax) * 100;
 
   // compute v
@@ -32,6 +37,11 @@ function rgb_to_hsv(rgb: number[]) {
   return [h, s, v]
 }
 
+/**
+ * Gets the prominent color of a given image.
+ * @param path Path to the image
+ * @returns The dominant color of the image
+ */
 export async function getProminentColor(path: string) {
   const colorsRGB: number[][] = await prominent(path, { amount: 3 }) as number[][];
   const colors = colorsRGB.map((colorRGB) => {
@@ -51,14 +61,31 @@ export async function getProminentColor(path: string) {
   return `${bestColor.rgb[0]}, ${bestColor.rgb[1]}, ${bestColor.rgb[2]}`;
 }
 
+/**
+ * Wraps a comma separated list of rgb values into an rgb string.
+ * @param color Comma separated list of rgb values
+ * @returns rgb string
+ */
 export function rgb(color: string) {
   return `rgb(${color})`;
 }
 
+/**
+ * Wraps a comma separated string of rgb values and an alpha value into an rgba string.
+ * @param color Comma separated string of rgb
+ * @param alpha Alpha value
+ * @returns rgba string
+ */
 export function rgba(color: string, alpha: number) {
   return `rgba(${color}, ${alpha})`;
 }
 
+/**
+ * Gets the brigher of two colors.
+ * @param color0 The first color
+ * @param color1 The second color
+ * @returns The brighter of the two colors
+ */
 export function getBrighterColor(color0: string, color1: string) {
   const values0 = color0.split(',').map((v) => parseInt(v.trim()));
   const values1 = color1.split(',').map((v) => parseInt(v.trim()));
