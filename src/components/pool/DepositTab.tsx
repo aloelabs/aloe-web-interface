@@ -6,10 +6,6 @@ import {
   ResolveBlendPoolDrawData,
 } from '../../data/BlendPoolDataResolver';
 import TokenAmountInput from '../common/TokenAmountInput';
-import { LinkButtonWithIcon, PrimaryButton } from '../common/Buttons';
-import GearIconPurple from '../../assets/svg/gear_purple.svg';
-import ToggleableRatioChange from './ToggleableRatioChange';
-import RiskNotices from '../common/RiskNotices';
 import { String1E } from '../../util/Numbers';
 import { WETH_9_MAINNET_ADDRESS } from '../../data/constants/Addresses';
 import Big from 'big.js';
@@ -26,6 +22,14 @@ import {
   DEFAULT_RATIO_CHANGE,
   RATIO_CHANGE_CUTOFF,
 } from '../../data/constants/Values';
+import ConfirmDepositModal from './modal/ConfirmDepositModal';
+import TokensDepositedModal from './modal/TokensDepositedModal';
+import TransactionFailedModal from './modal/TransactionFailedModal';
+import SubmittingOrderModal from './modal/SubmittingOrderModal';
+import styled from 'styled-components';
+import tw from 'twin.macro';
+import { PrimaryButton } from '../common/Buttons';
+import MaxSlippageInput from './MaxSlippageInput';
 
 export type DepositTabProps = {
   poolData: BlendPoolMarkers;
@@ -67,7 +71,23 @@ function printButtonState(
   }
 }
 
+export const TabWrapper = styled.div`
+  ${tw`flex flex-col items-center justify-center`}
+  padding: 24px;
+`;
+
+export const SectionLabel = styled.div`
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(130, 160, 182, 1);
+`;
+
 export default function DepositTab(props: DepositTabProps) {
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailedModal, setShowFailedModal] = useState(false);
+  const [showSubmittingModal, setShowSubmittingModal] = useState(false);
   const drawData = ResolveBlendPoolDrawData(props.poolData);
 
   const { poolStats } = useContext(BlendPoolContext);
@@ -77,8 +97,7 @@ export default function DepositTab(props: DepositTabProps) {
   const [token0Amount, setToken0Amount] = useState('');
   const [token1Amount, setToken1Amount] = useState('');
 
-  const [advOptionsClosed, setAdvOptionsClosed] = useState<boolean>(true);
-  const [ratioChange, setRatioChange] = useState(DEFAULT_RATIO_CHANGE);
+  const [maxSlippage, setMaxSlippage] = useState(DEFAULT_RATIO_CHANGE);
 
   const [buttonState, setButtonState] = useState<ButtonState>(
     ButtonState.NO_WALLET
@@ -115,12 +134,11 @@ export default function DepositTab(props: DepositTabProps) {
       token1Amount === '' || !depositData
         ? new Big(0)
         : new Big(token1Amount).mul(String1E(depositData.token1Decimals));
-
     if (isTransactionPending) {
       setButtonState(ButtonState.PENDING_TRANSACTION);
     } else if (!depositData || amount0.eq(0) || amount1.eq(0)) {
       setButtonState(ButtonState.NO_WALLET);
-    } else if (Number(ratioChange) <= RATIO_CHANGE_CUTOFF) {
+    } else if (Number(maxSlippage) <= RATIO_CHANGE_CUTOFF) {
       setButtonState(ButtonState.RATIO_CHANGE_TOO_LOW);
     } else if (amount0.gt(depositData.maxToken0)) {
       setButtonState(ButtonState.INSUFFICIENT_TOKEN_0);
@@ -146,7 +164,7 @@ export default function DepositTab(props: DepositTabProps) {
     isTransactionPending,
     props.poolData.token0Address,
     props.poolData.token1Address,
-    ratioChange,
+    maxSlippage,
     token0Amount,
     token1Amount,
     signer,
@@ -228,25 +246,7 @@ export default function DepositTab(props: DepositTabProps) {
             return;
           }
           setIsTransactionPending(true);
-
-          const amount0Max = new Big(token0Amount).mul(
-            String1E(depositData.token0Decimals)
-          );
-          const amount1Max = new Big(token1Amount).mul(
-            String1E(depositData.token1Decimals)
-          );
-
-          deposit(
-            signer,
-            props.poolData.poolAddress,
-            amount0Max,
-            amount1Max,
-            Number(ratioChange),
-            (receipt) => {
-              setIsTransactionPending(false);
-              console.log(receipt);
-            }
-          );
+          setShowConfirmModal(true);
         };
       case ButtonState.NO_WALLET:
       case ButtonState.RATIO_CHANGE_TOO_LOW:
@@ -258,14 +258,16 @@ export default function DepositTab(props: DepositTabProps) {
   };
 
   const onButtonClick: () => void = constructButtonAction(buttonState);
-
   return (
-    <div className='flex flex-col items-center justify-center pt-4'>
-      <div className='w-full'>
+    <TabWrapper>
+      <div className='w-full flex flex-col gap-y-4'>
         <TokenAmountInput
           value={token0Amount}
           tokenLabel={drawData.token0Label}
           max={maxToken0String}
+          maxed={
+            token0Amount === maxToken0String || token1Amount === maxToken1String
+          }
           onChange={(newValue) => {
             if (newValue === '') {
               setToken1Amount('');
@@ -298,11 +300,16 @@ export default function DepositTab(props: DepositTabProps) {
             }
             setToken0Amount(newValue);
           }}
+          error={false}
+          errorMessage='Error message'
         />
         <TokenAmountInput
           value={token1Amount}
           tokenLabel={drawData.token1Label}
           max={maxToken1String}
+          maxed={
+            token0Amount === maxToken0String || token1Amount === maxToken1String
+          }
           onChange={(newValue) => {
             if (newValue === '') {
               setToken0Amount('');
@@ -335,43 +342,14 @@ export default function DepositTab(props: DepositTabProps) {
 
             setToken1Amount(newValue);
           }}
+          error={false}
+          errorMessage='Error message'
         />
       </div>
-      {/*<div className='w-full px-4 mt-2 mb-4 border-t-2 border-t-grey-100 h-0'/>*/}
-      <div className='flex flex-row items-center justify-between w-full h-8 my-2'>
-        <RiskNotices />
-        <LinkButtonWithIcon
-          icon={GearIconPurple}
-          className='flex flex-row items-center justify-center'
-          name='Advanced'
-          onClick={() => {
-            setAdvOptionsClosed(!advOptionsClosed);
-          }}
-        >
-          <div className=''>Advanced</div>
-        </LinkButtonWithIcon>
-      </div>
-      <div className='w-full overflow-hidden mt-2'>
-        <ToggleableRatioChange
-          closed={advOptionsClosed}
-          value={ratioChange}
-          onChange={(newValue) => {
-            setRatioChange(newValue);
-          }}
-        >
-          <div className='py-1'>
-            Because of price movements, the ratio between the two assets might
-            change as the deposit is confirmed.
-          </div>
-          <div className='py-1'>
-            Transaction reverts if the total change is greater than this limit
-            for either token.
-          </div>
-        </ToggleableRatioChange>
-      </div>
-      <div className='w-full'>
+      <MaxSlippageInput updateMaxSlippage={(updatedMaxSlippage) => setMaxSlippage(updatedMaxSlippage)} />
+      <div className='w-full mt-8'>
         <PrimaryButton
-          className='w-full py-2 mt-2'
+          className='w-full py-2'
           name={buttonLabel}
           onClick={onButtonClick}
           disabled={[
@@ -390,6 +368,69 @@ export default function DepositTab(props: DepositTabProps) {
           </div>
         </PrimaryButton>
       </div>
-    </div>
+      <ConfirmDepositModal
+        open={showConfirmModal}
+        setOpen={setShowConfirmModal}
+        onConfirm={() => {
+          setShowConfirmModal(false);
+          setShowSubmittingModal(true);
+          if (!signer || !depositData) {
+            setIsTransactionPending(false);
+            return;
+          }
+          const amount0Max = new Big(token0Amount).mul(
+            String1E(depositData.token0Decimals)
+          );
+          const amount1Max = new Big(token1Amount).mul(
+            String1E(depositData.token1Decimals)
+          );
+          deposit(
+            signer,
+            props.poolData.poolAddress,
+            amount0Max,
+            amount1Max,
+            Number(maxSlippage),
+            (receipt) => {
+              setShowSubmittingModal(false);
+              if (receipt?.status === 1) {
+                setShowSuccessModal(true);
+              } else {
+                setShowFailedModal(true);
+              }
+              setIsTransactionPending(false);
+              console.log(receipt);
+            }
+          );
+        }}
+        onCancel={() => {
+          setIsTransactionPending(false);
+        }}
+        estimatedTotal='$5,038'
+        token0Ticker={drawData.token0Label}
+        token1Ticker={drawData.token1Label}
+        token0Estimate={token0Amount}
+        token1Estimate={token1Amount}
+        numberOfShares='2'
+        maxSlippage={maxSlippage}
+        networkFee='0.01'
+      />
+      <TokensDepositedModal
+        open={showSuccessModal}
+        setOpen={setShowSuccessModal}
+        totalEstimatedValue='$5,038'
+        token0Ticker={drawData.token0Label}
+        token1Ticker={drawData.token1Label}
+        token0Estimate={token0Amount}
+        token1Estimate={token1Amount}
+      />
+      <TransactionFailedModal
+        open={showFailedModal}
+        setOpen={setShowFailedModal}
+      />
+      <SubmittingOrderModal
+        open={showSubmittingModal}
+        setOpen={setShowSubmittingModal}
+      />
+    </TabWrapper>
   );
 }

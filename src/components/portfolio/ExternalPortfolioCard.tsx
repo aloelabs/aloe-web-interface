@@ -1,0 +1,102 @@
+import React from 'react';
+import styled from 'styled-components';
+import tw from 'twin.macro';
+import {
+  CardBodyWrapper,
+  CardTitleWrapper,
+  CardWrapper,
+  ValueText,
+  TokenIconsWrapper,
+  CardSubTitleWrapper,
+  TokenIcon,
+  TokenPairTickers,
+} from './PortfolioCard';
+import { MigrateButton } from '../common/Buttons';
+import { TokenData } from '../../data/TokenData';
+import { FeeTier } from '../../data/BlendPoolMarkers';
+import {
+  RESPONSIVE_BREAKPOINT_SM,
+  RESPONSIVE_BREAKPOINT_MD,
+} from '../../data/constants/Breakpoints';
+import PercentChange from '../common/PercentChange';
+import FeeTierContainer from '../common/FeeTierContainer';
+
+const EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR = 'rgba(26, 41, 52, 0.65)';
+const EXTERNAL_CARD_WRAPPER_HOVER_OUTLINE_COLOR = 'rgba(56, 82, 101, 1)';
+const CARD_TITLE_BG_COLOR = 'rgba(26, 41, 52, 0.5)';
+
+const ExternalCardWrapper = styled(CardWrapper)`
+  &:hover {
+    box-shadow: 0px 8px 48px 0px ${EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR};
+    outline: 1px solid ${EXTERNAL_CARD_WRAPPER_HOVER_OUTLINE_COLOR};
+  }
+`;
+
+const BodySubContainer = styled.div`
+  ${tw`flex flex-col justify-between`}
+  width: 50%;
+  height: 88px;
+  padding-left: 40px;
+  padding-right: 48px;
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
+    padding: 20px 32px;
+    height: auto;
+  }
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    width: 100%;
+  }
+`;
+
+export const ValuePercentContainer = styled.div`
+  ${tw`flex gap-2 items-center`}
+`;
+
+const EndAlignedBodySubContainer = styled(BodySubContainer)`
+  ${tw`justify-center items-end`}
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    align-items: start;
+  }
+`;
+
+export type ExternalPortfolioCardProps = {
+  token0: TokenData;
+  token1: TokenData;
+  uniswapFeeTier: FeeTier;
+  estimatedValue: number;
+  percentageChange: number;
+};
+
+export default function ExternalPortfolioCard(
+  props: ExternalPortfolioCardProps
+) {
+  const { token0, token1, uniswapFeeTier, estimatedValue, percentageChange } =
+    props;
+  return (
+    <ExternalCardWrapper>
+      <CardTitleWrapper backgroundGradient={CARD_TITLE_BG_COLOR}>
+        <TokenPairTickers>
+          {token0.ticker} - {token1.ticker}
+        </TokenPairTickers>
+        <CardSubTitleWrapper>
+          <TokenIconsWrapper>
+            <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
+            <TokenIcon src={token1.iconPath} alt=''></TokenIcon>
+          </TokenIconsWrapper>
+          <FeeTierContainer feeTier={uniswapFeeTier} />
+        </CardSubTitleWrapper>
+      </CardTitleWrapper>
+      <CardBodyWrapper>
+        <BodySubContainer>
+          <span>Estimated Value</span>
+          <ValuePercentContainer>
+            <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
+            <PercentChange percent={percentageChange} />
+          </ValuePercentContainer>
+        </BodySubContainer>
+        <EndAlignedBodySubContainer>
+          <MigrateButton>Migrate to Aloe</MigrateButton>
+        </EndAlignedBodySubContainer>
+      </CardBodyWrapper>
+    </ExternalCardWrapper>
+  );
+}

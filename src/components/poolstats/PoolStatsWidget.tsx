@@ -6,20 +6,52 @@ import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { ResolveBlendPoolDrawData } from '../../data/BlendPoolDataResolver';
 
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
-import { prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
+import {
+  prettyFormatBalance,
+  roundPercentage,
+  String1E,
+  toBig,
+} from '../../util/Numbers';
 import { useAccount, useBalance } from 'wagmi';
+
+const ROUNDING_PRECISION = 2;
+
+const Wrapper = styled.div`
+  ${tw`flex flex-col`}
+  /* 16px due to the bottom padding already being 8px making the total space 24px */
+  gap: 16px;
+  margin-bottom: 64px;
+`;
+
+const PoolStatsWidgetGrid = styled.div`
+  display: grid;
+  grid-template-columns: calc(50% - 12px) calc(50% - 12px);
+  column-gap: 24px;
+  border-top: 1px solid rgba(26, 41, 52, 1);
+`;
+
+const PoolStat = styled.div`
+  ${tw`flex items-center justify-between`}
+  padding: 18px 8px;
+  border-bottom: 1px solid rgba(26, 41, 52, 1);
+`;
+
+const PoolStatLabel = styled.span`
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(130, 160, 182, 1);
+`;
+
+const PoolStatValue = styled.span`
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+  color: rgba(255, 255, 255, 1);
+`;
 
 export type PoolStatsWidgetProps = {
   poolData: BlendPoolMarkers;
 };
-
-const HorizDivider = styled.div`
-  ${tw`w-full px-4 border-t-2 border-t-grey-200 h-0`}
-`;
-
-const Card = styled.div`
-  ${tw`w-full py-2 flex flex-row items-center justify-between hover:bg-grey-75`}
-`;
 
 export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
   const drawData = ResolveBlendPoolDrawData(props.poolData);
@@ -69,88 +101,38 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
     : '-';
 
   return (
-    <div className='w-full flex flex-col items-start justify-start'>
-      <WidgetHeading>Vault Usage</WidgetHeading>
-      <div className='w-full flex flex-col items-start justify-start pb-4 text-grey-800'>
-        {/*<Card>*/}
-        {/*  <span>TVL</span>*/}
-        {/*  <span>-</span>*/}
-        {/*</Card>*/}
-        {/*<HorizDivider />*/}
-        <Card>
-          <span>
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token0Label}
-            </span>
-            &nbsp;Reserves
-          </span>
-          <span>
-            {token0Reserves}&nbsp;
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token0Label}
-            </span>
-          </span>
-        </Card>
-        <HorizDivider />
-        <Card>
-          <span>
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token1Label}
-            </span>
-            &nbsp;Reserves
-          </span>
-          <span>
-            {token1Reserves}&nbsp;
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token1Label}
-            </span>
-          </span>
-        </Card>
-        <HorizDivider />
-      </div>
-      {/*User Stats*/}
-      <WidgetHeading>Your&nbsp;Position</WidgetHeading>
-      <div className='w-full flex flex-col items-start justify-start text-grey-800'>
-        <Card>
-          <span>Shares</span>
-          <span>{poolSharesBalance}</span>
-        </Card>
-        <HorizDivider />
-        {/*<Card>*/}
-        {/*  <span>Value</span>*/}
-        {/*  <span>-</span>*/}
-        {/*</Card>*/}
-        {/*<HorizDivider />*/}
-        <Card>
-          <span>
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token0Label}
-            </span>
-            &nbsp;Holdings
-          </span>
-          <span>
-            {token0OwedToUser}&nbsp;
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token0Label}
-            </span>
-          </span>
-        </Card>
-        <HorizDivider />
-        <Card>
-          <span>
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token1Label}
-            </span>
-            &nbsp;Holdings
-          </span>
-          <span>
-            {token1OwedToUser}&nbsp;
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token1Label}
-            </span>
-          </span>
-        </Card>
-      </div>
-    </div>
+    <Wrapper>
+      <WidgetHeading>Stats</WidgetHeading>
+      <PoolStatsWidgetGrid>
+        <PoolStat>
+          <PoolStatLabel>APR</PoolStatLabel>
+          <PoolStatValue>
+            {roundPercentage(12, ROUNDING_PRECISION)}%
+          </PoolStatValue>
+        </PoolStat>
+        <PoolStat>
+          <PoolStatLabel>CAPR</PoolStatLabel>
+          <PoolStatValue>
+            {roundPercentage(23, ROUNDING_PRECISION)}%
+          </PoolStatValue>
+        </PoolStat>
+        <PoolStat>
+          <PoolStatLabel>Volume 24H</PoolStatLabel>
+          <PoolStatValue>$125.30 M</PoolStatValue>
+        </PoolStat>
+        <PoolStat>
+          <PoolStatLabel>Liquidity</PoolStatLabel>
+          <PoolStatValue>$125.30 M</PoolStatValue>
+        </PoolStat>
+        <PoolStat>
+          <PoolStatLabel>TVL</PoolStatLabel>
+          <PoolStatValue>$125.30 M</PoolStatValue>
+        </PoolStat>
+        <PoolStat>
+          <PoolStatLabel>Lorem Ipsum</PoolStatLabel>
+          <PoolStatValue>$125.30 M</PoolStatValue>
+        </PoolStat>
+      </PoolStatsWidgetGrid>
+    </Wrapper>
   );
 }
