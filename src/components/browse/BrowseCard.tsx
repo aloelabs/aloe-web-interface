@@ -3,18 +3,18 @@ import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { BlendPoolMarkers, PrintFeeTier } from '../../data/BlendPoolMarkers';
-import { GetSiloData } from '../../data/SiloData';
-import { GetTokenData } from '../../data/TokenData';
 import {
   BROWSE_CARD_WIDTH_LG,
   BROWSE_CARD_WIDTH_MD,
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
-  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_MD
 } from '../../data/constants/Breakpoints';
+import { GetSiloData } from '../../data/SiloData';
+import { GetTokenData } from '../../data/TokenData';
+import { getProminentColor } from '../../util/Colors';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
-import { getProminentColor } from '../../util/Colors';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -170,17 +170,25 @@ export default function BrowseCard(props: BrowseCardProps) {
 
   const [token0Color, setToken0Color] = useState<string>('');
   const [token1Color, setToken1Color] = useState<string>('');
+
   useEffect(() => {
     /**
      * Add whatever async logic needed to calculate the gradients.
      */
-    getProminentColor(token0.iconPath || '').then((color) => {
-      setToken0Color(color);
-    });
-    getProminentColor(token1.iconPath || '').then((color) => {
-      setToken1Color(color);
-    });
-  });
+    let mounted = true;
+    const calculateProminentColors = async () => {
+      const token0Color = await getProminentColor(token0.iconPath || '');
+      const token1Color = await getProminentColor(token1.iconPath || '');
+      if (mounted) {
+        setToken0Color(token0Color);
+        setToken1Color(token1Color);
+      }
+    };
+    calculateProminentColors();
+    return () => {
+      mounted = false;
+    };
+  }, [token0, token1]);
 
   // Create the variables for the gradients.
   const cardTitleBackgroundGradient = `linear-gradient(90deg, ${rgba(
