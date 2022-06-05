@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
+import UnknownTokenIcon from '../../assets/svg/tokens/unknown_token.svg';
 
 const DEFAULT_TOKEN_BACKGROUND_COLOR = 'rgba(255, 255, 255, 1)';
 const OMIT_TOKEN_BACKGROUND_COLOR = 'transparent';
@@ -41,7 +42,7 @@ export default function TokenPairIcons(props: TokenPairIconsProps) {
   return (
     <TokenIconsWrapper>
       <TokenIcon
-        src={token0IconPath || ''}
+        src={token0IconPath || UnknownTokenIcon}
         backgroundColor={
           omitBackground
             ? OMIT_TOKEN_BACKGROUND_COLOR
@@ -51,7 +52,7 @@ export default function TokenPairIcons(props: TokenPairIconsProps) {
         alt={token0AltText}
       />
       <TokenIcon
-        src={token1IconPath || ''}
+        src={token1IconPath || UnknownTokenIcon}
         backgroundColor={
           omitBackground
             ? OMIT_TOKEN_BACKGROUND_COLOR
