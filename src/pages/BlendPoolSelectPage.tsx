@@ -110,7 +110,7 @@ export default function BlendPoolSelectPage() {
           </a>
         </div>
         <BrowseCards>
-          {pools.map((pool, index, array) => {
+          {pools.map((pool, index) => {
             return <BrowseCard blendPoolMarkers={pool} key={index} />;
           })}
         </BrowseCards>
