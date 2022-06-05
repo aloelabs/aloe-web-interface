@@ -30,6 +30,8 @@ export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
   const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
   const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
+  const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
+  const [poolsToDisplay, setPoolsToDisplay] = useState<BlendPoolMarkers[]>([]);
   const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
   const [activeTokenOptions, setActiveTokenOptions] = useState<
     MultiDropdownOption[]
@@ -113,6 +115,53 @@ export default function BlendPoolSelectPage() {
       setFilteredPools(pools);
     }
   }, [searchText, pools]);
+
+  useEffect(() => {
+    if (activeTokenOptions.length > 0) {
+      setActivePools(pools.filter((pool) => {
+        const {
+          silo0Name,
+          silo1Name,
+          silo0Label,
+          silo1Label,
+          token0Label,
+          token1Label,
+        } = ResolveBlendPoolDrawData(pool);
+
+        return (
+          [
+            silo0Name,
+            silo1Name,
+            silo0Label,
+            silo1Label,
+            token0Label,
+            token1Label,
+          ].findIndex((field) => {
+            return activeTokenOptions.map((option) => option.label.toLowerCase()).includes(field.toLowerCase());
+          }) !== -1
+        );
+      }));
+    } else if (pools.length > 0) {
+      setActivePools(pools);
+    }
+  }, [pools, activeTokenOptions]);
+
+  useEffect(() => {
+    if (activePools.length > 0 && filteredPools.length > 0) {
+      if (filteredPools.length >= activePools.length) {
+        setPoolsToDisplay(filteredPools.filter((pool) => {
+          return activePools.includes(pool);
+        }));
+      } else {
+        setPoolsToDisplay(activePools.filter((pool) => {
+          return filteredPools.includes(pool);
+        }));
+      }
+    } else if (filteredPools.length > 0) {
+      setPoolsToDisplay(filteredPools);
+    }
+  }, [filteredPools, activePools]);
+
 
   /* Calculating the number of applied filters */
   let numberOfFiltersApplied = 0;
@@ -200,7 +249,7 @@ export default function BlendPoolSelectPage() {
             </tr>
           </thead>
           <tbody className=''>
-            {filteredPools.map((pool, index, array) => {
+            {poolsToDisplay.map((pool, index, array) => {
               return (
                 <React.Fragment key={index}>
                   <BlendPoolSelectTableRow poolData={pool} />
