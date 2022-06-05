@@ -5,7 +5,7 @@ import { prominent } from 'color.js';
  * @param rgb RGB color
  * @returns HSV color
  */
-function rgb_to_hsv(rgb: number[]) {
+function rgb_to_hsv(rgb: number[]) : number[] {
   // R, G, B values are divided by 255
   // to change the range from 0..255 to 0..1
   const r = rgb[0] / 255.0;
@@ -42,7 +42,7 @@ function rgb_to_hsv(rgb: number[]) {
  * @param path Path to the image
  * @returns The dominant color of the image
  */
-export async function getProminentColor(path: string) {
+export async function getProminentColor(path: string) : Promise<string> {
   const colorsRGB: number[][] = await prominent(path, { amount: 3 }) as number[][];
   const colors = colorsRGB.map((colorRGB) => {
     return {
@@ -66,7 +66,7 @@ export async function getProminentColor(path: string) {
  * @param color Comma separated list of rgb values
  * @returns rgb string
  */
-export function rgb(color: string) {
+export function rgb(color: string) : string {
   return `rgb(${color})`;
 }
 
@@ -76,7 +76,7 @@ export function rgb(color: string) {
  * @param alpha Alpha value
  * @returns rgba string
  */
-export function rgba(color: string, alpha: number) {
+export function rgba(color: string, alpha: number) : string {
   return `rgba(${color}, ${alpha})`;
 }
 
@@ -86,7 +86,7 @@ export function rgba(color: string, alpha: number) {
  * @param color1 The second color
  * @returns The brighter of the two colors
  */
-export function getBrighterColor(color0: string, color1: string) {
+export function getBrighterColor(color0: string, color1: string) : string {
   const values0 = color0.split(',').map((v) => parseInt(v.trim()));
   const values1 = color1.split(',').map((v) => parseInt(v.trim()));
   const avg0 = (values0[0] + values0[1] + values0[2]) / 3;
