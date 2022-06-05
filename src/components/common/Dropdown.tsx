@@ -29,6 +29,7 @@ const DropdownHeader = styled.button`
   padding: 16px 52px 16px 24px;
   border: 1px solid ${DROPDOWN_HEADER_BORDER_COLOR};
   border-radius: 100px;
+  white-space: nowrap;
 `;
 
 const DropdownList = styled.div`
