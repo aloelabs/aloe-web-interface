@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { roundPercentage } from '../../util/Numbers';
-import PositiveChangeIcon from '../../assets/svg/positive_change_chevron.svg';
-import NegativeChangeIcon from '../../assets/svg/negative_change_chevron.svg';
 import { TokenData } from '../../data/TokenData';
-import { FeeTier, PrintFeeTier } from '../../data/BlendPoolMarkers';
+import { FeeTier } from '../../data/BlendPoolMarkers';
 import { SiloData } from '../../data/SiloData';
 import {
   getBrighterColor,
@@ -17,11 +14,16 @@ import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import PercentChange from '../common/PercentChange';
+import FeeTierContainer from '../common/FeeTierContainer';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
+const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
+const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
+const SILO_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const FEE_TIER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
 const FEE_TIER_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
@@ -94,12 +96,25 @@ export const CardBodyWrapper = styled.div`
   }
 `;
 
-export const FeeTierContainer = styled.div`
-  ${tw`flex flex-col items-center justify-center`}
-  padding: 8px 16px;
-  background: ${FEE_TIER_BG_COLOR};
-  color: ${FEE_TIER_TEXT_COLOR};
-  border-radius: 100px;
+export const TokenPairTickers = styled.div`
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+  font-family: 'ClashDisplay-Variable';
+`;
+
+export const TokenIconsWrapper = styled.div`
+  ${tw`flex flex-row items-center justify-start -space-x-2`}
+  width: 56px;
+  height: 32px;
+`;
+
+export const TokenIcon = styled.img`
+  ${tw`rounded-full bg-white`}
+  position: relative;
+  width: 32px;
+  height: 32px;
+  box-shadow: 0 0 0 3px ${TOKEN_ICON_BORDER_COLOR};
 `;
 
 const BodySubContainer = styled.div`
@@ -129,42 +144,20 @@ const BodyDivider = styled.div`
   }
 `;
 
+export const TokenTickerText = styled.span`
+  font-size: 16px;
+  line-height: 24px;
+`;
+
+export const SiloText = styled.span`
+  font-size: 14px;
+  line-height: 20px;
+  color: ${SILO_TEXT_COLOR};
+`;
+
 export const ValueText = styled.span`
   font-size: 32px;
-`;
-
-const PercentChangeContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  height: 28px;
-  border-radius: 8px;
-  padding: 6px;
-  font-size: 12px;
-  &:after {
-    content: '';
-    width: 14px;
-    height: 14px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
-`;
-
-export const PositivePercentChangeContainer = styled(PercentChangeContainer)`
-  background: ${POSITIVE_PERCENT_BG_COLOR};
-  color: ${POSITIVE_PERCENT_TEXT_COLOR};
-  &:after {
-    background-image: url(${PositiveChangeIcon});
-  }
-`;
-
-export const NegativePercentChangeContainer = styled(PercentChangeContainer)`
-  background: ${NEGATIVE_PERCENT_BG_COLOR};
-  color: ${NEGATIVE_PERCENT_TEXT_COLOR};
-  &:after {
-    background-image: url(${NegativeChangeIcon});
-  }
+  font-weight: 700;
 `;
 
 export type PortfolioCardProps = {
@@ -218,9 +211,9 @@ export default function PortfolioCard(props: PortfolioCardProps) {
       shadowColor={cardShadowColor}
     >
       <CardTitleWrapper backgroundGradient={cardTitleBackgroundGradient}>
-        <span className='text-2xl font-bold'>
+        <TokenPairTickers>
           {token0.ticker} - {token1.ticker}
-        </span>
+        </TokenPairTickers>
         <CardSubTitleWrapper>
           <TokenPairIcons
             token0IconPath={token0.iconPath}
@@ -228,9 +221,7 @@ export default function PortfolioCard(props: PortfolioCardProps) {
             token0AltText={`${token0.name}'s Icon`}
             token1AltText={`${token1.name}'s Icon`}
           />
-          <FeeTierContainer>
-            Uniswap Fee Tier - {PrintFeeTier(uniswapFeeTier)}
-          </FeeTierContainer>
+          <FeeTierContainer feeTier={uniswapFeeTier} />
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
@@ -249,17 +240,7 @@ export default function PortfolioCard(props: PortfolioCardProps) {
           <span>Estimated Value</span>
           <div className='flex gap-2 items-center'>
             <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
-            {percentageChange >= 0 && (
-              <PositivePercentChangeContainer>
-                +{roundPercentage(percentageChange, PERCENT_ROUNDING_PRECISION)}
-                %
-              </PositivePercentChangeContainer>
-            )}
-            {percentageChange < 0 && (
-              <NegativePercentChangeContainer>
-                {roundPercentage(percentageChange, PERCENT_ROUNDING_PRECISION)}%
-              </NegativePercentChangeContainer>
-            )}
+            <PercentChange percent={percentageChange} />
           </div>
         </BodySubContainer>
       </CardBodyWrapper>

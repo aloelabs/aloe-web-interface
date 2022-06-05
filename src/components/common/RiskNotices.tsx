@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import WarningIcon from '../../assets/svg/warning.svg';
 import { WarningButtonWithIcon } from './Buttons';
 import WidgetHeading from './WidgetHeading';
-import Modal from './Modal';
+import { CloseableModal } from './Modal';
 
 export default function RiskNotices() {
   const [open, setOpen] = useState(false);
@@ -16,7 +16,7 @@ export default function RiskNotices() {
       >
         See Risks
       </WarningButtonWithIcon>
-      <Modal open={open} setOpen={setOpen} title='Risks'>
+      <CloseableModal open={open} setOpen={setOpen} title='Risks'>
         <p>
           NOTE: This is not an exhaustive list! Please do your own research
           before depositing, and never deposit more than you can afford to lose.
@@ -47,7 +47,7 @@ export default function RiskNotices() {
           This vault is subject to similar impermanent loss as a standard
           Uniswap V2 position.
         </p>
-      </Modal>
+      </CloseableModal>
     </div>
   );
 }
