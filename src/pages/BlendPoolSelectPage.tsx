@@ -114,9 +114,6 @@ export default function BlendPoolSelectPage() {
   if (selectedSortByOption.value !== 'default') {
     numberOfFiltersApplied++;
   }
-  if (searchText.length > 0) {
-    numberOfFiltersApplied++;
-  }
 
   return (
     <AppPage>
