@@ -2,6 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
+import { Display, Text } from '../common/Typography';
+
+const METRIC_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
+const METRIC_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
 
 const Wrapper = styled.div`
   ${tw`flex p-8 relative`}
@@ -32,21 +36,6 @@ const VerticalDivider = styled.div`
   background-color: rgba(43, 64, 80, 1);
 `;
 
-const MetricLabel = styled.span`
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 30px;
-  color: rgba(130, 160, 182, 1);
-`;
-
-const MetricValue = styled.span`
-  /* font-family: 'ClashDisplay-Variable'; */
-  font-size: 32px;
-  font-weight: 400;
-  line-height: 40px;
-  color: rgba(255, 255, 255, 1);
-`;
-
 export type BrowsePoolsPerformanceProps = {
   poolData: BlendPoolMarkers[];
 };
@@ -57,18 +46,18 @@ export default function BrowsePoolsPerformance(
   return (
     <Wrapper>
       <div className='flex flex-col gap-3 flex-grow p-4'>
-        <MetricLabel>Total Value Invested</MetricLabel>
-        <MetricValue>$1.394M</MetricValue>
+        <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>Total Value Invested</Text>
+        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>$1.394M</Display>
       </div>
       <VerticalDivider />
       <div className='flex flex-col gap-3 flex-grow p-4'>
-        <MetricLabel>Pools Deployed</MetricLabel>
-        <MetricValue>{props.poolData.length} Pools</MetricValue>
+        <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>Pools Deployed</Text>
+        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>{props.poolData.length} Pools</Display>
       </div>
       <VerticalDivider />
       <div className='flex flex-col gap-3 flex-grow p-4'>
-        <MetricLabel>Total Aloe Users</MetricLabel>
-        <MetricValue>1001</MetricValue>
+        <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>Total Aloe Users</Text>
+        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>1001</Display>
       </div>
     </Wrapper>
   );

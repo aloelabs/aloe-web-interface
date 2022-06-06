@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import AloeLogo from '../../assets/svg/aloe_capital_nav_logo.svg';
+import { Text } from '../common/Typography';
 import ConnectWalletButton from './ConnectWalletButton';
 
 type MenuItem = {
@@ -29,29 +30,14 @@ const MenuItems: MenuItem[] = [
   // },
 ];
 
-const StyledNavLink = styled(NavLink)`
+const StyledNavLink = styled(Text)`
   ${tw`px-8 py-5`}
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  color: rgba(75, 105, 128, 1);
   cursor: pointer;
   user-select: none;
 
   &.active {
     color: rgba(255, 255, 255, 1);
   }
-  /* &.active {
-    background: linear-gradient(
-      180deg,
-      rgba(15, 23, 42, 0.16) 0%,
-      rgba(89, 214, 124, 0.16) 100%
-    );
-    font-weight: 500;
-    border-bottom: 4px solid #59d67c;
-    padding-top: 4px;
-    ${tw`text-grey-1000`};
-  } */
 
   :hover:not(&.active) {
     ${tw`text-grey-900`};
@@ -86,6 +72,10 @@ export default function Header() {
           {MenuItems.map((menuitem) => (
             <>
               <StyledNavLink
+                size='M'
+                weight='medium'
+                color='rgba(75, 105, 128, 1)'
+                as={NavLink}
                 id={`${menuitem.name}-nav-link`}
                 to={menuitem.url}
                 key={menuitem.name}

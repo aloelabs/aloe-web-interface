@@ -5,12 +5,11 @@ import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTab
 import { TextInput } from '../components/common/Input';
 import SearchIcon from '../assets/svg/search.svg';
 import AppPage from '../components/common/AppPage';
-import PageHeading from '../components/common/PageHeading';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
 import Pagination from '../components/common/Pagination';
-import styled from 'styled-components';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
+import { Display } from '../components/common/Typography';
 import {
   DropdownOption,
   DropdownWithPlaceholder,
@@ -19,12 +18,6 @@ import {
 } from '../components/common/Dropdown';
 import { GetTokenData } from '../data/TokenData';
 import { FilterBadge } from '../components/common/FilterBadge';
-
-const BrowseTitle = styled.span`
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 40px;
-`;
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
@@ -183,11 +176,11 @@ export default function BlendPoolSelectPage() {
   return (
     <AppPage>
       <div className='flex flex-col gap-6'>
-        <BrowseTitle>Aloe's Performance</BrowseTitle>
+        <Display size='L' weight='semibold'>Aloe's Performance</Display>
         <BrowsePoolsPerformance poolData={pools} />
       </div>
       <div className='flex items-center gap-6'>
-        <PageHeading>Browse Deployed Pools</PageHeading>
+        <Display size='L' weight='semibold'>Browse Deployed Pools</Display>
         {numberOfFiltersApplied > 0 && (
           <FilterBadge>
             {numberOfFiltersApplied} {numberOfFiltersApplied === 1 ? 'Filter' : 'Filters'} Applied

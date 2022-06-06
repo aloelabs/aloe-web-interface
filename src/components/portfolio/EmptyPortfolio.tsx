@@ -33,11 +33,13 @@ const EmptyPortfolioText = styled.span`
   font-size: 28px;
   font-weight: 700;
   line-height: 28px;
+  padding-bottom: 4px;
 `;
 
 const EmptyPortfolioSubText = styled.span`
   ${tw`text-center text-white`}
   font-size: 18px;
+  font-weight: 400;
   line-height: 24.3px;
   color: ${EMPTY_PORTFOLIO_SUB_TEXT_COLOR};
 `;

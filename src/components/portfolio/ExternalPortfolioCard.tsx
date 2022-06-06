@@ -1,25 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import {
-  CardBodyWrapper,
-  CardTitleWrapper,
-  CardWrapper,
-  ValueText,
-  TokenIconsWrapper,
-  CardSubTitleWrapper,
-  TokenIcon,
-  TokenPairTickers,
-} from './PortfolioCard';
-import { MigrateButton } from '../common/Buttons';
-import { TokenData } from '../../data/TokenData';
 import { FeeTier } from '../../data/BlendPoolMarkers';
 import {
-  RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_SM,
 } from '../../data/constants/Breakpoints';
-import PercentChange from '../common/PercentChange';
+import { TokenData } from '../../data/TokenData';
+import { MigrateButton } from '../common/Buttons';
 import FeeTierContainer from '../common/FeeTierContainer';
+import PercentChange from '../common/PercentChange';
+import { Display, Text } from '../common/Typography';
+import {
+  CardBodyWrapper,
+  CardSubTitleWrapper,
+  CardTitleWrapper,
+  CardWrapper,
+  TokenIcon,
+  TokenIconsWrapper,
+  ValueText,
+} from './PortfolioCard';
 
 const EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR = 'rgba(26, 41, 52, 0.65)';
 const EXTERNAL_CARD_WRAPPER_HOVER_OUTLINE_COLOR = 'rgba(56, 82, 101, 1)';
@@ -74,9 +74,9 @@ export default function ExternalPortfolioCard(
   return (
     <ExternalCardWrapper>
       <CardTitleWrapper backgroundGradient={CARD_TITLE_BG_COLOR}>
-        <TokenPairTickers>
+        <Display size='M' weight='semibold'>
           {token0.ticker} - {token1.ticker}
-        </TokenPairTickers>
+        </Display>
         <CardSubTitleWrapper>
           <TokenIconsWrapper>
             <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
@@ -87,7 +87,9 @@ export default function ExternalPortfolioCard(
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
-          <span>Estimated Value</span>
+          <Text size='M' weight='medium'>
+            Estimated Value
+          </Text>
           <ValuePercentContainer>
             <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
             <PercentChange percent={percentageChange} />

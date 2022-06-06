@@ -3,6 +3,7 @@ import { roundPercentage } from '../../util/Numbers';
 import PositiveChangeIcon from '../../assets/svg/positive_change_chevron.svg';
 import NegativeChangeIcon from '../../assets/svg/negative_change_chevron.svg';
 import styled from 'styled-components';
+import { Text } from './Typography';
 
 const POSITIVE_PERCENT_BG_COLOR = 'rgba(0, 193, 67, 0.1)';
 const POSITIVE_PERCENT_TEXT_COLOR = 'rgb(0, 193, 67)';
@@ -17,7 +18,6 @@ const PercentChangeContainer = styled.div`
   height: 28px;
   border-radius: 8px;
   padding: 6px;
-  font-size: 12px;
   &:after {
     content: '';
     width: 14px;
@@ -30,7 +30,6 @@ const PercentChangeContainer = styled.div`
 
 export const PositivePercentChangeContainer = styled(PercentChangeContainer)`
   background: ${POSITIVE_PERCENT_BG_COLOR};
-  color: ${POSITIVE_PERCENT_TEXT_COLOR};
   &:after {
     background-image: url(${PositiveChangeIcon});
   }
@@ -38,7 +37,6 @@ export const PositivePercentChangeContainer = styled(PercentChangeContainer)`
 
 export const NegativePercentChangeContainer = styled(PercentChangeContainer)`
   background: ${NEGATIVE_PERCENT_BG_COLOR};
-  color: ${NEGATIVE_PERCENT_TEXT_COLOR};
   &:after {
     background-image: url(${NegativeChangeIcon});
   }
@@ -53,13 +51,17 @@ export default function PercentChange(props: PercentChangeProps) {
   if (percent >= 0) {
     return (
       <PositivePercentChangeContainer>
-        +{roundPercentage(percent, PERCENT_ROUNDING_PRECISION)}%
+        <Text size='XS' weight='bold' color={POSITIVE_PERCENT_TEXT_COLOR}>
+          +{roundPercentage(percent, PERCENT_ROUNDING_PRECISION)}%
+        </Text>
       </PositivePercentChangeContainer>
     );
   } else {
     return (
       <NegativePercentChangeContainer>
-        {roundPercentage(percent, PERCENT_ROUNDING_PRECISION)}%
+        <Text size='XS' weight='bold' color={NEGATIVE_PERCENT_TEXT_COLOR}>
+          {roundPercentage(percent, PERCENT_ROUNDING_PRECISION)}%
+        </Text>
       </NegativePercentChangeContainer>
     );
   }
