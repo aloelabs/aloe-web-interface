@@ -9,6 +9,9 @@ import NextChevronActive from '../../assets/svg/next_chevron_active.svg';
 import NextChevronInactive from '../../assets/svg/next_chevron_inactive.svg';
 import PreviousChevronActive from '../../assets/svg/previous_chevron_active.svg';
 import PreviousChevronInactive from '../../assets/svg/previous_chevron_inactive.svg';
+import { Text } from './Typography';
+
+const DESCRIPTION_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 const Wrapper = styled.div`
   ${tw`w-full flex`}
@@ -28,19 +31,13 @@ const Title = styled.div`
   color: rgba(255, 255, 255, 1);
 `;
 
-const Description = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: rgba(130, 160, 182, 1);
-`;
-
 const NavigationButton = styled.button`
   ${tw`w-full flex items-center justify-center`}
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background-color: rgba(26, 41, 52, 1);
+  user-select: none;
 
   &:disabled {
     background-color: rgba(13, 23, 30, 1);
@@ -62,27 +59,27 @@ const NavigationDot = styled.div`
 
 const RISK_CARDS = [
   {
-    title: 'Execution Risk',
+    title: <Title>Execution Risk</Title>,
     description:
-      <Description>Though Aloe Blend has been <a href="https://github.com/aloelabs/aloe-blend/blob/master/audits/aloe_1.1_signed.pdf" className='underline'>audited</a>, there’s always a chance that something goes wrong. The contract code is immutable, and there is no failsafe by which Aloe Labs or anyone else can pause execution.</Description>,
+      <Text size='S' weight='medium' color={DESCRIPTION_TEXT_COLOR}>Though Aloe Blend has been <a href="https://github.com/aloelabs/aloe-blend/blob/master/audits/aloe_1.1_signed.pdf" className='underline'>audited</a>, there’s always a chance that something goes wrong. The contract code is immutable, and there is no failsafe by which Aloe Labs or anyone else can pause execution.</Text>,
     image: ExecutionRiskIcon,
   },
   {
-    title: 'Base Protocol Risk',
+    title: <Title>Base Protocol Risk</Title>,
     description:
-      <Description>The underlying protocols (Uniswap and protocols used in silos) present risk from both their code and the potential for deleterious governance action.</Description>,
+      <Text size='S' weight='medium' color={DESCRIPTION_TEXT_COLOR}>The underlying protocols (Uniswap and protocols used in silos) present risk from both their code and the potential for deleterious governance action.</Text>,
     image: BaseProtocolRiskIcon,
   },
   {
-    title: 'Impermanent Loss',
+    title: <Title>Impermanent Loss</Title>,
     description:
-      <Description>This pool is subject to similar impermanent loss as a standard Uniswap V2 position.</Description>,
+      <Text size='S' weight='medium' color={DESCRIPTION_TEXT_COLOR}>This pool is subject to similar impermanent loss as a standard Uniswap V2 position.</Text>,
     image: ImpermanentLossIcon,
   },
   {
-    title: 'Tokens and Base Layer Risk',
+    title: <Title>Tokens and Base Layer Risk</Title>,
     description:
-      <Description>Risks associated with holding the underlying tokens are still present when depositing to this pool. Ethereum blockchain clients can break and bugs can be exploited. This interface may not always work.</Description>,
+      <Text size='S' weight='medium' color={DESCRIPTION_TEXT_COLOR}>Risks associated with holding the underlying tokens are still present when depositing to this pool. Ethereum blockchain clients can break and bugs can be exploited. This interface may not always work.</Text>,
     image: TokenAndBaseLayerRiskIcon,
   },
 ];
@@ -99,8 +96,8 @@ export default function RiskCard() {
       <RiskImage src={image} />
       <div className='flex flex-col justify-between p-8'>
         <div className='flex flex-col gap-y-2'>
-          <Title>{title}</Title>
-          <Description>{description}</Description>
+          {title}
+          {description}
         </div>
         <div className='flex items-center justify-between'>
           <NavigationButton disabled={isPreviousButtonDisabled} onClick={() => setCurrentCardIndex(currentCardIndex - 1)}>

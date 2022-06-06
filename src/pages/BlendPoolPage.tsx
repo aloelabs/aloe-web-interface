@@ -15,6 +15,7 @@ import { GetTokenData } from '../data/TokenData';
 import { GetSiloData } from '../data/SiloData';
 import { PreviousPageButton } from '../components/common/Buttons';
 import FeeTierContainer from '../components/common/FeeTierContainer';
+import { Text } from '../components/common/Typography';
 
 const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
   position: absolute;
@@ -104,7 +105,7 @@ export default function BlendPoolPage() {
           <PoolStatsWidget poolData={poolData} />
           <PoolPieChartWidget poolData={poolData} />
           <div className='flex flex-col gap-y-6 mt-16'>
-            <SectionHeading>Investing Risk</SectionHeading>
+            <Text size='L' weight='medium'>Investing Risk</Text>
             <RiskCard />
           </div>
         </div>
