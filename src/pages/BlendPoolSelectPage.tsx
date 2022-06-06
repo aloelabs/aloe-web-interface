@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { TertiaryButton } from '../components/common/Buttons';
 import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
 import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTableRow';
@@ -11,6 +11,14 @@ import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
 import Pagination from '../components/common/Pagination';
 import styled from 'styled-components';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
+import {
+  DropdownOption,
+  DropdownWithPlaceholder,
+  MultiDropdown,
+  MultiDropdownOption,
+} from '../components/common/Dropdown';
+import { GetTokenData } from '../data/TokenData';
+import { FilterBadge } from '../components/common/FilterBadge';
 
 const BrowseTitle = styled.span`
   font-size: 32px;
@@ -20,37 +28,148 @@ const BrowseTitle = styled.span`
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
+  const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
+  const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
+  const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
+  const [poolsToDisplay, setPoolsToDisplay] = useState<BlendPoolMarkers[]>([]);
+  const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
+  const [activeTokenOptions, setActiveTokenOptions] = useState<
+    MultiDropdownOption[]
+  >([]);
   const [page, setPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const sortByOptions = [
+    {
+      label: 'Default',
+      value: 'default',
+      isDefault: true,
+    },
+    {
+      label: 'Newest First',
+      value: 'newest',
+      isDefault: false,
+    },
+    {
+      label: 'Oldest First',
+      value: 'oldest',
+      isDefault: false,
+    }
+  ] as DropdownOption[];
+  const [selectedSortByOption, setSelectedSortByOption] = useState<DropdownOption>(sortByOptions[0]);
 
   const { poolDataMap } = useContext(BlendTableContext);
+  const loadData = useCallback(async () => {
+    let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
+    setPools(poolData);
+    let tokenAddresses = Array.from(
+      new Set(
+        poolData.flatMap((pool) => [
+          pool.token0Address.toLowerCase(),
+          pool.token1Address.toLocaleLowerCase(),
+        ])
+      )
+    );
+    let tokenData = tokenAddresses.map((address) => GetTokenData(address));
+    let tokenOptionData = tokenData.map(
+      (data) =>
+        ({
+          label: data.ticker,
+          value: data.address,
+          icon: data.iconPath,
+        } as MultiDropdownOption)
+    );
+    setTokenOptions(tokenOptionData);
+    setActiveTokenOptions(tokenOptionData);
+  }, [poolDataMap]);
 
-  let pools: BlendPoolMarkers[] = Array.from(poolDataMap.values());
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
-  if (searchText.length > 0) {
-    pools = pools.filter((pool) => {
-      const {
-        silo0Name,
-        silo1Name,
-        silo0Label,
-        silo1Label,
-        token0Label,
-        token1Label,
-      } = ResolveBlendPoolDrawData(pool);
-
-      return (
-        [
+  useEffect(() => {
+    if (searchText.length > 0 && pools.length > 0) {
+      setFilteredPools(pools.filter((pool) => {
+        const {
           silo0Name,
           silo1Name,
           silo0Label,
           silo1Label,
           token0Label,
           token1Label,
-        ].findIndex((field) => {
-          return field.toLowerCase().includes(searchText.toLowerCase());
-        }) !== -1
-      );
-    });
+        } = ResolveBlendPoolDrawData(pool);
+  
+        return (
+          [
+            silo0Name,
+            silo1Name,
+            silo0Label,
+            silo1Label,
+            token0Label,
+            token1Label,
+          ].findIndex((field) => {
+            return field.toLowerCase().includes(searchText.toLowerCase());
+          }) !== -1
+        );
+      }));
+    } else if (pools.length > 0) {
+      setFilteredPools(pools);
+    }
+  }, [searchText, pools]);
+
+  useEffect(() => {
+    if (activeTokenOptions.length > 0) {
+      setActivePools(pools.filter((pool) => {
+        const {
+          silo0Name,
+          silo1Name,
+          silo0Label,
+          silo1Label,
+          token0Label,
+          token1Label,
+        } = ResolveBlendPoolDrawData(pool);
+
+        return (
+          [
+            silo0Name,
+            silo1Name,
+            silo0Label,
+            silo1Label,
+            token0Label,
+            token1Label,
+          ].findIndex((field) => {
+            return activeTokenOptions.map((option) => option.label.toLowerCase()).includes(field.toLowerCase());
+          }) !== -1
+        );
+      }));
+    } else if (pools.length > 0) {
+      setActivePools(pools);
+    }
+  }, [pools, activeTokenOptions]);
+
+  useEffect(() => {
+    if (activePools.length > 0 && filteredPools.length > 0) {
+      if (filteredPools.length >= activePools.length) {
+        setPoolsToDisplay(filteredPools.filter((pool) => {
+          return activePools.includes(pool);
+        }));
+      } else {
+        setPoolsToDisplay(activePools.filter((pool) => {
+          return filteredPools.includes(pool);
+        }));
+      }
+    } else if (filteredPools.length > 0) {
+      setPoolsToDisplay(filteredPools);
+    }
+  }, [filteredPools, activePools]);
+
+
+  /* Calculating the number of applied filters */
+  let numberOfFiltersApplied = 0;
+  if (activeTokenOptions.length < tokenOptions.length) {
+    numberOfFiltersApplied++;
+  }
+  if (selectedSortByOption.value !== 'default') {
+    numberOfFiltersApplied++;
   }
 
   const handlePageChange = (page: number) => {
@@ -67,8 +186,13 @@ export default function BlendPoolSelectPage() {
         <BrowseTitle>Aloe's Performance</BrowseTitle>
         <BrowsePoolsPerformance poolData={pools} />
       </div>
-      <div>
+      <div className='flex items-center gap-6'>
         <PageHeading>Browse Deployed Pools</PageHeading>
+        {numberOfFiltersApplied > 0 && (
+          <FilterBadge>
+            {numberOfFiltersApplied} {numberOfFiltersApplied === 1 ? 'Filter' : 'Filters'} Applied
+          </FilterBadge>
+        )}
       </div>
       <div className='py-4 flex flex-row items-center justify-between text-lg'>
         <TextInput
@@ -77,6 +201,24 @@ export default function BlendPoolSelectPage() {
           placeholder='Search by name or symbol'
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
+        />
+
+        <MultiDropdown
+          options={tokenOptions}
+          activeOptions={activeTokenOptions}
+          handleChange={(selectedOptions) => {
+            setActiveTokenOptions(selectedOptions);
+          }}
+          placeholder='All Tokens'
+          selectedText='Tokens'
+        />
+        <DropdownWithPlaceholder
+          options={sortByOptions}
+          selectedOption={selectedSortByOption}
+          onSelect={(option: DropdownOption) => {
+            setSelectedSortByOption(option);
+          }}
+          placeholder='Sort By'
         />
 
         <a
@@ -107,7 +249,7 @@ export default function BlendPoolSelectPage() {
             </tr>
           </thead>
           <tbody className=''>
-            {pools.map((pool, index, array) => {
+            {poolsToDisplay.map((pool, index, array) => {
               return (
                 <React.Fragment key={index}>
                   <BlendPoolSelectTableRow poolData={pool} />
