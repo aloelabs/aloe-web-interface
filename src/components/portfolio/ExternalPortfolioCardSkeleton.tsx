@@ -6,10 +6,10 @@ import {
   CardBodyWrapper,
   CardTitleWrapper,
   CardWrapper,
-  PositivePercentChangeContainer,
   TokenIconsWrapper,
   CardSubTitleWrapper,
 } from './PortfolioCard';
+import { PositivePercentChangeContainer } from '../common/PercentChange';
 import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_MD,

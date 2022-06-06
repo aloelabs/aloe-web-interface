@@ -108,7 +108,7 @@ export default function RiskCard() {
           </NavigationButton>
           <div className='flex items-center gap-x-2'>
             {RISK_CARDS.map((_riskCard, index) => (
-              <NavigationDot className={index === currentCardIndex ? 'active' : ''} />
+              <NavigationDot className={index === currentCardIndex ? 'active' : ''} key={index} />
             ))}
           </div>
           <NavigationButton disabled={isNextButtonDisabled} onClick={() => {setCurrentCardIndex(currentCardIndex + 1)}}>
