@@ -7,6 +7,7 @@ import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
+import RiskCard from '../components/common/RiskCard';
 import { RESPONSIVE_BREAKPOINT_LG, RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_SM } from '../data/constants/Breakpoints';
 import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
 import TokenPairHeader from '../components/pool/TokenPairHeader';
@@ -14,6 +15,7 @@ import { GetTokenData } from '../data/TokenData';
 import { GetSiloData } from '../data/SiloData';
 import { PreviousPageButton } from '../components/common/Buttons';
 import FeeTierContainer from '../components/common/FeeTierContainer';
+import { Text } from '../components/common/Typography';
 
 const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
   position: absolute;
@@ -60,6 +62,13 @@ const GridExpandingDiv = styled.div`
   }
 `;
 
+const SectionHeading = styled.div`
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  color: rgba(255, 255, 255, 1);
+`;
+
 export default function BlendPoolPage() {
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
@@ -95,6 +104,10 @@ export default function BlendPoolPage() {
           <PoolPositionWidget poolData={poolData} />
           <PoolStatsWidget poolData={poolData} />
           <PoolPieChartWidget poolData={poolData} />
+          <div className='flex flex-col gap-y-6 mt-16'>
+            <Text size='L' weight='medium'>Investing Risk</Text>
+            <RiskCard />
+          </div>
         </div>
       </PoolBodyWrapper>
     </BlendPoolProvider>
