@@ -23,10 +23,8 @@ import { Display, Text } from '../common/Typography';
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
 const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
-const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
 const SILO_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const SILO_NAME_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 
 export const CardWrapper = styled.div.attrs(
   (props: { borderGradient: string; shadowColor: string }) => props
@@ -221,7 +219,7 @@ export default function PortfolioCard(props: PortfolioCardProps) {
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
-          <span>Invested</span>
+          <Text size='M' weight='medium'>Invested</Text>
           <InvestedTypes
             token0={token0}
             token1={token1}

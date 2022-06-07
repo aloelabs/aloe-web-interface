@@ -3,8 +3,10 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import { SiloData } from '../../data/SiloData';
 import { TokenData } from '../../data/TokenData';
+import { Text } from './Typography';
 
 const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
+const SILO_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 
 const InvestedTypesContainer = styled.div.attrs(
   (props: { shouldGrow: boolean }) => props
@@ -72,14 +74,14 @@ export default function InvestedTypes(props: InvestedTypeProps) {
   return (
     <InvestedTypesContainer shouldGrow={shouldGrow}>
       <InvestedType figureColor={figureColor}>
-        <span>{token0.ticker}</span>
+        <Text size='M' weight='medium'>{token0.ticker}</Text>
         <DashedDivider />
-        <span className='text-xs'>via {silo0.shortName}</span>
+        <Text size='S' weight='medium' color={SILO_TEXT_COLOR}>via {silo0.shortName}</Text>
       </InvestedType>
       <InvestedType figureColor={figureColor}>
-        <span>{token1.ticker}</span>
+        <Text size='M' weight='medium'>{token1.ticker}</Text>
         <DashedDivider />
-        <span className='text-xs'>via {silo1.shortName}</span>
+        <Text size='S' weight='medium' color={SILO_TEXT_COLOR}>via {silo1.shortName}</Text>
       </InvestedType>
     </InvestedTypesContainer>
   );
