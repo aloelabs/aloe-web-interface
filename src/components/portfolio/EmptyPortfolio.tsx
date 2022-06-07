@@ -30,12 +30,17 @@ const Container = styled.div`
 
 const EmptyPortfolioText = styled.span`
   ${tw`text-center text-white`}
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 28px;
+  padding-bottom: 4px;
 `;
 
 const EmptyPortfolioSubText = styled.span`
   ${tw`text-center text-white`}
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 24.3px;
   color: ${EMPTY_PORTFOLIO_SUB_TEXT_COLOR};
 `;
 
@@ -47,7 +52,9 @@ const BrowsePoolsButton = styled.button.attrs(
   padding: 16px 24px;
   border: 1px solid white;
   border-radius: 8px;
-  line-height: 24px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24.3px;
   &:after {
     content: '';
     display: block;
