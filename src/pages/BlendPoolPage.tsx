@@ -7,7 +7,6 @@ import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
-import tw from 'twin.macro';
 import RiskCard from '../components/common/RiskCard';
 import { RESPONSIVE_BREAKPOINT_LG, RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_SM } from '../data/constants/Breakpoints';
 import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
@@ -17,6 +16,8 @@ import { GetSiloData } from '../data/SiloData';
 import { PreviousPageButton } from '../components/common/Buttons';
 import FeeTierContainer from '../components/common/FeeTierContainer';
 import { Text } from '../components/common/Typography';
+
+const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
   position: absolute;
@@ -63,21 +64,6 @@ const GridExpandingDiv = styled.div`
   }
 `;
 
-const SectionHeading = styled.div`
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 30px;
-  color: rgba(255, 255, 255, 1);
-`;
-
-const AboutMessage = styled.div`
-  ${tw`flex flex-col gap-y-6`}
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  color: rgba(130, 160, 182, 1);
-`;
-
 export default function BlendPoolPage() {
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
@@ -114,8 +100,8 @@ export default function BlendPoolPage() {
           <PoolStatsWidget poolData={poolData} />
           <PoolPieChartWidget poolData={poolData} />
           <div className='flex flex-col gap-y-6 mt-16'>
-            <SectionHeading>About Aloe Blend Pool</SectionHeading>
-            <AboutMessage>
+            <Text size='L' weight='medium'>About Aloe Blend Pool</Text>
+            <Text size='M' weight='medium' color={ABOUT_MESSAGE_TEXT_COLOR} className='flex flex-col gap-y-6'>
               <p>
                 Placing funds into a Blend Vault will allow Aloe to use
                 Uniswap V3 and yield-earning silos on your behalf.
@@ -130,7 +116,7 @@ export default function BlendPoolPage() {
                 you earn yield from both Uniswap V3 and the silos, unlike
                 Uniswap V2.
               </p>
-            </AboutMessage>
+            </Text>
           </div>
           <div className='flex flex-col gap-y-6 mt-16'>
             <Text size='L' weight='medium'>Investing Risk</Text>
