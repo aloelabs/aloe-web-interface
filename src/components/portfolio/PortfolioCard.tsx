@@ -15,16 +15,16 @@ import {
   rgba,
 } from '../../util/Colors';
 import FeeTierContainer from '../common/FeeTierContainer';
+import InvestedTypes from '../common/InvestedTypes';
+import TokenPairIcons from '../common/TokenPairIcons';
 import PercentChange from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
 const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
-const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
 const SILO_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const SILO_NAME_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 
 export const CardWrapper = styled.div.attrs(
   (props: { borderGradient: string; shadowColor: string }) => props
@@ -127,53 +127,6 @@ const BodySubContainer = styled.div`
   }
 `;
 
-const InvestedTypesContainer = styled.div`
-  ${tw`flex flex-col`}
-  gap: 8px;
-`;
-
-const InvestedType = styled.div`
-  display: flex;
-  align-items: center;
-  padding-left: 24px;
-  position: relative;
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0px;
-    top: calc(50% - 4px);
-    width: 8px;
-    height: 8px;
-    border-radius: 100%;
-    background: ${TOKEN_PAIR_FIGURE_COLOR};
-  }
-  &:first-child::after {
-    content: '';
-    position: absolute;
-    left: 3px;
-    top: 16px;
-    width: 2px;
-    height: 24px;
-    background: ${TOKEN_PAIR_FIGURE_COLOR};
-  }
-`;
-
-const DashedDivider = styled.div`
-  margin-left: 8px;
-  margin-right: 8px;
-  position: relative;
-  flex-grow: 1;
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: calc(50% - 1px);
-    width: 100%;
-    height: 1px;
-    border-bottom: 1px dashed ${DASHED_DIVIDER_BORDER_COLOR};
-  }
-`;
-
 const BodyDivider = styled.div`
   width: 1px;
   height: 88px;
@@ -255,44 +208,25 @@ export default function PortfolioCard(props: PortfolioCardProps) {
           {token0.ticker} - {token1.ticker}
         </Display>
         <CardSubTitleWrapper>
-          <TokenIconsWrapper>
-            <TokenIcon
-              src={token0.iconPath}
-              alt={token0.ticker + "'s Icon"}
-            ></TokenIcon>
-            <TokenIcon
-              src={token1.iconPath}
-              alt={token1.ticker + "'s Icon"}
-            ></TokenIcon>
-          </TokenIconsWrapper>
+          <TokenPairIcons
+            token0IconPath={token0.iconPath}
+            token1IconPath={token1.iconPath}
+            token0AltText={`${token0.name}'s Icon`}
+            token1AltText={`${token1.name}'s Icon`}
+          />
           <FeeTierContainer feeTier={uniswapFeeTier} />
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
-          <Text size='M' weight='medium'>
-            Invested
-          </Text>
-          <InvestedTypesContainer>
-            <InvestedType>
-              <Text size='M' weight='medium'>
-                {token0.ticker}
-              </Text>
-              <DashedDivider />
-              <Text size='S' weight='medium' color={SILO_NAME_TEXT_COLOR}>
-                via {silo0.shortName}
-              </Text>
-            </InvestedType>
-            <InvestedType>
-              <Text size='M' weight='medium'>
-                {token1.ticker}
-              </Text>
-              <DashedDivider />
-              <Text size='S' weight='medium' color={SILO_NAME_TEXT_COLOR}>
-                via {silo1.shortName}
-              </Text>
-            </InvestedType>
-          </InvestedTypesContainer>
+          <Text size='M' weight='medium'>Invested</Text>
+          <InvestedTypes
+            token0={token0}
+            token1={token1}
+            silo0={silo0}
+            silo1={silo1}
+            figureColor={TOKEN_PAIR_FIGURE_COLOR}
+          />
         </BodySubContainer>
         <BodyDivider />
         <BodySubContainer>

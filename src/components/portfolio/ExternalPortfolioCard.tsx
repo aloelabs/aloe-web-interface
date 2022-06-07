@@ -10,14 +10,13 @@ import { TokenData } from '../../data/TokenData';
 import { MigrateButton } from '../common/Buttons';
 import FeeTierContainer from '../common/FeeTierContainer';
 import PercentChange from '../common/PercentChange';
+import TokenPairIcons from '../common/TokenPairIcons';
 import { Display, Text } from '../common/Typography';
 import {
   CardBodyWrapper,
   CardSubTitleWrapper,
   CardTitleWrapper,
   CardWrapper,
-  TokenIcon,
-  TokenIconsWrapper,
   ValueText,
 } from './PortfolioCard';
 
@@ -78,10 +77,12 @@ export default function ExternalPortfolioCard(
           {token0.ticker} - {token1.ticker}
         </Display>
         <CardSubTitleWrapper>
-          <TokenIconsWrapper>
-            <TokenIcon src={token0.iconPath} alt=''></TokenIcon>
-            <TokenIcon src={token1.iconPath} alt=''></TokenIcon>
-          </TokenIconsWrapper>
+          <TokenPairIcons
+            token0IconPath={token0.iconPath}
+            token1IconPath={token1.iconPath}
+            token0AltText={`${token0.name}'s Icon`}
+            token1AltText={`${token1.name}'s Icon`}
+          />
           <FeeTierContainer feeTier={uniswapFeeTier} />
         </CardSubTitleWrapper>
       </CardTitleWrapper>
