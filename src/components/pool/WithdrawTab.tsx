@@ -20,11 +20,13 @@ import ConfirmWithdrawalModal from './modal/ConfirmWithdrawalModal';
 import SharesWithdrawnModal from './modal/SharesWithdrawnModal';
 import SubmittingOrderModal from './modal/SubmittingOrderModal';
 import TransactionFailedModal from './modal/TransactionFailedModal';
-import { SectionLabel, TabWrapper } from './DepositTab';
+import { TabWrapper } from './DepositTab';
 import styled from 'styled-components';
-import tw from 'twin.macro';
-import { GetTokenData } from '../../data/TokenData';
 import MaxSlippageInput from './MaxSlippageInput';
+import { Text } from '../common/Typography';
+import TokenBreakdown from '../common/TokenBreakdown';
+
+const LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 export type WithdrawTabProps = {
   poolData: BlendPoolMarkers;
@@ -65,27 +67,6 @@ const EstimatedReturnValue = styled.div`
   font-size: 32px;
   font-weight: 600;
   line-height: 40px;
-`;
-
-const TokenBreakdown = styled.div`
-  ${tw`w-full flex flex-row items-center justify-between`}
-  padding: 16px;
-  border: 1px solid rgba(26, 41, 52, 1);
-  border-radius: 8px;
-`;
-
-const TokenBreakdownLabel = styled.div`
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-  color: rgba(75, 105, 128, 1);
-`;
-
-const TokenBreakdownValue = styled.div`
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  color: rgba(255, 255, 255, 1);
 `;
 
 export default function WithdrawTab(props: WithdrawTabProps) {
@@ -233,43 +214,26 @@ export default function WithdrawTab(props: WithdrawTabProps) {
           <HorizontalDivider />
           <div className='w-full flex flex-col gap-y-6'>
             <div className='w-full flex flex-col gap-y-3'>
-              <SectionLabel>Your estimated return</SectionLabel>
+              <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>
+                Your estimated return
+              </Text>
               <EstimatedReturnValue>
                 {prettyFormatBalance()}
               </EstimatedReturnValue>
             </div>
-            <div className='w-full flex flex-col gap-y-3'>
-              <SectionLabel>Token Breakdown</SectionLabel>
-              <div className='flex gap-x-2'>
-                <TokenBreakdown>
-                  <TokenBreakdownLabel>
-                    {
-                      GetTokenData(
-                        props.poolData.token0Address.toLocaleLowerCase()
-                      ).ticker
-                    }
-                  </TokenBreakdownLabel>
-                  <TokenBreakdownValue>
-                    {token0Estimate}
-                  </TokenBreakdownValue>
-                </TokenBreakdown>
-                <TokenBreakdown>
-                  <TokenBreakdownLabel>
-                    {
-                      GetTokenData(
-                        props.poolData.token1Address.toLocaleLowerCase()
-                      ).ticker
-                    }
-                  </TokenBreakdownLabel>
-                  <TokenBreakdownValue>
-                    {token1Estimate}
-                  </TokenBreakdownValue>
-                </TokenBreakdown>
-              </div>
-            </div>
+            <TokenBreakdown
+              token0Ticker={drawData.token0Label}
+              token1Ticker={drawData.token1Label}
+              token0Estimate={token0Estimate}
+              token1Estimate={token1Estimate}
+            />
           </div>
         </div>
-        <MaxSlippageInput updateMaxSlippage={(updatedMaxSlippage) => setMaxSlippage(updatedMaxSlippage)} />
+        <MaxSlippageInput
+          updateMaxSlippage={(updatedMaxSlippage) =>
+            setMaxSlippage(updatedMaxSlippage)
+          }
+        />
         <div className='w-full mt-8'>
           <PrimaryButton
             className='w-full py-2'
