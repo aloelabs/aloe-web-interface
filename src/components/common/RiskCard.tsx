@@ -94,7 +94,7 @@ export default function RiskCard() {
   return (
     <Wrapper>
       <RiskImage src={image} />
-      <div className='flex flex-col justify-between p-8'>
+      <div className='w-full flex flex-col justify-between p-8'>
         <div className='flex flex-col gap-y-2'>
           {title}
           {description}
