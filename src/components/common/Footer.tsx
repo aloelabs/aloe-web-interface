@@ -4,6 +4,9 @@ import tw from 'twin.macro';
 import DiscordFooterIcon from '../../assets/svg/discord_footer.svg';
 import TwitterFooterIcon from '../../assets/svg/twitter_footer.svg';
 import MediumFooterIcon from '../../assets/svg/medium_footer.svg';
+import { Text } from './Typography';
+
+const FOOTER_LINK_TEXT_COLOR = 'rgba(75, 105, 128, 1)';
 
 const StyledFooter = styled.footer`
   ${tw`fixed bottom-0 left-0 right-0 flex flex-row items-center justify-between`}
@@ -15,12 +18,7 @@ const StyledFooter = styled.footer`
   z-index: 40;
 `;
 
-const FooterLink = styled.a`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: rgba(75, 105, 128, 1);
-
+const FooterLink = styled(Text)`
   &:hover {
     color: rgba(255, 255, 255, 1);
   }
@@ -39,6 +37,10 @@ export default function Footer() {
     <StyledFooter>
       <div className='flex flex-row items-center'>
         <FooterLink
+          as='a'
+          size='S'
+          weight='medium'
+          color={FOOTER_LINK_TEXT_COLOR}
           href={'https://aloe.capital/'}
           target='_blank'
           rel='noopener noreferrer'
@@ -47,6 +49,10 @@ export default function Footer() {
         </FooterLink>
         <VerticalDivider />
         <FooterLink
+          as='a'
+          size='S'
+          weight='medium'
+          color={FOOTER_LINK_TEXT_COLOR}
           href={'https://docs.aloe.capital/'}
           target='_blank'
           rel='noopener noreferrer'
@@ -55,6 +61,10 @@ export default function Footer() {
         </FooterLink>
         <VerticalDivider />
         <FooterLink
+          as='a'
+          size='S'
+          weight='medium'
+          color={FOOTER_LINK_TEXT_COLOR}
           href={'/terms.pdf'}
           target='_blank'
           rel='noopener noreferrer'

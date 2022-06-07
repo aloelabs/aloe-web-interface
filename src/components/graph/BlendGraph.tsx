@@ -10,8 +10,8 @@ import {
 import BlendGraphTooltip from './BlendGraphTooltip';
 import { differenceInDays, format, parseISO } from 'date-fns/esm';
 import styled from 'styled-components';
-import tw from 'twin.macro';
 import { getEvenlySpacedDates } from '../../util/Dates';
+import { Text } from '../common/Typography';
 
 const TEXT_COLOR = '#82a0b6';
 const TOTAL_RETURNS_GRADIENT_COLOR = '#59d67c';
@@ -49,25 +49,20 @@ const LegendItemBox = styled.div`
   border-radius: 8px;
 `;
 
-const LegendItemText = styled.div`
-  ${tw`text-sm`}
-  color: ${TEXT_COLOR};
-`;
-
 function BlendGraphLegend() {
   return (
     <LegendWrapper>
       <LegendItem>
         <LegendItemBox color={TOTAL_RETURNS_STROKE_COLOR} />
-        <LegendItemText>Pool Returns</LegendItemText>
+        <Text size='M' weight='medium' color={TEXT_COLOR}>Pool Returns</Text>
       </LegendItem>
       <LegendItem>
         <LegendItemBox color={UNISWAP_V2_STROKE_COLOR} />
-        <LegendItemText>Uniswap V2</LegendItemText>
+        <Text size='M' weight='medium' color={TEXT_COLOR}>Uniswap V2</Text>
       </LegendItem>
       <LegendItem>
         <LegendItemBox color={HODL_STROKE_COLOR} />
-        <LegendItemText>50/50 HODL</LegendItemText>
+        <Text size='M' weight='medium' color={TEXT_COLOR}>50/50 HODL</Text>
       </LegendItem>
     </LegendWrapper>
   );
@@ -133,7 +128,7 @@ export default function BlendGraph(props: BlendGraphProps) {
             domain={['auto', 'auto']}
             interval={0}
             ticks={ticks}
-            tick={{ fill: TEXT_COLOR }}
+            tick={{ fill: TEXT_COLOR, fontSize: '14px' }}
             tickFormatter={(tickString) =>
               format(parseISO(tickString), dateFormat)
             }

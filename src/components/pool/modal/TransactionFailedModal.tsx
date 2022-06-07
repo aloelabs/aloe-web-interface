@@ -1,8 +1,9 @@
 import React from 'react';
 import { SecondaryButton } from '../../common/Buttons';
 import {
-  CloseableModal, Message,
+  CloseableModal, MESSAGE_TEXT_COLOR,
 } from '../../common/Modal';
+import { Text } from '../../common/Typography';
 
 const FAILED_BORDER_GRADIENT = 'rgba(235, 87, 87, 1)';
 
@@ -19,9 +20,9 @@ export default function TransactionFailedModal(props: TransactionFailedModalProp
       title='Transaction Failed'
       borderGradient={FAILED_BORDER_GRADIENT}
     >
-      <Message>
+      <Text size='M' weight='medium' color={MESSAGE_TEXT_COLOR}>
         Oops! Something went wrong with your transaction, please try again later.
-      </Message>
+      </Text>
       <SecondaryButton className='w-full py-3 mt-8'>Dismiss</SecondaryButton>
     </CloseableModal>
   );

@@ -1,15 +1,16 @@
 import React from 'react';
+import SuccessIcon from '../../../assets/svg/success.svg';
 import { PrimaryButton } from '../../common/Buttons';
 import {
   CloseableModal,
   DashedDivider,
   HorizontalDivider,
-  Label,
-  Message,
-  Value,
+  LABEL_TEXT_COLOR,
+  MESSAGE_TEXT_COLOR,
+  VALUE_TEXT_COLOR,
 } from '../../common/Modal';
 import TokenBreakdown from '../../common/TokenBreakdown';
-import SuccessIcon from '../../../assets/svg/success.svg';
+import { Text } from '../../common/Typography';
 
 export type TokensDepositedModalProps = {
   open: boolean;
@@ -22,28 +23,40 @@ export type TokensDepositedModalProps = {
 };
 
 export default function TokensDepositedModal(props: TokensDepositedModalProps) {
-  const { open, setOpen, totalEstimatedValue, token0Ticker, token1Ticker, token0Estimate, token1Estimate } = props;
+  const {
+    open,
+    setOpen,
+    totalEstimatedValue,
+    token0Ticker,
+    token1Ticker,
+    token0Estimate,
+    token1Estimate,
+  } = props;
   return (
-    <CloseableModal
-      open={open}
-      setOpen={setOpen}
-      title='Tokens Deposited'
-    >
+    <CloseableModal open={open} setOpen={setOpen} title='Tokens Deposited'>
       <div className='flex justify-center items-center'>
         <img src={SuccessIcon} alt='success' />
       </div>
       <HorizontalDivider />
       <div className='flex flex-col gap-y-4 mb-4'>
-        <Message>Deposit Summary:</Message>
+        <Text size='M' weight='medium' color={MESSAGE_TEXT_COLOR}>Deposit Summary:</Text>
         <div className='flex justify-between items-center'>
-          <Label>Pool Selected</Label>
+          <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>
+            Pool Selected
+          </Text>
           <DashedDivider />
-          <Value>{token0Ticker} - {token1Ticker}</Value>
+          <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>
+            {token0Ticker} - {token1Ticker}
+          </Text>
         </div>
         <div className='flex justify-between items-center'>
-          <Label>Total Estimated Value</Label>
+          <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>
+            Total Estimated Value
+          </Text>
           <DashedDivider />
-          <Value>{totalEstimatedValue}</Value>
+          <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>
+            {totalEstimatedValue}
+          </Text>
         </div>
       </div>
       <TokenBreakdown
@@ -52,7 +65,9 @@ export default function TokensDepositedModal(props: TokensDepositedModalProps) {
         token0Estimate={token0Estimate}
         token1Estimate={token1Estimate}
       />
-      <PrimaryButton className='w-full py-3 mt-8'>View Your Position</PrimaryButton>
+      <PrimaryButton className='w-full py-3 mt-8'>
+        View Your Position
+      </PrimaryButton>
     </CloseableModal>
   );
 }

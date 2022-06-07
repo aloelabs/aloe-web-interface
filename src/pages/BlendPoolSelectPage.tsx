@@ -1,28 +1,31 @@
-import React, { useContext, useState } from 'react';
-import { TertiaryButton } from '../components/common/Buttons';
-import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
-import EllipsesIcon from '../assets/svg/more_ellipses.svg';
-import LeftArrow from '../assets/svg/left_arrow.svg';
-import RightArrow from '../assets/svg/right_arrow.svg';
-import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTableRow';
-import { TextInput } from '../components/common/Input';
-import SearchIcon from '../assets/svg/search.svg';
-import WideAppPage from '../components/common/WideAppPage';
-import PageHeading from '../components/common/PageHeading';
-import { BlendTableContext } from '../data/context/BlendTableContext';
-import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
-import BrowseCard from '../components/browse/BrowseCard';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import SearchIcon from '../assets/svg/search.svg';
+import BrowseCard from '../components/browse/BrowseCard';
+import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
+import { TertiaryButton } from '../components/common/Buttons';
+import {
+  DropdownOption,
+  DropdownWithPlaceholder,
+  MultiDropdown,
+  MultiDropdownOption
+} from '../components/common/Dropdown';
+import { FilterBadge } from '../components/common/FilterBadge';
+import { TextInput } from '../components/common/Input';
+import Pagination from '../components/common/Pagination';
+import { Display } from '../components/common/Typography';
+import WideAppPage from '../components/common/WideAppPage';
+import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
+import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
 import {
   BROWSE_CARD_WIDTH_LG,
   BROWSE_CARD_WIDTH_MD,
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
-  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_MD
 } from '../data/constants/Breakpoints';
-import Pagination from '../components/common/Pagination';
-import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
-import AppPage from '../components/common/AppPage';
+import { BlendTableContext } from '../data/context/BlendTableContext';
+import { GetTokenData } from '../data/TokenData';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -54,45 +57,160 @@ const BrowseCards = styled.div`
   align-items: center;
 `;
 
-const BrowseTitle = styled.span`
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 40px;
-`;
-
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
+  const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
+  const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
+  const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
+  const [poolsToDisplay, setPoolsToDisplay] = useState<BlendPoolMarkers[]>([]);
+  const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
+  const [activeTokenOptions, setActiveTokenOptions] = useState<
+    MultiDropdownOption[]
+  >([]);
   const [page, setPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const sortByOptions = [
+    {
+      label: 'Default',
+      value: 'default',
+      isDefault: true,
+    },
+    {
+      label: 'Newest First',
+      value: 'newest',
+      isDefault: false,
+    },
+    {
+      label: 'Oldest First',
+      value: 'oldest',
+      isDefault: false,
+    },
+  ] as DropdownOption[];
+  const [selectedSortByOption, setSelectedSortByOption] =
+    useState<DropdownOption>(sortByOptions[0]);
 
   const { poolDataMap } = useContext(BlendTableContext);
+  const loadData = useCallback(async () => {
+    let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
+    setPools(poolData);
+    let tokenAddresses = Array.from(
+      new Set(
+        poolData.flatMap((pool) => [
+          pool.token0Address.toLowerCase(),
+          pool.token1Address.toLocaleLowerCase(),
+        ])
+      )
+    );
+    let tokenData = tokenAddresses.map((address) => GetTokenData(address));
+    let tokenOptionData = tokenData.map(
+      (data) =>
+        ({
+          label: data.ticker,
+          value: data.address,
+          icon: data.iconPath,
+        } as MultiDropdownOption)
+    );
+    setTokenOptions(tokenOptionData);
+    setActiveTokenOptions(tokenOptionData);
+  }, [poolDataMap]);
 
-  let pools: BlendPoolMarkers[] = Array.from(poolDataMap.values());
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
-  if (searchText.length > 0) {
-    pools = pools.filter((pool) => {
-      const {
-        silo0Name,
-        silo1Name,
-        silo0Label,
-        silo1Label,
-        token0Label,
-        token1Label,
-      } = ResolveBlendPoolDrawData(pool);
+  useEffect(() => {
+    if (searchText.length > 0 && pools.length > 0) {
+      setFilteredPools(
+        pools.filter((pool) => {
+          const {
+            silo0Name,
+            silo1Name,
+            silo0Label,
+            silo1Label,
+            token0Label,
+            token1Label,
+          } = ResolveBlendPoolDrawData(pool);
 
-      return (
-        [
-          silo0Name,
-          silo1Name,
-          silo0Label,
-          silo1Label,
-          token0Label,
-          token1Label,
-        ].findIndex((field) => {
-          return field.toLowerCase().includes(searchText.toLowerCase());
-        }) !== -1
+          return (
+            [
+              silo0Name,
+              silo1Name,
+              silo0Label,
+              silo1Label,
+              token0Label,
+              token1Label,
+            ].findIndex((field) => {
+              return field.toLowerCase().includes(searchText.toLowerCase());
+            }) !== -1
+          );
+        })
       );
-    });
+    } else if (pools.length > 0) {
+      setFilteredPools(pools);
+    }
+  }, [searchText, pools]);
+
+  useEffect(() => {
+    if (activeTokenOptions.length > 0) {
+      setActivePools(
+        pools.filter((pool) => {
+          const {
+            silo0Name,
+            silo1Name,
+            silo0Label,
+            silo1Label,
+            token0Label,
+            token1Label,
+          } = ResolveBlendPoolDrawData(pool);
+
+          return (
+            [
+              silo0Name,
+              silo1Name,
+              silo0Label,
+              silo1Label,
+              token0Label,
+              token1Label,
+            ].findIndex((field) => {
+              return activeTokenOptions
+                .map((option) => option.label.toLowerCase())
+                .includes(field.toLowerCase());
+            }) !== -1
+          );
+        })
+      );
+    } else if (pools.length > 0) {
+      setActivePools(pools);
+    }
+  }, [pools, activeTokenOptions]);
+
+  useEffect(() => {
+    if (activePools.length > 0 && filteredPools.length > 0) {
+      if (filteredPools.length >= activePools.length) {
+        setPoolsToDisplay(
+          filteredPools.filter((pool) => {
+            return activePools.includes(pool);
+          })
+        );
+      } else {
+        setPoolsToDisplay(
+          activePools.filter((pool) => {
+            return filteredPools.includes(pool);
+          })
+        );
+      }
+    } else {
+      setPoolsToDisplay([]);
+    }
+  }, [filteredPools, activePools]);
+
+  /* Calculating the number of applied filters */
+  let numberOfFiltersApplied = 0;
+  if (activeTokenOptions.length < tokenOptions.length) {
+    numberOfFiltersApplied++;
+  }
+  if (selectedSortByOption.value !== 'default') {
+    numberOfFiltersApplied++;
   }
 
   const handlePageChange = (page: number) => {
@@ -107,18 +225,49 @@ export default function BlendPoolSelectPage() {
     <WideAppPage>
       <PageWrapper>
         <div className='flex flex-col gap-6'>
-          <BrowseTitle>Aloe's Performance</BrowseTitle>
+          <Display size='L' weight='semibold'>
+            Aloe's Performance
+          </Display>
           <BrowsePoolsPerformance poolData={pools} />
         </div>
-        <PageHeading>Browse Deployed Pools</PageHeading>
-        <div className='flex justify-between mt-8 mb-8'>
+        <div className='flex items-center gap-6'>
+          <Display size='L' weight='semibold'>
+            Browse Deployed Pools
+          </Display>
+          {numberOfFiltersApplied > 0 && (
+            <FilterBadge>
+              {numberOfFiltersApplied}{' '}
+              {numberOfFiltersApplied === 1 ? 'Filter' : 'Filters'} Applied
+            </FilterBadge>
+          )}
+        </div>
+        <div className='py-4 flex flex-row items-center justify-between text-lg'>
           <TextInput
             className='lg:basis-5/12 md:basis-1/2 md:grow-0 sm:basis-0 sm:grow sm:mr-12'
             icon={SearchIcon}
-            placeholder='Search by name, symbol or address'
+            placeholder='Search by name or symbol'
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
+
+          <MultiDropdown
+            options={tokenOptions}
+            activeOptions={activeTokenOptions}
+            handleChange={(selectedOptions) => {
+              setActiveTokenOptions(selectedOptions);
+            }}
+            placeholder='All Tokens'
+            selectedText='Tokens'
+          />
+          <DropdownWithPlaceholder
+            options={sortByOptions}
+            selectedOption={selectedSortByOption}
+            onSelect={(option: DropdownOption) => {
+              setSelectedSortByOption(option);
+            }}
+            placeholder='Sort By'
+          />
+
           <a
             href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
             target='_blank'
@@ -134,7 +283,7 @@ export default function BlendPoolSelectPage() {
           </a>
         </div>
         <BrowseCards>
-          {pools.map((pool, index) => {
+          {poolsToDisplay.map((pool, index) => {
             return <BrowseCard blendPoolMarkers={pool} key={index} />;
           })}
         </BrowseCards>

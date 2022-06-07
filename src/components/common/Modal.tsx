@@ -4,9 +4,13 @@ import CloseIcon from '../../assets/svg/close_modal.svg';
 import LoadingIcon from '../../assets/svg/loading.svg';
 import styled from 'styled-components';
 import tw from 'twin.macro';
+import { Display } from './Typography';
 
 const DEFAULT_BORDER_GRADIENT = 'linear-gradient(90deg, #9BAAF3 0%, #7BD8C0 100%)';
 const LOADING_BORDER_GRADIENT = 'rgba(43, 64, 80, 1)';
+export const LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
+export const VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
+export const MESSAGE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
 
 const StyledDialog = styled.div`
   z-index: 100;
@@ -36,14 +40,6 @@ const ModalWrapper = styled.div.attrs(
     -webkit-mask-composite: xor;
     mask-composite: exclude;
   }
-`;
-
-const ModalHeading = styled.div`
-  font-family: 'ClashDisplay-Variable';
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 32px;
-  color: rgba(255, 255, 255, 1);
 `;
 
 const LoaderWrapper = styled.div`
@@ -193,7 +189,7 @@ export function CloseableModal(props: CloseableModalProps) {
   return (
     <ModalBase open={props.open} setOpen={props.setOpen} onClose={props.onClose} initialFocusRef={cancelButtonRef} borderGradient={props.borderGradient}>
       <div className='w-full flex flex-row items-center justify-between mb-8'>
-        <ModalHeading>{props.title}</ModalHeading>
+        <Display size='M' weight='semibold'>{props.title}</Display>
         <button
           type='button'
           className='w-fit inline-flex justify-center rounded-full text-white focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm'
@@ -221,7 +217,7 @@ export function LoadingModal(props: LoadingModalProps) {
   return (
     <ModalBase open={props.open} setOpen={(_open: boolean) => {}} borderGradient={borderGradient}>
       <div className='w-full flex flex-row items-center justify-between mb-8'>
-        <ModalHeading>{props.title}</ModalHeading>
+        <Display size='M' weight='semibold'>{props.title}</Display>
         <LoaderWrapper>
           <Loader src={LoadingIcon} alt='loader' />
         </LoaderWrapper>

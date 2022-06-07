@@ -1,26 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
+import { FeeTier } from '../../data/BlendPoolMarkers';
+import {
+  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_SM,
+} from '../../data/constants/Breakpoints';
+import { TokenData } from '../../data/TokenData';
+import { MigrateButton } from '../common/Buttons';
+import FeeTierContainer from '../common/FeeTierContainer';
+import PercentChange from '../common/PercentChange';
+import TokenPairIcons from '../common/TokenPairIcons';
+import { Display, Text } from '../common/Typography';
 import {
   CardBodyWrapper,
+  CardSubTitleWrapper,
   CardTitleWrapper,
   CardWrapper,
   ValueText,
-  TokenIconsWrapper,
-  CardSubTitleWrapper,
-  TokenIcon,
-  TokenPairTickers,
 } from './PortfolioCard';
-import { MigrateButton } from '../common/Buttons';
-import { TokenData } from '../../data/TokenData';
-import { FeeTier } from '../../data/BlendPoolMarkers';
-import {
-  RESPONSIVE_BREAKPOINT_SM,
-  RESPONSIVE_BREAKPOINT_MD,
-} from '../../data/constants/Breakpoints';
-import TokenPairIcons from '../common/TokenPairIcons';
-import PercentChange from '../common/PercentChange';
-import FeeTierContainer from '../common/FeeTierContainer';
 
 const EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR = 'rgba(26, 41, 52, 0.65)';
 const EXTERNAL_CARD_WRAPPER_HOVER_OUTLINE_COLOR = 'rgba(56, 82, 101, 1)';
@@ -75,9 +73,9 @@ export default function ExternalPortfolioCard(
   return (
     <ExternalCardWrapper>
       <CardTitleWrapper backgroundGradient={CARD_TITLE_BG_COLOR}>
-        <TokenPairTickers>
+        <Display size='M' weight='semibold'>
           {token0.ticker} - {token1.ticker}
-        </TokenPairTickers>
+        </Display>
         <CardSubTitleWrapper>
           <TokenPairIcons
             token0IconPath={token0.iconPath}
@@ -90,7 +88,9 @@ export default function ExternalPortfolioCard(
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
-          <span>Estimated Value</span>
+          <Text size='M' weight='medium'>
+            Estimated Value
+          </Text>
           <ValuePercentContainer>
             <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
             <PercentChange percent={percentageChange} />

@@ -7,6 +7,7 @@ import { BlendTableContext } from '../data/context/BlendTableContext';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
+import RiskCard from '../components/common/RiskCard';
 import { RESPONSIVE_BREAKPOINT_LG, RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_SM } from '../data/constants/Breakpoints';
 import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
 import TokenPairHeader from '../components/pool/TokenPairHeader';
@@ -14,6 +15,9 @@ import { GetTokenData } from '../data/TokenData';
 import { GetSiloData } from '../data/SiloData';
 import { PreviousPageButton } from '../components/common/Buttons';
 import FeeTierContainer from '../components/common/FeeTierContainer';
+import { Text } from '../components/common/Typography';
+
+const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
   position: absolute;
@@ -95,6 +99,29 @@ export default function BlendPoolPage() {
           <PoolPositionWidget poolData={poolData} />
           <PoolStatsWidget poolData={poolData} />
           <PoolPieChartWidget poolData={poolData} />
+          <div className='flex flex-col gap-y-6 mt-16'>
+            <Text size='L' weight='medium'>About Aloe Blend Pool</Text>
+            <Text size='M' weight='medium' color={ABOUT_MESSAGE_TEXT_COLOR} className='flex flex-col gap-y-6'>
+              <p>
+                Placing funds into a Blend Vault will allow Aloe to use
+                Uniswap V3 and yield-earning silos on your behalf.
+              </p>
+              <p>
+                When you deposit to the vault, your tokens are pooled
+                together with all other users. Once conditions are right,
+                the vault can be "rebalanced". some tokens get placed in
+                Uniswap, and some in the token's silo. Blend is designed to
+                allocate tokens such that overall value will be split 50/50
+                between the two tokens, just like Uniswap V2. In Aloe Blend,
+                you earn yield from both Uniswap V3 and the silos, unlike
+                Uniswap V2.
+              </p>
+            </Text>
+          </div>
+          <div className='flex flex-col gap-y-6 mt-16'>
+            <Text size='L' weight='medium'>Investing Risk</Text>
+            <RiskCard />
+          </div>
         </div>
       </PoolBodyWrapper>
     </BlendPoolProvider>

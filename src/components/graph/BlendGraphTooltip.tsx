@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { format, parseISO } from 'date-fns';
+import { Text } from '../common/Typography';
 
 const TOOLTIP_BG_COLOR = 'rgba(0, 0, 0, 0.4)';
 const TOOLTIP_BORDER_COLOR = 'rgba(255, 255, 255, 0.1)';
@@ -23,21 +24,6 @@ const TooltipTitleContainer = styled.div`
   border-bottom: 1px solid ${TOOLTIP_BORDER_COLOR};
 `;
 
-const TooltipTitleText = styled.div`
-  ${tw`text-xs font-medium`}
-  color: ${TOOLTIP_TEXT_COLOR};
-`;
-
-const TooltipValue = styled.span`
-  ${tw`text-sm font-bold`}
-  color: ${(props) => props.color};
-`;
-
-const TooltipLabel = styled.span`
-  ${tw`text-xs font-medium`}
-  color: ${(props) => props.color};
-`;
-
 export default function BlendGraphTooltip(data: any, active = false) {
   if (active) {
     const payload = data.payload;
@@ -48,8 +34,8 @@ export default function BlendGraphTooltip(data: any, active = false) {
     const tooltipValues = payload.map((item: any, index: number) => {
       return (
         <div className='flex flex-col' key={index}>
-          <TooltipLabel color={item.color}>{item.name}</TooltipLabel>
-          <TooltipValue color={item.color}>{prettify(item.value)}</TooltipValue>
+          <Text size='XS' weight='medium' color={item.color}>{item.name}</Text>
+          <Text size='M' weight='medium' color={item.color}>{prettify(item.value)}</Text>
         </div>
       );
     });
@@ -57,8 +43,8 @@ export default function BlendGraphTooltip(data: any, active = false) {
     return (
       <TooltipContainer>
         <TooltipTitleContainer>
-          <TooltipTitleText>{labelTop}</TooltipTitleText>
-          <TooltipTitleText>{labelBottom}</TooltipTitleText>
+          <Text size='XS' weight='medium' color={TOOLTIP_TEXT_COLOR}>{labelTop}</Text>
+          <Text size='XS' weight='medium' color={TOOLTIP_TEXT_COLOR}>{labelBottom}</Text>
         </TooltipTitleContainer>
         <div className='flex flex-col justify-between gap-2 mt-1 pl-3 pr-3 pb-3'>
           {tooltipValues}

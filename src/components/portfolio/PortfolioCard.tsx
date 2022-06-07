@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { TokenData } from '../../data/TokenData';
 import { FeeTier } from '../../data/BlendPoolMarkers';
+import {
+  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_SM,
+} from '../../data/constants/Breakpoints';
 import { SiloData } from '../../data/SiloData';
+import { TokenData } from '../../data/TokenData';
 import {
   getBrighterColor,
   getProminentColor,
   rgb,
   rgba,
 } from '../../util/Colors';
-import {
-  RESPONSIVE_BREAKPOINT_SM,
-  RESPONSIVE_BREAKPOINT_MD,
-} from '../../data/constants/Breakpoints';
-import PercentChange from '../common/PercentChange';
 import FeeTierContainer from '../common/FeeTierContainer';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
+import PercentChange from '../common/PercentChange';
+import { Display, Text } from '../common/Typography';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
@@ -25,13 +26,7 @@ const TOKEN_ICON_BORDER_COLOR = 'rgba(0, 0, 0, 1)';
 const DASHED_DIVIDER_BORDER_COLOR = 'rgba(255, 255, 255, 0.6)';
 const SILO_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 const BODY_DIVIDER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const FEE_TIER_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const FEE_TIER_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
-const POSITIVE_PERCENT_BG_COLOR = 'rgba(0, 193, 67, 0.1)';
-const POSITIVE_PERCENT_TEXT_COLOR = 'rgb(0, 193, 67)';
-const NEGATIVE_PERCENT_BG_COLOR = 'rgba(255, 255, 255, 0.1)';
-const NEGATIVE_PERCENT_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
-const PERCENT_ROUNDING_PRECISION = 2;
+const SILO_NAME_TEXT_COLOR = 'rgba(228, 237, 246, 1)';
 
 export const CardWrapper = styled.div.attrs(
   (props: { borderGradient: string; shadowColor: string }) => props
@@ -211,9 +206,9 @@ export default function PortfolioCard(props: PortfolioCardProps) {
       shadowColor={cardShadowColor}
     >
       <CardTitleWrapper backgroundGradient={cardTitleBackgroundGradient}>
-        <TokenPairTickers>
+        <Display size='M' weight='semibold'>
           {token0.ticker} - {token1.ticker}
-        </TokenPairTickers>
+        </Display>
         <CardSubTitleWrapper>
           <TokenPairIcons
             token0IconPath={token0.iconPath}
@@ -237,7 +232,9 @@ export default function PortfolioCard(props: PortfolioCardProps) {
         </BodySubContainer>
         <BodyDivider />
         <BodySubContainer>
-          <span>Estimated Value</span>
+          <Text size='M' weight='medium'>
+            Estimated Value
+          </Text>
           <div className='flex gap-2 items-center'>
             <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
             <PercentChange percent={percentageChange} />

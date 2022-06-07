@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import WidgetHeading from '../common/WidgetHeading';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
@@ -13,8 +12,11 @@ import {
   toBig,
 } from '../../util/Numbers';
 import { useAccount, useBalance } from 'wagmi';
+import { Display, Text } from '../common/Typography';
 
 const ROUNDING_PRECISION = 2;
+const POOL_STAT_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
+const POOL_STAT_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
 
 const Wrapper = styled.div`
   ${tw`flex flex-col`}
@@ -34,19 +36,6 @@ const PoolStat = styled.div`
   ${tw`flex items-center justify-between`}
   padding: 18px 8px;
   border-bottom: 1px solid rgba(26, 41, 52, 1);
-`;
-
-const PoolStatLabel = styled.span`
-  font-size: 14px;
-  line-height: 20px;
-  color: rgba(130, 160, 182, 1);
-`;
-
-const PoolStatValue = styled.span`
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 24px;
-  color: rgba(255, 255, 255, 1);
 `;
 
 export type PoolStatsWidgetProps = {
@@ -102,35 +91,35 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
 
   return (
     <Wrapper>
-      <WidgetHeading>Stats</WidgetHeading>
+      <Text size='L' weight='medium'>Stats</Text>
       <PoolStatsWidgetGrid>
         <PoolStat>
-          <PoolStatLabel>APR</PoolStatLabel>
-          <PoolStatValue>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>APR</Text>
+          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>
             {roundPercentage(12, ROUNDING_PRECISION)}%
-          </PoolStatValue>
+          </Display>
         </PoolStat>
         <PoolStat>
-          <PoolStatLabel>CAPR</PoolStatLabel>
-          <PoolStatValue>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>CAPR</Text>
+          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>
             {roundPercentage(23, ROUNDING_PRECISION)}%
-          </PoolStatValue>
+          </Display>
         </PoolStat>
         <PoolStat>
-          <PoolStatLabel>Volume 24H</PoolStatLabel>
-          <PoolStatValue>$125.30 M</PoolStatValue>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>Volume 24H</Text>
+          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>$125.30 M</Display>
         </PoolStat>
         <PoolStat>
-          <PoolStatLabel>Liquidity</PoolStatLabel>
-          <PoolStatValue>$125.30 M</PoolStatValue>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>Liquidity</Text>
+          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>$125.30 M</Display>
         </PoolStat>
         <PoolStat>
-          <PoolStatLabel>TVL</PoolStatLabel>
-          <PoolStatValue>$125.30 M</PoolStatValue>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>TVL</Text>
+          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>$125.30 M</Display>
         </PoolStat>
         <PoolStat>
-          <PoolStatLabel>Lorem Ipsum</PoolStatLabel>
-          <PoolStatValue>$125.30 M</PoolStatValue>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>Lorem Ipsum</Text>
+          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>$125.30 M</Display>
         </PoolStat>
       </PoolStatsWidgetGrid>
     </Wrapper>

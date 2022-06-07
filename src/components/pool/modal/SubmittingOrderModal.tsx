@@ -1,7 +1,8 @@
 import React from 'react';
 import {
-  LoadingModal, Message,
+  LoadingModal, MESSAGE_TEXT_COLOR,
 } from '../../common/Modal';
+import { Text } from '../../common/Typography';
 
 export type SubmittingOrderModalProps = {
   open: boolean;
@@ -15,9 +16,9 @@ export default function SubmittingOrderModal(props: SubmittingOrderModalProps) {
       setOpen={props.setOpen}
       title='Submitting Order'
     >
-      <Message>
+      <Text size='M' weight='medium' color={MESSAGE_TEXT_COLOR}>
         After wallet approval, your transaction will be finished in about 3s.
-      </Message>
+      </Text>
     </LoadingModal>
   );
 }

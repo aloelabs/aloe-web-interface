@@ -10,6 +10,7 @@ import {
 } from 'date-fns/esm';
 import styled from 'styled-components';
 import tw from 'twin.macro';
+import { Text } from '../common/Typography';
 
 const WHITE = '#FFFFFF';
 const GRAPH_BUTTON_ACTIVE_BG_COLOR = '#0d171e';
@@ -58,15 +59,25 @@ const generateData = (
 };
 
 const GraphButton = styled.button`
-  ${tw`rounded-md w-10 p-1 text-grey-600 bg-transparent font-medium disabled:text-grey-500`}
+  ${tw`rounded-md w-10 p-1 bg-transparent disabled:text-grey-500`}
   color: ${GRAPH_BUTTON_TEXT_COLOR};
   &.active {
     background-color: ${GRAPH_BUTTON_ACTIVE_BG_COLOR};
     color: ${WHITE};
+
+    /* For the nested Text component */
+    div {
+      color: ${WHITE};
+    }
   }
   &:hover {
     background-color: ${GRAPH_BUTTON_ACTIVE_BG_COLOR};
     color: ${WHITE};
+
+    /* For the nested Text component */
+    div {
+      color: ${WHITE};
+    }
   }
 `;
 
@@ -84,7 +95,7 @@ const BlendAllocationGraphButton = (props: GraphButtonProps) => {
       className={props.active ? 'active' : ''}
       onClick={props.handleClick}
     >
-      {props.text}
+      <Text size='S' weight='medium' color={GRAPH_BUTTON_TEXT_COLOR}>{props.text}</Text>
     </GraphButton>
   );
 };
