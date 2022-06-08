@@ -2,6 +2,8 @@ import React, { ReactElement } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { classNames } from '../../util/ClassNames';
+import MigrateIcon from '../../assets/svg/migrate.svg';
+import LeftChevron from '../../assets/svg/left_chevron.svg';
 
 const DEFAULT_BLACK = 'rgba(0, 0, 0, 1)';
 const DISABLED_BLACK = 'rgba(7, 14, 18, 1)';
@@ -40,7 +42,7 @@ export const BaseButton = styled.button.attrs(
     empty?: boolean;
     backgroundColor?: string;
     color?: string;
-    fill?: boolean;
+    fillWidth?: boolean;
     linkTo?: string;
   }) => props
 )`
@@ -84,7 +86,7 @@ export const BaseButton = styled.button.attrs(
         ICON_SIZES[props.size]
       }px; height: ${ICON_SIZES[props.size]}px; box-sizing: content-box;`;
     }
-    if (props.fill) {
+    if (props.fillWidth) {
       return `width: 100%;`;
     }
   }};
@@ -320,7 +322,7 @@ export const OutlinedWhiteButton = styled(BaseButton)`
 
 export const FilledStylizedButton = styled(BaseButton)`
   ${tw`relative`}
-  /* font-family: 'ClashDisplay-Variable'; */
+  font-family: 'ClashDisplay-Variable';
   background: linear-gradient(90deg, #9baaf3 0%, #7bd8c0 100%);
   color: rgba(0, 0, 0, 1);
   font-weight: 600;
@@ -535,7 +537,7 @@ export type ButtonWithIconProps = {
   name?: string;
   backgroundColor?: string;
   color?: string;
-  fill?: boolean;
+  fillWidth?: boolean;
 };
 
 export function FilledGradientButtonWithIcon(props: ButtonWithIconProps) {
@@ -550,7 +552,7 @@ export function FilledGradientButtonWithIcon(props: ButtonWithIconProps) {
     name,
     backgroundColor,
     color,
-    fill,
+    fillWidth,
   } = props;
   return (
     <ButtonWithIconWrapper svgColorType={svgColorType}>
@@ -564,7 +566,7 @@ export function FilledGradientButtonWithIcon(props: ButtonWithIconProps) {
         name={name}
         backgroundColor={backgroundColor}
         color={color}
-        fill={fill}
+        fillWidth={fillWidth}
       >
         {children}
       </FilledGradientButton>
@@ -592,7 +594,7 @@ export function FilledGreyButtonWithIcon(props: ButtonWithIconProps) {
     name,
     backgroundColor,
     color,
-    fill,
+    fillWidth,
   } = props;
   return (
     <ButtonWithIconWrapper svgColorType={svgColorType}>
@@ -606,7 +608,7 @@ export function FilledGreyButtonWithIcon(props: ButtonWithIconProps) {
         name={name}
         backgroundColor={backgroundColor}
         color={color}
-        fill={fill}
+        fillWidth={fillWidth}
       >
         {children}
       </FilledGreyButton>
@@ -635,7 +637,7 @@ export function OutlinedGradientButtonWithIcon(props: ButtonWithIconProps) {
     name,
     backgroundColor,
     color,
-    fill,
+    fillWidth,
   } = props;
   return (
     <ButtonWithIconWrapper svgColorType={svgColorType}>
@@ -649,7 +651,7 @@ export function OutlinedGradientButtonWithIcon(props: ButtonWithIconProps) {
         name={name}
         backgroundColor={backgroundColor}
         color={color}
-        fill={fill}
+        fillWidth={fillWidth}
       >
         {children}
       </OutlinedGradientButton>
@@ -678,7 +680,7 @@ export function OutlinedWhiteButtonWithIcon(props: ButtonWithIconProps) {
     name,
     backgroundColor,
     color,
-    fill,
+    fillWidth,
   } = props;
   return (
     <ButtonWithIconWrapper svgColorType={svgColorType}>
@@ -692,7 +694,7 @@ export function OutlinedWhiteButtonWithIcon(props: ButtonWithIconProps) {
         name={name}
         backgroundColor={backgroundColor}
         color={color}
-        fill={fill}
+        fillWidth={fillWidth}
       >
         {children}
       </OutlinedWhiteButton>
@@ -720,7 +722,7 @@ export function FilledStylizedButtonWithIcon(props: ButtonWithIconProps) {
     name,
     backgroundColor,
     color,
-    fill,
+    fillWidth,
   } = props;
   return (
     <ButtonWithIconWrapper svgColorType={svgColorType}>
@@ -734,7 +736,7 @@ export function FilledStylizedButtonWithIcon(props: ButtonWithIconProps) {
         name={name}
         backgroundColor={backgroundColor}
         color={color}
-        fill={fill}
+        fillWidth={fillWidth}
       >
         {children}
       </FilledStylizedButton>
@@ -765,7 +767,7 @@ export function OutlinedGradientRoundedButtonWithIcon(
     name,
     backgroundColor,
     color,
-    fill,
+    fillWidth,
   } = props;
   return (
     <ButtonWithIconWrapper svgColorType={svgColorType}>
@@ -779,7 +781,7 @@ export function OutlinedGradientRoundedButtonWithIcon(
         name={name}
         backgroundColor={backgroundColor}
         color={color}
-        fill={fill}
+        fillWidth={fillWidth}
       >
         {children}
       </OutlinedGradientRoundedButton>
@@ -901,5 +903,31 @@ export function WarningButtonWithIcon(props: ButtonWithIconWrapperOldProps) {
         {props.children}
       </WarningButton>
     </ButtonWithIconWrapperOld>
+  );
+}
+
+const PreviousPageButtonWrapper = styled.button`
+  ${tw`flex items-center justify-center`}
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  background-color: rgba(26, 41, 52, 1);
+`;
+
+const PreviousPageIcon = styled.img`
+  width: 19px;
+  height: 19px;
+`;
+
+export type PreviousPageButtonProps = {
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+};
+
+export function PreviousPageButton(props: PreviousPageButtonProps) {
+  const { onClick } = props;
+  return (
+    <PreviousPageButtonWrapper onClick={onClick}>
+      <PreviousPageIcon src={LeftChevron} alt='Previous Page' />
+    </PreviousPageButtonWrapper>
   );
 }

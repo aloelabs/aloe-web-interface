@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { CloseableModal } from '../common/Modal';
+
 import { useAccount, useConnect } from 'wagmi';
 import { FormatAddress } from '../../util/FormatAddress';
 import {
   FilledStylizedButton,
   OutlinedGradientRoundedButton
 } from '../common/Buttons';
-import Modal from '../common/Modal';
 import { mapConnectorNameToIcon } from './ConnectorIconMap';
 
 
@@ -34,7 +35,7 @@ export default function ConnectWalletButton() {
       >
         {buttonText}
       </OutlinedGradientRoundedButton>
-      <Modal open={modalOpen} setOpen={setModalOpen} title={'Connect Wallet'}>
+      <CloseableModal open={modalOpen} setOpen={setModalOpen} title={'Connect Wallet'}>
         <div className='w-full'>
           {accountData ? (
             // We have an account connected
@@ -57,7 +58,7 @@ export default function ConnectWalletButton() {
                 size='M'
                 backgroundColor='rgba(26, 41, 52, 1)'
                 color={'rgba(255, 255, 255, 1)'}
-                fill={true}
+                fillWidth={true}
                 onClick={disconnect}
               >
                 Disconnect
@@ -102,7 +103,7 @@ export default function ConnectWalletButton() {
                     size='M'
                     backgroundColor='rgba(26, 41, 52, 1)'
                     color={'rgba(255, 255, 255, 1)'}
-                    fill={true}
+                    fillWidth={true}
                     disabled={!connector.ready}
                     onClick={() => connect(connector)}
                   >
@@ -119,7 +120,7 @@ export default function ConnectWalletButton() {
             </div>
           )}
         </div>
-      </Modal>
+      </CloseableModal>
     </div>
   );
 }
