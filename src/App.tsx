@@ -12,6 +12,7 @@ import GovernancePage from './pages/GovernancePage';
 import AppBody from './components/common/AppBody';
 import { RedirectPartialPath } from './util/RedirectPartialPath';
 import { BlendTableProvider } from './data/context/BlendTableContext';
+import ButtonExamplesPage from './pages/ButtonExamplesPage';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
                   </Route>
                   <Route path='/portfolio' element={<PortfolioPage />} />
                   <Route path='/governance' element={<GovernancePage />} />
+                  <Route path='/buttons' element={<ButtonExamplesPage />} />
                   <Route path='/' element={<Navigate replace to='/blend' />} />
                   <Route path='*' element={<Navigate to='/' />} />
                 </Routes>
