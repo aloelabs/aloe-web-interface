@@ -1,7 +1,9 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
+import { GlobalStats } from '../../data/GlobalStats';
 import { Display, Text } from '../common/Typography';
 
 const METRIC_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
@@ -43,21 +45,42 @@ export type BrowsePoolsPerformanceProps = {
 export default function BrowsePoolsPerformance(
   props: BrowsePoolsPerformanceProps
 ) {
+  const [globalStats, setGlobalStats] = useState<GlobalStats>();
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchGlobalStats = async () => {
+      const res = await axios.get('http://34.94.221.78:3000/global_stats');
+      const data = res.data[0];
+      if (mounted) {
+        setGlobalStats({
+          poolCount: data['pool_count'],
+          users: data['users'],
+          totalValueLocked: data['total_value_locked'],
+        });
+      }
+    }
+    fetchGlobalStats();
+    return () => {
+      mounted = false;
+    }
+  }, []);
+
   return (
     <Wrapper>
       <div className='flex flex-col gap-3 flex-grow p-4'>
         <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>Total Value Invested</Text>
-        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>$1.394M</Display>
+        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>{globalStats?.totalValueLocked.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</Display>
       </div>
       <VerticalDivider />
       <div className='flex flex-col gap-3 flex-grow p-4'>
         <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>Pools Deployed</Text>
-        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>{props.poolData.length} Pools</Display>
+        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>{globalStats?.poolCount} Pools</Display>
       </div>
       <VerticalDivider />
       <div className='flex flex-col gap-3 flex-grow p-4'>
         <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>Total Aloe Users</Text>
-        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>1001</Display>
+        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>{globalStats?.users}</Display>
       </div>
     </Wrapper>
   );

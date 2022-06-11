@@ -1,21 +1,27 @@
-import React, { useContext } from 'react';
+import axios from 'axios';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import PoolInteractionTabs from '../components/pool/PoolInteractionTabs';
-import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
-import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
-import { BlendTableContext } from '../data/context/BlendTableContext';
-import { BlendPoolProvider } from '../data/context/BlendPoolContext';
-import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
-import RiskCard from '../components/common/RiskCard';
-import { RESPONSIVE_BREAKPOINT_LG, RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_SM } from '../data/constants/Breakpoints';
-import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
-import TokenPairHeader from '../components/pool/TokenPairHeader';
-import { GetTokenData } from '../data/TokenData';
-import { GetSiloData } from '../data/SiloData';
+import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
 import { PreviousPageButton } from '../components/common/Buttons';
 import FeeTierContainer from '../components/common/FeeTierContainer';
+import RiskCard from '../components/common/RiskCard';
 import { Text } from '../components/common/Typography';
+import PoolInteractionTabs from '../components/pool/PoolInteractionTabs';
+import TokenPairHeader from '../components/pool/TokenPairHeader';
+import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
+import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
+import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
+import {
+  RESPONSIVE_BREAKPOINT_LG,
+  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_SM
+} from '../data/constants/Breakpoints';
+import { BlendPoolProvider } from '../data/context/BlendPoolContext';
+import { BlendTableContext } from '../data/context/BlendTableContext';
+import { PoolStats } from '../data/PoolStats';
+import { GetSiloData } from '../data/SiloData';
+import { GetTokenData } from '../data/TokenData';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -65,12 +71,37 @@ const GridExpandingDiv = styled.div`
 `;
 
 export default function BlendPoolPage() {
+  const [poolStats, setPoolStats] = React.useState<PoolStats>();
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
 
   const { poolDataMap, fetchPoolData } = useContext(BlendTableContext);
 
   const poolData = poolDataMap.get(params.pooladdress || '');
+  useEffect(() => {
+    let mounted = true;
+    const fetchPoolStats = async () => {
+      const response = await axios.get(
+        `http://34.94.221.78:3000/pool_stats/${poolData?.poolAddress}/1/`
+      );
+      const data = response.data[0];
+      if (mounted) {
+        console.log(response.data);
+        setPoolStats({
+          annualPercentageRate: data['annual_percentage_rate'],
+          totalValueLocked: data['total_value_locked'],
+          performanceSinceInception: data['performance_since_inception'],
+        });
+      }
+    };
+    if (poolData) {
+      fetchPoolStats();
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [poolData]);
+
   if (!poolData) {
     if (params.pooladdress) {
       fetchPoolData(params.pooladdress);
@@ -97,29 +128,37 @@ export default function BlendPoolPage() {
         <div className='w-full py-4'>
           <BlendAllocationGraph />
           <PoolPositionWidget poolData={poolData} />
-          <PoolStatsWidget poolData={poolData} />
+          <PoolStatsWidget poolStats={poolStats} />
           <PoolPieChartWidget poolData={poolData} />
           <div className='flex flex-col gap-y-6 mt-16'>
-            <Text size='L' weight='medium'>About Aloe Blend Pool</Text>
-            <Text size='M' weight='medium' color={ABOUT_MESSAGE_TEXT_COLOR} className='flex flex-col gap-y-6'>
+            <Text size='L' weight='medium'>
+              About Aloe Blend Pool
+            </Text>
+            <Text
+              size='M'
+              weight='medium'
+              color={ABOUT_MESSAGE_TEXT_COLOR}
+              className='flex flex-col gap-y-6'
+            >
               <p>
-                Placing funds into a Blend Vault will allow Aloe to use
-                Uniswap V3 and yield-earning silos on your behalf.
+                Placing funds into a Blend Vault will allow Aloe to use Uniswap
+                V3 and yield-earning silos on your behalf.
               </p>
               <p>
-                When you deposit to the vault, your tokens are pooled
-                together with all other users. Once conditions are right,
-                the vault can be "rebalanced". some tokens get placed in
-                Uniswap, and some in the token's silo. Blend is designed to
-                allocate tokens such that overall value will be split 50/50
-                between the two tokens, just like Uniswap V2. In Aloe Blend,
-                you earn yield from both Uniswap V3 and the silos, unlike
-                Uniswap V2.
+                When you deposit to the vault, your tokens are pooled together
+                with all other users. Once conditions are right, the vault can
+                be "rebalanced". some tokens get placed in Uniswap, and some in
+                the token's silo. Blend is designed to allocate tokens such that
+                overall value will be split 50/50 between the two tokens, just
+                like Uniswap V2. In Aloe Blend, you earn yield from both Uniswap
+                V3 and the silos, unlike Uniswap V2.
               </p>
             </Text>
           </div>
           <div className='flex flex-col gap-y-6 mt-16'>
-            <Text size='L' weight='medium'>Investing Risk</Text>
+            <Text size='L' weight='medium'>
+              Investing Risk
+            </Text>
             <RiskCard />
           </div>
         </div>

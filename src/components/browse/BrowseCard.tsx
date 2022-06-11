@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,8 +9,9 @@ import {
   BROWSE_CARD_WIDTH_MD,
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
-  RESPONSIVE_BREAKPOINT_MD
+  RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import { PoolStats } from '../../data/PoolStats';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
 import { getProminentColor } from '../../util/Colors';
@@ -165,8 +167,29 @@ export default function BrowseCard(props: BrowseCardProps) {
    * Placeholders until we have the actual data
    */
   const pricePerShare = 729.48;
-  const aprFee = '10%';
-  const totalValueLocked = '$379M';
+
+  const [poolStats, setPoolStats] = useState<PoolStats>();
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchPoolStats = async () => {
+      const response = await axios.get(
+        `http://34.94.221.78:3000/pool_stats/${blendPoolMarkers.poolAddress}/1`
+      );
+      const data = response.data[0];
+      if (mounted) {
+        setPoolStats({
+          totalValueLocked: data['total_value_locked'],
+          performanceSinceInception: data['performance_since_inception'],
+          annualPercentageRate: data['annual_percentage_rate'],
+        });
+      }
+    };
+    fetchPoolStats();
+    return () => {
+      mounted = false;
+    };
+  }, [blendPoolMarkers.poolAddress]);
 
   const [token0Color, setToken0Color] = useState<string>('');
   const [token1Color, setToken1Color] = useState<string>('');
@@ -241,11 +264,16 @@ export default function BrowseCard(props: BrowseCardProps) {
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <InfoCategory>APR</InfoCategory>
-            <span className='text-2xl'>{aprFee}</span>
+            <span className='text-2xl'>{poolStats?.annualPercentageRate}%</span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <InfoCategory>TVL</InfoCategory>
-            <span className='text-2xl'>{totalValueLocked}</span>
+            <span className='text-2xl'>
+              {poolStats?.totalValueLocked.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              })}
+            </span>
           </InfoCategoryContainer>
         </ResponsiveBodySubContainer>
       </CardBodyWrapper>

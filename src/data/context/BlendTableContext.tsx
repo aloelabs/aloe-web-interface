@@ -1,11 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { BlendPoolMarkers } from '../BlendPoolMarkers';
-import findPools, { fetchBlendPoolData } from '../BlendPoolFinder';
-import {
-  BLEND_FACTORY_ADDRESS,
-  BLEND_FACTORY_CREATION_BLOCK,
-} from '../constants/Addresses';
 import { useProvider } from 'wagmi';
+import findPools, { fetchBlendPoolData } from '../BlendPoolFinder';
+import { BlendPoolMarkers } from '../BlendPoolMarkers';
 
 export interface IBlendTableContext {
   poolAddresses: string[];
@@ -52,11 +48,7 @@ export function BlendTableProvider(props: BlendTableContextProviderProps) {
         };
       });
       const loadAsync = async () => {
-        const searchResults = await findPools(
-          BLEND_FACTORY_ADDRESS,
-          BLEND_FACTORY_CREATION_BLOCK,
-          provider
-        );
+        const searchResults = await findPools(provider);
         if (searchResults !== null) {
           setContextState((x) => {
             return {
