@@ -36,7 +36,6 @@ const DropdownList = styled.div`
   ${tw`flex flex-col`}
   position: absolute;
   right: 0px;
-  top: calc(100% + 10px);
   z-index: 10;
   min-width: 100%;
   padding: 12px;
@@ -45,6 +44,14 @@ const DropdownList = styled.div`
   border-radius: 16px;
   border: 1px solid ${DROPDOWN_LIST_BORDER_COLOR};
   box-shadow: 0px 8px 32px 0px ${DROPDOWN_LIST_SHADOW_COLOR};
+
+  &:not(.inverted) {
+    top: calc(100% + 10px);
+  }
+
+  &.inverted {
+    bottom: calc(100% + 10px);
+  }
 `;
 
 const MultiDropdownList = styled(DropdownList)`
@@ -84,17 +91,68 @@ const CheckContainer = styled.div`
 export type DropdownOption = {
   label: string;
   value: string;
-  isDefault: boolean;
 };
 
 export type DropdownProps = {
   options: DropdownOption[];
   selectedOption: DropdownOption;
   onSelect: (option: DropdownOption) => void;
+  placeAbove?: boolean;
+};
+
+export function Dropdown(props: DropdownProps) {
+  const { options, selectedOption, onSelect, placeAbove } = props;
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+  useClickOutside(dropdownRef, () => setIsOpen(false), isOpen);
+
+  const toggleList = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const selectItem = (option: DropdownOption) => {
+    onSelect(option);
+    setIsOpen(false);
+  };
+
+  return (
+    <DropdownWrapper ref={dropdownRef}>
+      <DropdownHeader onClick={toggleList}>
+        {selectedOption.label}
+        <img
+          className='absolute right-6'
+          src={isOpen ? DropdownArrowUp : DropdownArrowDown}
+          alt=''
+        />
+      </DropdownHeader>
+      {isOpen && (
+        <DropdownList className={placeAbove ? 'inverted' : ''}>
+          {options.map((option) => (
+            <DropdownOptionContainer
+              key={option.value}
+              onClick={() => selectItem(option)}
+            >
+              {option.label}
+            </DropdownOptionContainer>
+          ))}
+        </DropdownList>
+      )}
+    </DropdownWrapper>
+  );
+}
+
+export type DropdownWithPlaceholderOption = DropdownOption & {
+  isDefault: boolean;
+}
+
+export type DropdownWithPlaceholderProps = {
+  options: DropdownWithPlaceholderOption[];
+  selectedOption: DropdownWithPlaceholderOption;
+  onSelect: (option: DropdownWithPlaceholderOption) => void;
   placeholder: string;
 };
 
-export function DropdownWithPlaceholder(props: DropdownProps) {
+export function DropdownWithPlaceholder(props: DropdownWithPlaceholderProps) {
   const { options, selectedOption, onSelect, placeholder } = props;
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -104,7 +162,7 @@ export function DropdownWithPlaceholder(props: DropdownProps) {
     setIsOpen(!isOpen);
   };
 
-  const selectItem = (option: DropdownOption, index: number) => {
+  const selectItem = (option: DropdownWithPlaceholderOption, index: number) => {
     onSelect(option);
     setIsOpen(false);
   };

@@ -7,12 +7,13 @@ import { TertiaryButton } from '../components/common/Buttons';
 import {
   DropdownOption,
   DropdownWithPlaceholder,
+  DropdownWithPlaceholderOption,
   MultiDropdown,
   MultiDropdownOption
 } from '../components/common/Dropdown';
 import { FilterBadge } from '../components/common/FilterBadge';
 import { TextInput } from '../components/common/Input';
-import Pagination from '../components/common/Pagination';
+import Pagination, { ItemsPerPage } from '../components/common/Pagination';
 import { Display } from '../components/common/Typography';
 import WideAppPage from '../components/common/WideAppPage';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
@@ -68,7 +69,7 @@ export default function BlendPoolSelectPage() {
     MultiDropdownOption[]
   >([]);
   const [page, setPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [itemsPerPage, setItemsPerPage] = useState<10 | 20 | 50 | 100>(10);
   const sortByOptions = [
     {
       label: 'Default',
@@ -85,9 +86,9 @@ export default function BlendPoolSelectPage() {
       value: 'oldest',
       isDefault: false,
     },
-  ] as DropdownOption[];
+  ] as DropdownWithPlaceholderOption[];
   const [selectedSortByOption, setSelectedSortByOption] =
-    useState<DropdownOption>(sortByOptions[0]);
+    useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
@@ -217,7 +218,7 @@ export default function BlendPoolSelectPage() {
     setPage(page);
   };
 
-  const handleItemsPerPageChange = (itemsPerPage: number) => {
+  const handleItemsPerPageChange = (itemsPerPage: ItemsPerPage) => {
     setItemsPerPage(itemsPerPage);
   };
 
@@ -262,7 +263,7 @@ export default function BlendPoolSelectPage() {
           <DropdownWithPlaceholder
             options={sortByOptions}
             selectedOption={selectedSortByOption}
-            onSelect={(option: DropdownOption) => {
+            onSelect={(option: DropdownWithPlaceholderOption) => {
               setSelectedSortByOption(option);
             }}
             placeholder='Sort By'
