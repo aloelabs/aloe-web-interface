@@ -1,16 +1,16 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import BrowseCard from '../components/browse/BrowseCard';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
-import Search from '../components/browse/Search';
 import { TertiaryButton } from '../components/common/Buttons';
 import {
   DropdownOption,
   DropdownWithPlaceholder,
   MultiDropdown,
-  MultiDropdownOption,
+  MultiDropdownOption
 } from '../components/common/Dropdown';
 import { FilterBadge } from '../components/common/FilterBadge';
+import { RoundedInputWithIcon } from '../components/common/Input';
 import Pagination from '../components/common/Pagination';
 import { Display } from '../components/common/Typography';
 import WideAppPage from '../components/common/WideAppPage';
@@ -21,10 +21,11 @@ import {
   BROWSE_CARD_WIDTH_MD,
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
-  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_MD
 } from '../data/constants/Breakpoints';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetTokenData } from '../data/TokenData';
+import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -54,6 +55,10 @@ const BrowseCards = styled.div`
   gap: ${BROWSE_CARD_GAP};
   justify-content: start;
   align-items: center;
+`;
+
+const SearchInputWrapper = styled.div`
+  width: 420px;
 `;
 
 export default function BlendPoolSelectPage() {
@@ -242,10 +247,16 @@ export default function BlendPoolSelectPage() {
         </div>
         <div className='py-4 flex flex-row items-center justify-between text-lg'>
           <div className='flex gap-x-4'>
-            <Search
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
+            <SearchInputWrapper>
+              <RoundedInputWithIcon
+                value={searchText}
+                size='L'
+                onChange={(e) => setSearchText(e.target.value)}
+                Icon={<SearchIcon />}
+                placeholder='Search by name, symbol or address'
+                fullWidth={true}
+              />
+            </SearchInputWrapper>
 
             <MultiDropdown
               options={tokenOptions}
