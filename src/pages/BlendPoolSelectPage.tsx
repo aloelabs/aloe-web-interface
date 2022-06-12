@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import SearchIcon from '../assets/svg/search.svg';
 import BrowseCard from '../components/browse/BrowseCard';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
 import Search from '../components/browse/Search';
@@ -9,10 +8,9 @@ import {
   DropdownOption,
   DropdownWithPlaceholder,
   MultiDropdown,
-  MultiDropdownOption
+  MultiDropdownOption,
 } from '../components/common/Dropdown';
 import { FilterBadge } from '../components/common/FilterBadge';
-import { TextInput } from '../components/common/Input';
 import Pagination from '../components/common/Pagination';
 import { Display } from '../components/common/Typography';
 import WideAppPage from '../components/common/WideAppPage';
@@ -23,7 +21,7 @@ import {
   BROWSE_CARD_WIDTH_MD,
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
-  RESPONSIVE_BREAKPOINT_MD
+  RESPONSIVE_BREAKPOINT_MD,
 } from '../data/constants/Breakpoints';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetTokenData } from '../data/TokenData';
@@ -244,7 +242,10 @@ export default function BlendPoolSelectPage() {
         </div>
         <div className='py-4 flex flex-row items-center justify-between text-lg'>
           <div className='flex gap-x-4'>
-            <Search value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+            <Search
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
 
             <MultiDropdown
               options={tokenOptions}
