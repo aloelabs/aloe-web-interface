@@ -140,6 +140,7 @@ export default function Pagination(props: PaginationProps) {
             onItemsPerPageChange(parseInt(updatedOption.value) as ItemsPerPage)
           }
           placeAbove={true}
+          small={true}
         />
         <PaginationRangeText>
           {startItem} - {endItem} of {totalItems}
