@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { classNames } from '../../util/ClassNames';
+import MigrateIcon from '../../assets/svg/migrate.svg';
+import LeftChevron from '../../assets/svg/left_chevron.svg';
 
 export const PrimaryButton = styled.button`
   ${tw`rounded-md text-grey-0 font-medium`}
@@ -219,6 +221,60 @@ export const WarningButton = styled.button`
   }
 `;
 
+export const MigrateButton = styled.button`
+  display: inline-flex;
+  position: relative;
+  width: fit-content;
+  gap: 14.7px;
+  padding: 16px 24px;
+  line-height: 24px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24.3px;
+  user-select: none;
+  cursor: pointer;
+  &:before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    padding: 1.5px;
+    background: linear-gradient(90deg, #9baaf3 0%, #7bd8c0 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    border-radius: 8px;
+  }
+  &:hover {
+    box-shadow: 0px 8px 16px -4px rgba(126, 213, 197, 0.08),
+      0px 8px 24px -4px rgba(154, 173, 241, 0.12);
+  }
+  &:after {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url(${MigrateIcon});
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+  }
+`;
+
+const PreviousPageButtonWrapper = styled.button`
+  ${tw`flex items-center justify-center`}
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  background-color: rgba(26, 41, 52, 1);
+`;
+
+const PreviousPageIcon = styled.img`
+  width: 19px;
+  height: 19px;
+`;
+
 const ButtonWithIconWrapper = styled.div`
   ${tw`flex flex-row items-center justify-start`}
   position: relative;
@@ -308,5 +364,18 @@ export function SecondaryButtonWithIcon(props: ButtonWithIconProps) {
         {props.children}
       </SecondaryButton>
     </ButtonWithIconWrapper>
+  );
+}
+
+export type PreviousPageButtonProps = {
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+};
+
+export function PreviousPageButton(props: PreviousPageButtonProps) {
+  const { onClick } = props;
+  return (
+    <PreviousPageButtonWrapper onClick={onClick}>
+      <PreviousPageIcon src={LeftChevron} alt='Previous Page' />
+    </PreviousPageButtonWrapper>
   );
 }

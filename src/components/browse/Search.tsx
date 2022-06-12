@@ -31,7 +31,8 @@ const SearchInput = styled.input`
   box-sizing: border-box;
   border-radius: 100px;
   padding: 16px 76px 16px 24px;
-  line-height: 24px;
+  font-size: 18px;
+  line-height: 24.3px;
   /* Height is declared so we can have an inner border */
   height: 56px;
   width: 410px;
