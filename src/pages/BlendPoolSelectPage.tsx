@@ -253,6 +253,7 @@ export default function BlendPoolSelectPage() {
                 size='L'
                 onChange={(e) => setSearchText(e.target.value)}
                 Icon={<SearchIcon />}
+                svgColorType='fill'
                 placeholder='Search by name, symbol or address'
                 fullWidth={true}
               />

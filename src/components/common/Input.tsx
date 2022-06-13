@@ -68,10 +68,7 @@ const MAX_BUTTON_HEIGHT = {
 };
 
 const InputBase = styled.input.attrs(
-  (props: {
-    inputSize: 'S' | 'M' | 'L';
-    fullWidth?: boolean;
-  }) => (props)
+  (props: { inputSize: 'S' | 'M' | 'L'; fullWidth?: boolean }) => props
 )`
   ${tw`relative text-left flex-grow`}
   background-color: ${INPUT_BG_COLOR};
@@ -81,8 +78,8 @@ const InputBase = styled.input.attrs(
   font-size: ${(props) => INPUT_FONT_SIZE[props.inputSize]}px;
   line-height: ${(props) => INPUT_LINE_HEIGHT[props.inputSize]}px;
   /* Height is declared so we can have an inner border */
-  height: ${props => INPUT_HEIGHT[props.inputSize]}px;
-  width: ${(props) => props.fullWidth ? '100%' : '320px'};
+  height: ${(props) => INPUT_HEIGHT[props.inputSize]}px;
+  width: ${(props) => (props.fullWidth ? '100%' : '320px')};
   caret-color: ${INPUT_CARET_COLOR};
 
   &:not(.no-border) {
@@ -101,7 +98,8 @@ const InputBase = styled.input.attrs(
     }
   }
 
-  &.active, &:focus {
+  &.active,
+  &:focus {
     outline: none;
     color: ${INPUT_TEXT_COLOR_FOCUS};
     background-color: ${INPUT_ACTIVE_BG_COLOR};
@@ -115,9 +113,9 @@ const InputBase = styled.input.attrs(
     border: 1px solid;
 
     border: double 1px transparent;
-    background-image: ${`linear-gradient(${INPUT_ACTIVE_BG_COLOR}, ${INPUT_ACTIVE_BG_COLOR})`}, 
-                      linear-gradient(90deg, #9BAAF3 0%, #7BD8C0 100%);
-                    background-origin: border-box;
+    background-image: ${`linear-gradient(${INPUT_ACTIVE_BG_COLOR}, ${INPUT_ACTIVE_BG_COLOR})`},
+      linear-gradient(90deg, #9baaf3 0%, #7bd8c0 100%);
+    background-origin: border-box;
     background-clip: padding-box, border-box;
   }
 
@@ -147,35 +145,37 @@ const SquareInputWrapper = styled.div`
 `;
 
 const SvgWrapper = styled.div.attrs(
-  (props: { 
-    size: 'S' | 'M' | 'L';
-  }) => (props)
+  (props: { size: 'S' | 'M' | 'L'; svgColorType: 'fill' | 'stroke' }) => props
 )`
   ${tw`absolute`}
 
   top: ${(props) => `calc(50% - ${ICON_SIZES[props.size] / 2}px)`};
   pointer-events: none;
-  right: ${(props) => `${
-          ICON_PADDING[props.size] -
-          ICON_SIZES[props.size] -
-          ICON_SPACING[props.size]
-        }px`};
+  right: ${(props) =>
+    `${
+      ICON_PADDING[props.size] -
+      ICON_SIZES[props.size] -
+      ICON_SPACING[props.size]
+    }px`};
   svg {
     width: ${(props) => ICON_SIZES[props.size]}px;
     height: ${(props) => ICON_SIZES[props.size]}px;
   }
 
   &.disabled {
-    svg path {
-      fill: ${INPUT_ICON_COLOR_DISABLED};
+    svg {
+      path {
+        ${(props) =>
+          props.svgColorType === 'fill'
+            ? `fill: ${INPUT_ICON_COLOR_DISABLED}`
+            : `stroke: ${INPUT_ICON_COLOR_DISABLED}`}
+      }
     }
   }
 `;
 
 const MaxButton = styled.button.attrs(
-  (props: {
-    size: 'S' | 'M' | 'L';
-  }) => (props)
+  (props: { size: 'S' | 'M' | 'L' }) => props
 )`
   ${tw`ml-3 p-0`}
   color: rgba(0, 193, 67, 1);
@@ -202,22 +202,66 @@ export type InputProps = {
   inputClassName?: string;
   placeholder?: string;
   disabled?: boolean;
-}
+};
 
 export function RoundedInput(props: InputProps) {
-  const { value, onChange, size, fullWidth, wrapperClassName, inputClassName, placeholder, disabled } = props;
+  const {
+    value,
+    onChange,
+    size,
+    fullWidth,
+    wrapperClassName,
+    inputClassName,
+    placeholder,
+    disabled,
+  } = props;
   return (
-    <RoundedInputWrapper className={classNames(fullWidth ? 'w-full' : 'w-max', wrapperClassName || '')}>
-      <InputBase value={value} onChange={onChange} inputSize={size} placeholder={placeholder} disabled={disabled} fullWidth={fullWidth} className={inputClassName} />
+    <RoundedInputWrapper
+      className={classNames(
+        fullWidth ? 'w-full' : 'w-max',
+        wrapperClassName || ''
+      )}
+    >
+      <InputBase
+        value={value}
+        onChange={onChange}
+        inputSize={size}
+        placeholder={placeholder}
+        disabled={disabled}
+        fullWidth={fullWidth}
+        className={inputClassName}
+      />
     </RoundedInputWrapper>
   );
 }
 
 export function SquareInput(props: InputProps) {
-  const { value, onChange, size, fullWidth, wrapperClassName, inputClassName, placeholder, disabled } = props;
+  const {
+    value,
+    onChange,
+    size,
+    fullWidth,
+    wrapperClassName,
+    inputClassName,
+    placeholder,
+    disabled,
+  } = props;
   return (
-    <SquareInputWrapper className={classNames(fullWidth ? 'w-full' : 'w-max', wrapperClassName || '')}>
-      <InputBase value={value} onChange={onChange} inputSize={size} placeholder={placeholder} disabled={disabled} fullWidth={fullWidth} className={inputClassName} />
+    <SquareInputWrapper
+      className={classNames(
+        fullWidth ? 'w-full' : 'w-max',
+        wrapperClassName || ''
+      )}
+    >
+      <InputBase
+        value={value}
+        onChange={onChange}
+        inputSize={size}
+        placeholder={placeholder}
+        disabled={disabled}
+        fullWidth={fullWidth}
+        className={inputClassName}
+      />
     </SquareInputWrapper>
   );
 }
@@ -225,27 +269,81 @@ export function SquareInput(props: InputProps) {
 export type InputWithMaxProps = InputProps & {
   onMaxClick: () => void;
   maxDisabled?: boolean;
-}
+};
 
 export function SquareInputWithMax(props: InputWithMaxProps) {
-  const { value, onChange, size, fullWidth, wrapperClassName, inputClassName, onMaxClick, maxDisabled, placeholder, disabled } = props;
+  const {
+    value,
+    onChange,
+    size,
+    fullWidth,
+    wrapperClassName,
+    inputClassName,
+    onMaxClick,
+    maxDisabled,
+    placeholder,
+    disabled,
+  } = props;
   return (
-    <SquareInputWrapper className={classNames(fullWidth ? 'w-full' : 'w-max', wrapperClassName || '')}>
-      <InputBase value={value} onChange={onChange} inputSize={size} placeholder={placeholder} disabled={disabled} fullWidth={fullWidth} className={classNames('no-border', inputClassName || '')} />
-      <MaxButton size={size} onClick={onMaxClick} disabled={disabled || maxDisabled}>MAX</MaxButton>
+    <SquareInputWrapper
+      className={classNames(
+        fullWidth ? 'w-full' : 'w-max',
+        wrapperClassName || ''
+      )}
+    >
+      <InputBase
+        value={value}
+        onChange={onChange}
+        inputSize={size}
+        placeholder={placeholder}
+        disabled={disabled}
+        fullWidth={fullWidth}
+        className={classNames('no-border', inputClassName || '')}
+      />
+      <MaxButton
+        size={size}
+        onClick={onMaxClick}
+        disabled={disabled || maxDisabled}
+      >
+        MAX
+      </MaxButton>
     </SquareInputWrapper>
   );
 }
 
 export type InputWithIconProps = InputProps & {
   Icon: ReactElement;
+  svgColorType: 'fill' | 'stroke';
 };
 
 export function RoundedInputWithIcon(props: InputWithIconProps) {
-  const { value, size, onChange, fullWidth, wrapperClassName, inputClassName, Icon, placeholder, disabled } = props;
+  const {
+    value,
+    size,
+    onChange,
+    fullWidth,
+    wrapperClassName,
+    inputClassName,
+    Icon,
+    placeholder,
+    disabled,
+  } = props;
   return (
-    <RoundedInputWrapper className={classNames(fullWidth ? 'w-full' : 'w-max', wrapperClassName || '')}>
-      <InputBase value={value} onChange={onChange} inputSize={size} placeholder={placeholder} disabled={disabled} fullWidth={fullWidth} className={inputClassName} />
+    <RoundedInputWrapper
+      className={classNames(
+        fullWidth ? 'w-full' : 'w-max',
+        wrapperClassName || ''
+      )}
+    >
+      <InputBase
+        value={value}
+        onChange={onChange}
+        inputSize={size}
+        placeholder={placeholder}
+        disabled={disabled}
+        fullWidth={fullWidth}
+        className={inputClassName}
+      />
       <SvgWrapper size={size} className={disabled ? 'disabled' : ''}>
         {Icon}
       </SvgWrapper>
@@ -254,10 +352,33 @@ export function RoundedInputWithIcon(props: InputWithIconProps) {
 }
 
 export function SquareInputWithIcon(props: InputWithIconProps) {
-  const { value, size, onChange, Icon, fullWidth, wrapperClassName, inputClassName, placeholder, disabled } = props;
+  const {
+    value,
+    size,
+    onChange,
+    Icon,
+    fullWidth,
+    wrapperClassName,
+    inputClassName,
+    placeholder,
+    disabled,
+  } = props;
   return (
-    <SquareInputWrapper className={classNames(fullWidth ? 'w-full' : 'w-max', wrapperClassName || '')}>
-      <InputBase value={value} onChange={onChange} inputSize={size} placeholder={placeholder} disabled={disabled} fullWidth={fullWidth} className={inputClassName} />
+    <SquareInputWrapper
+      className={classNames(
+        fullWidth ? 'w-full' : 'w-max',
+        wrapperClassName || ''
+      )}
+    >
+      <InputBase
+        value={value}
+        onChange={onChange}
+        inputSize={size}
+        placeholder={placeholder}
+        disabled={disabled}
+        fullWidth={fullWidth}
+        className={inputClassName}
+      />
       <SvgWrapper size={size} className={disabled ? 'disabled' : ''}>
         {Icon}
       </SvgWrapper>
