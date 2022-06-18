@@ -12,7 +12,6 @@ import styled from 'styled-components';
 import { getEvenlySpacedDates } from '../../util/Dates';
 import { Display, Text } from '../common/Typography';
 import PortfolioGraphTooltip from './tooltips/PortfolioGraphTooltip';
-import { classNames } from '../../util/ClassNames';
 import Graph, { getIdealDateFormat, getIdealStep } from './Graph';
 import GraphButtons from './GraphButtons';
 import { CombinedPercentChange } from '../common/PercentChange';
@@ -22,12 +21,36 @@ const TOTAL_RETURNS_GRADIENT_COLOR = '#59d67c';
 const TOTAL_RETURNS_STROKE_COLOR = '#00C143';
 const NET_DEPOSITS_STROKE_COLOR = '#ccdfed';
 
+const InfoContainer = styled.div.attrs(
+  (props: { blur?: boolean}) => props
+)`
+  opacity: ${(props) => props.blur ? 0.2 : 1};
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  padding-left: 96px;
+
+  @media (max-width: 1024px) {
+    padding-left: 32px;
+  }
+
+  @media (max-width: 768px) {
+    padding-left: 16px;
+  }
+`;
+
 const ResponsiveContainerStyled = styled.div`
   position: relative;
   left: -80px;
   width: calc(100% + 160px);
   height: 384px;
   overflow: hidden;
+
+  @media (max-width: 1024px) {
+    left: -24px;
+    width: calc(100% + 48px);
+  }
 `;
 
 const GraphButtonsWrapper = styled.div.attrs(
@@ -37,12 +60,26 @@ const GraphButtonsWrapper = styled.div.attrs(
   top: 6px;
   right: 88px;
   opacity: ${(props: any) => (props.blur ? 0.2 : 1)};
+
+  @media (max-width: 1024px) {
+    right: 32px;
+  }
+
+  @media (max-width: 768px) {
+    right: 16px;
+  }
 `;
 
 const ValueAndChangeContainer = styled.div`
   display: flex;
   column-gap: 17px;
   align-items: center;
+
+  @media (max-width: 1020px) {
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: 8px;
+  }
 `;
 
 const CustomCursor = (props: any) => {
@@ -183,11 +220,8 @@ export default function PortfolioGraph() {
     (estimatedValueChange / initialEstimatedValue) * 100;
   return (
     <ResponsiveContainerStyled>
-      <div
-        className={classNames(
-          'absolute flex flex-col gap-y-4 pl-24',
-          isTooltipActive ? 'opacity-20' : 'opacity-100'
-        )}
+      <InfoContainer
+        blur={isTooltipActive}
       >
         <Text size='XL' weight='medium' color='rgba(130, 160, 182, 1)'>
           Estimated Value
@@ -205,7 +239,7 @@ export default function PortfolioGraph() {
             percent={estimatedValueChangePercent}
           />
         </ValueAndChangeContainer>
-      </div>
+      </InfoContainer>
       <GraphButtonsWrapper blur={isTooltipActive}>
         <GraphButtons activeButton={activeButton} handleClick={handleClick} />
       </GraphButtonsWrapper>
