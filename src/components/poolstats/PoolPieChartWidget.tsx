@@ -85,7 +85,7 @@ const PieChartLabel = styled.div`
 
   // colors, borders, text
   border-radius: calc(var(--height) / 2);
-  background-color: rgb(17, 34, 46);
+  background-color: rgba(7, 14, 18, 1);
   color: rgba(255, 255, 255, 1);
   ${tw`font-bold`};
 `;
