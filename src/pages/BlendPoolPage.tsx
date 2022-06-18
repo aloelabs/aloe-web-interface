@@ -86,7 +86,6 @@ export default function BlendPoolPage() {
       );
       const data = response.data[0];
       if (mounted) {
-        console.log(response.data);
         setPoolStats({
           annualPercentageRate: data['annual_percentage_rate'],
           totalValueLocked: data['total_value_locked'],
