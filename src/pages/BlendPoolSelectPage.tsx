@@ -1,14 +1,15 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SearchIcon from '../assets/svg/search.svg';
+import { ReactComponent as PlusIcon } from '../assets/svg/white_plus.svg';
 import BrowseCard from '../components/browse/BrowseCard';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
-import { TertiaryButton } from '../components/common/Buttons';
+import { OutlinedGradientRoundedButtonWithIcon } from '../components/common/Buttons';
 import {
   DropdownOption,
   DropdownWithPlaceholder,
   MultiDropdown,
-  MultiDropdownOption
+  MultiDropdownOption,
 } from '../components/common/Dropdown';
 import { FilterBadge } from '../components/common/FilterBadge';
 import { TextInput } from '../components/common/Input';
@@ -22,7 +23,7 @@ import {
   BROWSE_CARD_WIDTH_MD,
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
-  RESPONSIVE_BREAKPOINT_MD
+  RESPONSIVE_BREAKPOINT_MD,
 } from '../data/constants/Breakpoints';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetTokenData } from '../data/TokenData';
@@ -274,12 +275,16 @@ export default function BlendPoolSelectPage() {
             rel='noopener noreferrer'
             tabIndex={-1}
           >
-            <TertiaryButton
+            <OutlinedGradientRoundedButtonWithIcon
+              size='L'
+              position='trailing'
+              activeGradientId='#plus-icon-gradient'
+              svgColorType='stroke'
               name='Deploy New Pool'
-              className='flex-none px-8 py-3'
+              Icon={<PlusIcon />}
             >
-              Deploy&nbsp;New&nbsp;Pool
-            </TertiaryButton>
+              <span>Deploy&nbsp;New&nbsp;Pool</span>
+            </OutlinedGradientRoundedButtonWithIcon>
           </a>
         </div>
         <BrowseCards>

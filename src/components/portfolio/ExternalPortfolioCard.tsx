@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
+import { ReactComponent as MigrateIcon } from '../../assets/svg/migrate.svg';
 import { FeeTier } from '../../data/BlendPoolMarkers';
 import {
   RESPONSIVE_BREAKPOINT_MD,
-  RESPONSIVE_BREAKPOINT_SM,
+  RESPONSIVE_BREAKPOINT_SM
 } from '../../data/constants/Breakpoints';
 import { TokenData } from '../../data/TokenData';
-import { MigrateButton } from '../common/Buttons';
+import { OutlinedGradientButtonWithIcon } from '../common/Buttons';
 import FeeTierContainer from '../common/FeeTierContainer';
 import { PercentChange } from '../common/PercentChange';
 import TokenPairIcons from '../common/TokenPairIcons';
@@ -17,7 +18,7 @@ import {
   CardSubTitleWrapper,
   CardTitleWrapper,
   CardWrapper,
-  ValueText,
+  ValueText
 } from './PortfolioCard';
 
 const EXTERNAL_CARD_WRAPPER_HOVER_SHADOW_COLOR = 'rgba(26, 41, 52, 0.65)';
@@ -97,7 +98,15 @@ export default function ExternalPortfolioCard(
           </ValuePercentContainer>
         </BodySubContainer>
         <EndAlignedBodySubContainer>
-          <MigrateButton>Migrate to Aloe</MigrateButton>
+          <OutlinedGradientButtonWithIcon
+            Icon={<MigrateIcon />}
+            position='trailing'
+            size='L'
+            activeGradientId='#migrate-icon-gradient'
+            svgColorType='fill'
+          >
+            <span>Migrate to Aloe</span>
+          </OutlinedGradientButtonWithIcon>
         </EndAlignedBodySubContainer>
       </CardBodyWrapper>
     </ExternalCardWrapper>

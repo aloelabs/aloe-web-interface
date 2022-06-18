@@ -1,5 +1,5 @@
 import React from 'react';
-import { PrimaryButton } from '../../common/Buttons';
+import { FilledStylizedButton } from '../../common/Buttons';
 import {
   CloseableModal,
   DashedDivider,
@@ -11,6 +11,7 @@ import {
 import TokenBreakdown from '../../common/TokenBreakdown';
 import SuccessIcon from '../../../assets/svg/success.svg';
 import { Text } from '../../common/Typography';
+import { MODAL_BLACK_TEXT_COLOR } from '../PoolInteractionTabs';
 
 export type SharesWithdrawnModalProps = {
   open: boolean;
@@ -59,7 +60,7 @@ export default function SharesWithdrawnModal(props: SharesWithdrawnModalProps) {
         token0Estimate={token0Estimate}
         token1Estimate={token1Estimate}
       />
-      <PrimaryButton className='w-full py-3 mt-8'>View Your Position</PrimaryButton>
+      <FilledStylizedButton size='M' fillWidth={true} color={MODAL_BLACK_TEXT_COLOR} className='mt-8'>View Your Position</FilledStylizedButton>
     </CloseableModal>
   );
 }

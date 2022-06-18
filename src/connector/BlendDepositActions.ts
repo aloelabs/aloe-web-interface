@@ -1,4 +1,4 @@
-import { BLOCKS_TO_WAIT, UINT256_MAX } from '../data/constants/Values';
+import { BLOCKS_TO_WAIT, GAS_ESTIMATION_SCALING, UINT256_MAX } from '../data/constants/Values';
 import { BigNumber, Contract, ContractReceipt, ethers, Signer } from 'ethers';
 
 import WethAbi from '../assets/abis/Weth9.json';
@@ -73,7 +73,7 @@ export async function deposit(
       )) as BigNumber
     ).toNumber();
 
-    transactionOptions['gasLimit'] = (estimatedGas * 1.1).toFixed(0);
+    transactionOptions['gasLimit'] = (estimatedGas * GAS_ESTIMATION_SCALING).toFixed(0);
   } catch (e) {
     console.error('Error while estimating gas');
     console.error(e);

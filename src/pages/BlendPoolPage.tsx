@@ -1,21 +1,21 @@
 import React, { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import PoolInteractionTabs from '../components/pool/PoolInteractionTabs';
-import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
-import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
-import { BlendTableContext } from '../data/context/BlendTableContext';
-import { BlendPoolProvider } from '../data/context/BlendPoolContext';
-import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import styled from 'styled-components';
-import RiskCard from '../components/common/RiskCard';
-import { RESPONSIVE_BREAKPOINT_LG, RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_SM } from '../data/constants/Breakpoints';
-import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
-import TokenPairHeader from '../components/pool/TokenPairHeader';
-import { GetTokenData } from '../data/TokenData';
-import { GetSiloData } from '../data/SiloData';
+import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
 import { PreviousPageButton } from '../components/common/Buttons';
 import FeeTierContainer from '../components/common/FeeTierContainer';
+import RiskCard from '../components/common/RiskCard';
 import { Text } from '../components/common/Typography';
+import PoolInteractionTabs from '../components/pool/PoolInteractionTabs';
+import TokenPairHeader from '../components/pool/TokenPairHeader';
+import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
+import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
+import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
+import { RESPONSIVE_BREAKPOINT_LG, RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_SM } from '../data/constants/Breakpoints';
+import { BlendPoolProvider } from '../data/context/BlendPoolContext';
+import { BlendTableContext } from '../data/context/BlendTableContext';
+import { GetSiloData } from '../data/SiloData';
+import { GetTokenData } from '../data/TokenData';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
