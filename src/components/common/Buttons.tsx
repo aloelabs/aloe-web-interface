@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { classNames } from '../../util/ClassNames';
-import MigrateIcon from '../../assets/svg/migrate.svg';
 import LeftChevron from '../../assets/svg/left_chevron.svg';
 
 const DEFAULT_BLACK = 'rgba(0, 0, 0, 1)';
