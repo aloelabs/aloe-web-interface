@@ -133,6 +133,7 @@ export function Dropdown(props: DropdownProps) {
         <DropdownList className={placeAbove ? 'inverted' : ''} small={small}>
           {options.map((option) => (
             <DropdownOptionContainer
+              className={option.value === selectedOption.value ? 'active' : ''}
               key={option.value}
               onClick={() => selectItem(option)}
             >
