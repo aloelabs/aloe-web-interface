@@ -4,13 +4,13 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import PortfolioCard from '../components/portfolio/PortfolioCard';
 import EmptyPortfolio from '../components/portfolio/EmptyPortfolio';
-import InfoIcon from '../assets/svg/info.svg';
 import ExternalPortfolioCard from '../components/portfolio/ExternalPortfolioCard';
 import EmptyExternalPortfolio from '../components/portfolio/EmptyExternalPortfolio';
 import { GetTokenData } from '../data/TokenData';
 import { FeeTier } from '../data/BlendPoolMarkers';
 import { GetSiloData } from '../data/SiloData';
 import { Text } from '../components/common/Typography';
+import { FilledTooltip } from '../components/common/Tooltip';
 
 const PORTFOLIO_TITLE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -23,25 +23,6 @@ const PortfolioCards = styled.div`
   ${tw`flex flex-wrap justify-center items-center`}
   gap: 24px;
   margin-top: 24px;
-`;
-
-const InfoButton = styled.button.attrs((props: { icon: string }) => props)`
-  ${tw`flex justify-center items-center`}
-  gap: 10px;
-  color: rgba(130, 160, 182, 1);
-  border-radius: 8px;
-  line-height: 30px;
-  font-size: 18px;
-  &:after {
-    content: '';
-    display: block;
-    width: 24px;
-    height: 24px;
-    background-image: url(${(props) => props.icon});
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-  }
 `;
 
 export default function PortfolioPage() {
@@ -115,7 +96,13 @@ export default function PortfolioPage() {
             <Text size='XL' weight='medium' color={PORTFOLIO_TITLE_TEXT_COLOR}>
               Your External Positions
             </Text>
-            <InfoButton icon={InfoIcon}>What is this?</InfoButton>
+            <FilledTooltip
+              content='Est nisl feugiat turpis amet, in sit bibendum tincidunt et. Vitae aliquam quam tempor, facilisi.'
+              buttonText='What is this?'
+              buttonSize='L'
+              position='top-right'
+              filled={true}
+            />
           </div>
           <PortfolioCards>
             <ExternalPortfolioCard
