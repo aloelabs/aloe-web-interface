@@ -44,24 +44,6 @@ export type GraphChart = {
   activeDot?: JSX.Element;
 };
 
-export type GraphProps = {
-  data: any;
-  containerHeight: number;
-  containerClassName?: string;
-  charts: GraphChart[];
-  dateFormat: string;
-  ticks: string[];
-  tickTextColor: string;
-  linearGradients?: React.SVGProps<SVGLinearGradientElement>[];
-  CustomTooltip?: JSX.Element;
-  tooltipPosition?: { x: number | undefined; y: number | undefined };
-  tooltipOffset?: number;
-  tooltipCursor?: React.SVGProps<SVGElement>;
-  showLegend?: boolean;
-  LegendContent?: JSX.Element;
-  setIsActive?: (isActive: boolean) => void;
-};
-
 export type CustomizedResponsiveContainerProps = {
   className?: string;
   height?: number;
@@ -93,6 +75,25 @@ function CustomizedResponsiveContainer(
   );
 }
 
+export type GraphProps = {
+  data: any;
+  containerHeight: number;
+  containerClassName?: string;
+  charts: GraphChart[];
+  dateFormat: string;
+  ticks: string[];
+  tickTextColor: string;
+  linearGradients?: React.SVGProps<SVGLinearGradientElement>[];
+  CustomTooltip?: JSX.Element;
+  tooltipPosition?: { x: number | undefined; y: number | undefined };
+  tooltipOffset?: number;
+  tooltipCursor?: React.SVGProps<SVGElement>;
+  showLegend?: boolean;
+  LegendContent?: JSX.Element;
+  allowEscapeViewBoxX?: boolean;
+  setIsActive?: (isActive: boolean) => void;
+};
+
 export default function Graph(props: GraphProps) {
   const {
     data,
@@ -109,6 +110,7 @@ export default function Graph(props: GraphProps) {
     tooltipCursor,
     showLegend,
     LegendContent,
+    allowEscapeViewBoxX,
     setIsActive,
   } = props;
 
@@ -143,7 +145,7 @@ export default function Graph(props: GraphProps) {
         />
         <Tooltip
           content={CustomTooltip}
-          allowEscapeViewBox={{ x: false, y: false }}
+          allowEscapeViewBox={{ x: allowEscapeViewBoxX, y: false }}
           isAnimationActive={false}
           position={tooltipPosition}
           offset={tooltipOffset}

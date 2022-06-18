@@ -11,7 +11,7 @@ import {
 import styled from 'styled-components';
 import { getEvenlySpacedDates } from '../../util/Dates';
 import { Display, Text } from '../common/Typography';
-import PortfolioGraphTooltip from './tooltips/PortfolioGraphTooltip';
+import PortfolioGraphTooltip, { PORTFOLIO_TOOLTIP_WIDTH } from './tooltips/PortfolioGraphTooltip';
 import Graph, { getIdealDateFormat, getIdealStep } from './Graph';
 import GraphButtons from './GraphButtons';
 import { CombinedPercentChange } from '../common/PercentChange';
@@ -286,9 +286,10 @@ export default function PortfolioGraph() {
         ]}
         CustomTooltip={<PortfolioGraphTooltip />}
         tooltipPosition={{ x: undefined, y: -155.83 }}
-        tooltipOffset={-103}
+        tooltipOffset={-(PORTFOLIO_TOOLTIP_WIDTH / 2)}
         tooltipCursor={<CustomCursor />}
         setIsActive={setIsTooltipActive}
+        allowEscapeViewBoxX={true}
       />
       {/* <ResponsiveContainer className='absolute bottom-0' height={222.5}>
         <AreaChart
