@@ -212,7 +212,6 @@ export default function PortfolioGraph() {
       <Graph
         data={data}
         containerHeight={222.5}
-        chartHeight={186.5}
         containerClassName='absolute bottom-0'
         charts={[
           {

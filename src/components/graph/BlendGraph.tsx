@@ -81,8 +81,7 @@ export default function BlendGraph(props: BlendGraphProps) {
     <ResponsiveContainerStyled>
       <Graph
         data={data}
-        containerHeight={346}
-        chartHeight={274}
+        containerHeight={330}
         dateFormat={dateFormat}
         linearGradients={[
           <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>

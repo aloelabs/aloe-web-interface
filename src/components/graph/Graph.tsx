@@ -47,7 +47,6 @@ export type GraphChart = {
 export type GraphProps = {
   data: any;
   containerHeight: number;
-  chartHeight: number;
   containerClassName?: string;
   charts: GraphChart[];
   dateFormat: string;
@@ -98,7 +97,6 @@ export default function Graph(props: GraphProps) {
   const {
     data,
     containerHeight,
-    chartHeight,
     containerClassName,
     charts,
     dateFormat,
@@ -122,7 +120,6 @@ export default function Graph(props: GraphProps) {
     >
       <AreaChart
         width={964}
-        height={chartHeight}
         data={data}
         margin={{ top: 0, left: 0, bottom: 0, right: 0 }}
       >
