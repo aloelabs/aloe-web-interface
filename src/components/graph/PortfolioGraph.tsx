@@ -144,8 +144,9 @@ const generatePortfolioGraphData = (from: Date, to: Date) => {
   let data = [];
   let currentDate = from;
   while (currentDate <= to) {
-    base1 += Math.random() * 10000 - Math.random() * 5000;
-    base2 += Math.random() < 0.025 ? 15000 : 0;
+    const newDeposit = Math.random() < 0.025 ? Math.random() * 35000 : 0;
+    base1 += Math.random() * 10000 - Math.random() * 5000 + newDeposit;
+    base2 += newDeposit
     base1 = Math.abs(base1);
     base2 = Math.abs(base2);
     data.push({

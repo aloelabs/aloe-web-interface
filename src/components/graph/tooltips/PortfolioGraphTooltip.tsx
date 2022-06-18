@@ -16,7 +16,7 @@ const TooltipContainer = styled.div`
   ${tw`rounded-md shadow-md`}
   background: ${TOOLTIP_BG_COLOR};
   border: 1px solid ${TOOLTIP_BORDER_COLOR};
-  width: 206px;
+  min-width: 206px;
   box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(24px);
 `;
@@ -40,7 +40,7 @@ export default function PortfolioGraphTooltip(data: any, active = false) {
             {item.name}
           </Text>
           <Text size='L' weight='bold' color={item.color}>
-            {prettify(item.value)}
+            {prettify(item.value)} USD
           </Text>
         </div>
       );
