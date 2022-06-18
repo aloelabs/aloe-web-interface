@@ -17,6 +17,11 @@ const ResponsiveContainerStyled = styled.div`
   left: -32px;
   width: calc(100% + 64px);
   height: 300px;
+
+  @media (max-width: 768px) {
+    left: -16px;
+    width: calc(100% + 32px);
+  }
 `;
 
 const LegendWrapper = styled.div`
