@@ -1,8 +1,9 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import RightArrow from '../../assets/svg/small_right_arrow.svg';
+import { ReactComponent as BrowsePoolsIcon } from '../../assets/svg/small_right_arrow.svg';
+import { OutlinedWhiteButtonWithIcon } from '../common/Buttons';
 
 export const EMPTY_PORTFOLIO_SUB_TEXT_COLOR = 'rgba(75, 105, 128, 1)';
 const CONTAINER_BORDER_GRADIENT = `linear-gradient(90deg, #9BAAF3 0%, #7BD8C0 100%)`;
@@ -44,34 +45,8 @@ const EmptyPortfolioSubText = styled.span`
   color: ${EMPTY_PORTFOLIO_SUB_TEXT_COLOR};
 `;
 
-const BrowsePoolsButton = styled.button.attrs(
-  (props: { icon: string }) => props
-)`
-  ${tw`flex justify-center items-center text-white`}
-  gap: 10px;
-  padding: 16px 24px;
-  border: 1px solid white;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 24.3px;
-  &:after {
-    content: '';
-    display: block;
-    width: 24px;
-    height: 24px;
-    background-image: url(${(props) => props.icon});
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-  }
-  &:hover {
-    box-shadow: 0px 8px 16px -4px rgba(126, 213, 197, 0.08),
-      0px 8px 24px -4px rgba(154, 173, 241, 0.12);
-  }
-`;
-
 export default function EmptyPortfolio() {
+  const navigate = useNavigate();
   return (
     <Container>
       <div className='flex flex-col items-center'>
@@ -83,9 +58,18 @@ export default function EmptyPortfolio() {
         </EmptyPortfolioSubText>
       </div>
       <div className='flex flex-col items-center'>
-        <BrowsePoolsButton icon={RightArrow} as={NavLink} to='/blend/pools'>
-          Browse Pools
-        </BrowsePoolsButton>
+        <OutlinedWhiteButtonWithIcon
+          Icon={<BrowsePoolsIcon />}
+          position='trailing'
+          size='L'
+          activeGradientId='#migrate-icon-gradient'
+          svgColorType='stroke'
+          onClick={() => {
+            navigate('/#/blend/pools');
+          }}
+        >
+          <span>Browse Pools</span>
+        </OutlinedWhiteButtonWithIcon>
       </div>
     </Container>
   );

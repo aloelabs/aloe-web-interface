@@ -1,6 +1,6 @@
 import React from 'react';
 import SuccessIcon from '../../../assets/svg/success.svg';
-import { PrimaryButton } from '../../common/Buttons';
+import { FilledStylizedButton } from '../../common/Buttons';
 import {
   CloseableModal,
   DashedDivider,
@@ -11,6 +11,7 @@ import {
 } from '../../common/Modal';
 import TokenBreakdown from '../../common/TokenBreakdown';
 import { Text } from '../../common/Typography';
+import { MODAL_BLACK_TEXT_COLOR } from '../PoolInteractionTabs';
 
 export type TokensDepositedModalProps = {
   open: boolean;
@@ -65,9 +66,9 @@ export default function TokensDepositedModal(props: TokensDepositedModalProps) {
         token0Estimate={token0Estimate}
         token1Estimate={token1Estimate}
       />
-      <PrimaryButton className='w-full py-3 mt-8'>
+      <FilledStylizedButton size='M' fillWidth={true} color={MODAL_BLACK_TEXT_COLOR} className='mt-8'>
         View Your Position
-      </PrimaryButton>
+      </FilledStylizedButton>
     </CloseableModal>
   );
 }

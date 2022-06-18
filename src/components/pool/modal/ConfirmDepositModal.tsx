@@ -1,5 +1,5 @@
 import React from 'react';
-import { PrimaryButton } from '../../common/Buttons';
+import { FilledStylizedButton } from '../../common/Buttons';
 import {
   CloseableModal,
   DashedDivider,
@@ -9,6 +9,7 @@ import {
 } from '../../common/Modal';
 import TokenBreakdown from '../../common/TokenBreakdown';
 import { Text } from '../../common/Typography';
+import { MODAL_BLACK_TEXT_COLOR } from '../PoolInteractionTabs';
 
 export type ConfirmDepositModalProps = {
   open: boolean;
@@ -69,7 +70,9 @@ export default function ConfirmDepositModal(props: ConfirmDepositModalProps) {
         <DashedDivider />
         <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{networkFee} WETH</Text>
       </div>
-      <PrimaryButton className='w-full py-3' onClick={onConfirm}>Confirm Deposit</PrimaryButton>
+      <FilledStylizedButton size='M' fillWidth={true} color={MODAL_BLACK_TEXT_COLOR} onClick={onConfirm}>
+        Confirm Deposit
+      </FilledStylizedButton>
     </CloseableModal>
   );
 }

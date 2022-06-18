@@ -7,6 +7,8 @@ import tw from 'twin.macro';
 import styled from 'styled-components';
 import ConnectWallet from './ConnectWallet';
 
+export const MODAL_BLACK_TEXT_COLOR = 'rgba(7, 14, 18, 1)';
+
 const Wrapper = styled.div`
   ${tw`w-full rounded-md`}
   background-color: rgba(13, 23, 30, 1);
