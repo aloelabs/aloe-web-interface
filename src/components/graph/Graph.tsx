@@ -114,8 +114,6 @@ export default function Graph(props: GraphProps) {
     setIsActive,
   } = props;
 
-  console.log(chartHeight);
-
   return (
     <CustomizedResponsiveContainer
       className={containerClassName}
