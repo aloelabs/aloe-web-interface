@@ -21,7 +21,7 @@ const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
   position: absolute;
-  bottom: -56px;
+  top: 140px;
   left: 67px;
 `;
 

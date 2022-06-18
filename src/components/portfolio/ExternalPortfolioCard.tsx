@@ -9,7 +9,7 @@ import {
 import { TokenData } from '../../data/TokenData';
 import { MigrateButton } from '../common/Buttons';
 import FeeTierContainer from '../common/FeeTierContainer';
-import PercentChange from '../common/PercentChange';
+import { PercentChange } from '../common/PercentChange';
 import TokenPairIcons from '../common/TokenPairIcons';
 import { Display, Text } from '../common/Typography';
 import {

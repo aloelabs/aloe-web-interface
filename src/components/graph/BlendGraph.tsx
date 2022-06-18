@@ -1,17 +1,10 @@
 import React from 'react';
-import {
-  Area,
-  AreaChart,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-} from 'recharts';
-import BlendGraphTooltip from './BlendGraphTooltip';
-import { differenceInDays, format, parseISO } from 'date-fns/esm';
+import BlendGraphTooltip from './tooltips/BlendGraphTooltip';
+import { differenceInDays, parseISO } from 'date-fns/esm';
 import styled from 'styled-components';
 import { getEvenlySpacedDates } from '../../util/Dates';
 import { Text } from '../common/Typography';
+import Graph, { getIdealDateFormat, getIdealStep } from './Graph';
 
 const TEXT_COLOR = '#82a0b6';
 const TOTAL_RETURNS_GRADIENT_COLOR = '#59d67c';
@@ -80,28 +73,61 @@ export default function BlendGraph(props: BlendGraphProps) {
   const numberOfUniqueYears = new Set(
     dates.map((d) => parseISO(d).getFullYear())
   ).size;
-  let step = 3;
-  let dateFormat = 'MMM yyyy';
-  if (differenceInDays(toDate, fromDate) <= 1) {
-    step = 5;
-    dateFormat = 'ha';
-  } else if (differenceInDays(toDate, fromDate) <= 7) {
-    step = 5;
-    dateFormat = 'iii';
-  } else if (differenceInDays(toDate, fromDate) <= 31 * 3) {
-    step = 4;
-    dateFormat = 'MMM dd';
-  } else if (differenceInDays(toDate, fromDate) <= 366) {
-    step = 4;
-    dateFormat = 'MMM';
-  } else {
-    step = numberOfUniqueYears - 1 - 2; // Subtract 2 because we don't want to show the first and last year
-    dateFormat = 'yyyy';
-  }
+  const diffInDays = differenceInDays(toDate, fromDate);
+  const step = getIdealStep(diffInDays, numberOfUniqueYears);
+  const dateFormat = getIdealDateFormat(diffInDays);
   const ticks = getEvenlySpacedDates(dates, step).slice(1);
   return (
     <ResponsiveContainerStyled>
-      <ResponsiveContainer>
+      <Graph
+        data={data}
+        containerHeight={346}
+        chartHeight={274}
+        dateFormat={dateFormat}
+        linearGradients={[
+          <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>
+              <stop
+                offset='-29%'
+                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+                stopOpacity={0.25}
+              />
+              <stop
+                offset='99.93%'
+                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+                stopOpacity={0}
+              />
+            </linearGradient>
+        ]}
+        ticks={ticks}
+        tickTextColor={TEXT_COLOR}
+        CustomTooltip={<BlendGraphTooltip />}
+        charts={[
+          {
+            type: 'monotone',
+            dataKey: 'Total Returns',
+            stroke: TOTAL_RETURNS_STROKE_COLOR,
+            fill: 'url(#totalReturnsGradient)',
+            fillOpacity: 1,
+          },
+          {
+            type: 'monotone',
+            dataKey: 'Uniswap V2',
+            stroke: UNISWAP_V2_STROKE_COLOR,
+            fillOpacity: 0,
+            strokeDasharray: '5 5',
+          },
+          {
+            type: 'monotone',
+            dataKey: '50/50 HODL',
+            stroke: HODL_STROKE_COLOR,
+            fillOpacity: 0,
+            strokeDasharray: '5 5',
+          }
+        ]}
+        showLegend={true}
+        LegendContent={<BlendGraphLegend />}
+      />
+      {/* <ResponsiveContainer>
         <AreaChart
           width={964}
           height={300}
@@ -165,7 +191,7 @@ export default function BlendGraph(props: BlendGraphProps) {
           />
           <Legend iconType='rect' content={BlendGraphLegend}></Legend>
         </AreaChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer> */}
     </ResponsiveContainerStyled>
   );
 }

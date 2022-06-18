@@ -10,11 +10,7 @@ import {
 } from 'date-fns/esm';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { Text } from '../common/Typography';
-
-const WHITE = '#FFFFFF';
-const GRAPH_BUTTON_ACTIVE_BG_COLOR = '#0d171e';
-const GRAPH_BUTTON_TEXT_COLOR = '#3f5464'; //rgba(43, 64, 80, 1);
+import GraphButtons from '../graph/GraphButtons';
 
 const generateData = (
   from: Date,
@@ -58,27 +54,11 @@ const generateData = (
   return data;
 };
 
-const GraphButton = styled.button`
-  ${tw`rounded-md w-10 p-1 bg-transparent disabled:text-grey-500`}
-  color: ${GRAPH_BUTTON_TEXT_COLOR};
-  &.active {
-    background-color: ${GRAPH_BUTTON_ACTIVE_BG_COLOR};
-    color: ${WHITE};
-
-    /* For the nested Text component */
-    div {
-      color: ${WHITE};
-    }
-  }
-  &:hover {
-    background-color: ${GRAPH_BUTTON_ACTIVE_BG_COLOR};
-    color: ${WHITE};
-
-    /* For the nested Text component */
-    div {
-      color: ${WHITE};
-    }
-  }
+const GraphButtonsWrapper = styled.div`
+  ${tw`w-max`}
+  position: absolute;
+  top: -36px;
+  right: 0;
 `;
 
 export type GraphButtonProps = {
@@ -86,18 +66,6 @@ export type GraphButtonProps = {
   text: string;
   active: boolean;
   handleClick: any;
-};
-
-const BlendAllocationGraphButton = (props: GraphButtonProps) => {
-  return (
-    <GraphButton
-      key={props.idx}
-      className={props.active ? 'active' : ''}
-      onClick={props.handleClick}
-    >
-      <Text size='S' weight='medium' color={GRAPH_BUTTON_TEXT_COLOR}>{props.text}</Text>
-    </GraphButton>
-  );
 };
 
 const Wrapper = styled.div`
@@ -153,56 +121,14 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
     }
   };
 
-  const graphButtons: GraphButtonProps[] = [
-    {
-      idx: 0,
-      text: '1D',
-      active: true,
-      handleClick: () => handleClick(0),
-    },
-    {
-      idx: 1,
-      text: '1W',
-      active: false,
-      handleClick: () => handleClick(1),
-    },
-    {
-      idx: 2,
-      text: '1M',
-      active: false,
-      handleClick: () => handleClick(2),
-    },
-    {
-      idx: 3,
-      text: '3M',
-      active: false,
-      handleClick: () => handleClick(3),
-    },
-    {
-      idx: 4,
-      text: '1Y',
-      active: false,
-      handleClick: () => handleClick(4),
-    },
-    {
-      idx: 5,
-      text: 'ALL',
-      active: false,
-      handleClick: () => handleClick(5),
-    },
-  ];
-
   const data = generateData(fromDate, toDate, 6.5, 5, 4);
   return (
     <Wrapper>
       <Container>
-        <div className='w-full flex justify-end gap-4 pr-16 pb-16'>
-          {graphButtons.map((props: any) => {
-            props.active = props.idx === activeButton;
-            return BlendAllocationGraphButton(props);
-          })}
-        </div>
-        <BlendGraph data={data} fromDate={fromDate} toDate={toDate} />
+        <GraphButtonsWrapper>
+          <GraphButtons activeButton={activeButton} handleClick={handleClick} />
+        </GraphButtonsWrapper>
+        <BlendGraph data={data} fromDate={fromDate} toDate={toDate} tw='mt-16' />
       </Container>
     </Wrapper>
   );

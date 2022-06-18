@@ -17,7 +17,7 @@ import {
 import FeeTierContainer from '../common/FeeTierContainer';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
-import PercentChange from '../common/PercentChange';
+import { PercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
