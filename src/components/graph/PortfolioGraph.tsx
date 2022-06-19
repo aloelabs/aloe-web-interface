@@ -1,20 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
-  add,
+  closestTo,
   differenceInDays,
   parseISO,
   subDays,
+  subMinutes,
   subMonths,
   subWeeks,
-  subYears,
+  subYears
 } from 'date-fns/esm';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { getEvenlySpacedDates } from '../../util/Dates';
-import { Display, Text } from '../common/Typography';
-import PortfolioGraphTooltip, { PORTFOLIO_TOOLTIP_WIDTH } from './tooltips/PortfolioGraphTooltip';
-import Graph, { getIdealDateFormat, getIdealStep } from './Graph';
-import GraphButtons from './GraphButtons';
 import { CombinedPercentChange } from '../common/PercentChange';
+import { Display, Text } from '../common/Typography';
+import Graph, { getIdealDateFormat, getIdealStep } from './Graph';
+import GraphButtons, { buttonIdxToText } from './GraphButtons';
+import PortfolioGraphTooltip, { PORTFOLIO_TOOLTIP_WIDTH } from './tooltips/PortfolioGraphTooltip';
 
 const TEXT_COLOR = '#82a0b6';
 const TOTAL_RETURNS_GRADIENT_COLOR = '#59d67c';
@@ -123,55 +125,30 @@ function NetReturnsDot(props: any) {
   );
 }
 
-const generatePortfolioGraphData = (from: Date, to: Date) => {
-  let difference = differenceInDays(to, from);
-  let interval = {};
-  if (difference <= 1) {
-    interval = { minutes: 15 };
-  } else if (difference <= 7) {
-    interval = { hours: 3 };
-  } else if (difference <= 31) {
-    interval = { hours: 8 };
-  } else if (difference <= 31 * 3) {
-    interval = { days: 1 };
-  } else if (difference <= 367) {
-    interval = { weeks: 1 };
-  } else {
-    interval = { months: 1 };
-  }
-  let base1 = 10000;
-  let base2 = 5000;
-  let data = [];
-  let currentDate = from;
-  while (currentDate <= to) {
-    const newDeposit = Math.random() < 0.025 ? Math.random() * 35000 : 0;
-    base1 += Math.random() * 10000 - Math.random() * 5000 + newDeposit;
-    base2 += newDeposit
-    base1 = Math.abs(base1);
-    base2 = Math.abs(base2);
-    data.push({
-      'Portfolio Value': base1,
-      'Net Deposits': base2,
-      x: currentDate.toISOString(),
-    });
-    currentDate = add(currentDate, interval);
-  }
-  return data;
-};
+function makeRequest(reqUrl: string) {
+  return axios.get(
+    reqUrl,
+    {
+      timeout: 10000,
+    }
+  );
+}
 
 export default function PortfolioGraph() {
   const [activeButton, setActiveButton] = useState(0);
-  const now = new Date(Date.now());
-  const [fromDate, setFromDate] = useState(subDays(now, 1));
-  const [toDate, setToDate] = useState(now);
+  const now = new Date(1651632134000);
+  const [fromDate, setFromDate] = useState(subWeeks(now, 2));
+  const [toDate, setToDate] = useState(subWeeks(now, 1));
   const [isTooltipActive, setIsTooltipActive] = useState(false);
   const [data, setData] = useState(
-    generatePortfolioGraphData(fromDate, toDate)
+    [{ 'Portfolio Value': 0, 'Net Deposits': 0, x: fromDate.toISOString() },
+    { 'Portfolio Value': 0, 'Net Deposits': 0, x: toDate.toISOString() }]
   );
 
   const handleClick = (key: number) => {
     setActiveButton(key);
-    let now = new Date(Date.now());
+    let now = new Date(1651632134000);
+    now = subWeeks(now, 1);
     switch (key) {
       case 0:
         setFromDate(subDays(now, 1));
@@ -203,14 +180,103 @@ export default function PortfolioGraph() {
   };
 
   useEffect(() => {
-    setData(generatePortfolioGraphData(fromDate, toDate));
-  }, [fromDate, toDate]);
+    let mounted = true;
+    const fetchPoolStats = async () => {
+      axios.all(
+        [
+          
+        ]
+      )
+      // const shareBalancesResponse = await axios.get(
+      //   // `http://34.94.221.78:3000/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/1651632134`
+      //   `http://34.94.221.78:3000/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+      // );
+      // // const netDepositsResponse = await axios.get(
+      // //   `http://34.94.221.78:3000/net_deposits/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/1651632134`
+      // // );
+      // const poolResponse = await axios.get(
+      //   `http://34.94.221.78:3000/pool_returns/0xE801c4175A0341e65dFef8F3B79e1889047AfEbb/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+      // );
+      // const wbtcResponse = await axios.get(
+      //   `http://34.94.221.78:3000/token_returns/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+      // );
+      // const wethResponse = await axios.get(
+      //   `http://34.94.221.78:3000/token_returns/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+      // );
+      const getShareBalances = makeRequest(
+        `http://34.94.221.78:3000/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+      );
+      // const netDepositsResponse = await axios.get(
+      //   `http://34.94.221.78:3000/net_deposits/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/1651632134`
+      // );
+      const getPool = makeRequest(
+        `http://34.94.221.78:3000/pool_returns/0xE801c4175A0341e65dFef8F3B79e1889047AfEbb/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+      );
+      const getWbtc = makeRequest(
+        `http://34.94.221.78:3000/token_returns/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+      );
+      const getWeth = makeRequest(
+        `http://34.94.221.78:3000/token_returns/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+      );
+      axios.all([getShareBalances, getPool, getWbtc, getWeth]).then(axios.spread((shareBalancesResponse, poolResponse, wbtcResponse, wethResponse) => {
+        const shareBalanaces = shareBalancesResponse.data;
+        // const netDeposits = netDepositsResponse.data;
+        const poolReturns = poolResponse.data;
+        const wbtcReturns = wbtcResponse.data;
+        const wethReturns = wethResponse.data;
+        if (mounted) {
+          let totalSupplyData = {} as any;
+          let portfolioData = [];
+          const shareBalancesKeys = Object.keys(shareBalanaces);
+          // const netDepositsKeys = Object.keys(netDeposits);
+          for (let i = 0; i < poolReturns.length; i++) {
+            const poolReturn = poolReturns[i];
+            const wbtcReturn = wbtcReturns[i];
+            const wethReturn = wethReturns[i];
+            const timestamp = poolReturn.timestamp;
+            totalSupplyData[new Date(timestamp).toISOString()] = {
+              value: (poolReturn.inventory0 * wbtcReturn.price + poolReturn.inventory1 * wethReturn.price),
+              supply: poolReturn.total_supply,
+            };
+          }
+          const dates = Object.keys(totalSupplyData);
+          for (let i = 0; i < shareBalancesKeys.length; i++) {
+            const shareBalancesKey = shareBalancesKeys[i];
+            // const netDepositsKey = netDepositsKeys[i];
+            const shareBalancesValue = shareBalanaces[shareBalancesKey];
+            // const netDepositsValue = netDeposits[netDepositsKey];
+            for (let j = 0; j < shareBalancesValue.length; j++) {
+              const timestamp = shareBalancesValue[j].timestamp * 1000;
+              const date = new Date(timestamp);
+              const closestDate = closestTo(date, dates.map((d) => new Date(d)));
+              if (closestDate) {
+                const obj = totalSupplyData[closestDate.toISOString()];
+                const percentOwned = shareBalancesValue[j].balance / obj.supply;
+                portfolioData.push({
+                  'Portfolio Value': percentOwned * obj.value,
+                  'Net Deposits': 0,//netDepositsValue[j].net_deposit,
+                  x: new Date(timestamp).toISOString(),
+                });
+              }
+            }
+          }
+          setData(portfolioData);
+        }
+      }));
+    };
+    fetchPoolStats();
+    return () => {
+      mounted = false;
+    };
+  }, [activeButton, toDate]);
 
   const dates = data.map((d: any) => d.x) as string[];
+  const updatedTo = new Date(dates[dates.length - 1]);
+  const updatedFrom = new Date(dates[0]);
   const numberOfUniqueYears = new Set(
     dates.map((d) => parseISO(d).getFullYear())
   ).size;
-  const diffInDays = differenceInDays(toDate, fromDate);
+  const diffInDays = differenceInDays(updatedTo, updatedFrom);
   const step = getIdealStep(diffInDays, numberOfUniqueYears);
   const dateFormat = getIdealDateFormat(diffInDays);
   const ticks = getEvenlySpacedDates(dates, step).slice(1);
@@ -218,7 +284,7 @@ export default function PortfolioGraph() {
   const currentEstimatedValue = data[data.length - 1]['Portfolio Value'];
   const estimatedValueChange = currentEstimatedValue - initialEstimatedValue;
   const estimatedValueChangePercent =
-    (estimatedValueChange / initialEstimatedValue) * 100;
+    (estimatedValueChange / initialEstimatedValue) * 100 || 0;
   return (
     <ResponsiveContainerStyled>
       <InfoContainer
@@ -291,99 +357,6 @@ export default function PortfolioGraph() {
         setIsActive={setIsTooltipActive}
         allowEscapeViewBoxX={true}
       />
-      {/* <ResponsiveContainer className='absolute bottom-0' height={222.5}>
-        <AreaChart
-          width={964}
-          height={186.5}
-          data={data}
-          margin={{ top: 0, left: 0, bottom: 0, right: 0 }}
-          onMouseEnter={() => {
-            if (!isActive) {
-              setIsActive(true);
-            }
-          }}
-          onMouseLeave={() => {
-            setIsActive(false)
-          }}
-        >
-          <defs>
-            <linearGradient
-              id='totalReturnsGradient'
-              x1='0'
-              y1='0'
-              x2='0'
-              y2='1'
-            >
-              <stop
-                offset='-29%'
-                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
-                stopOpacity={0.25}
-              />
-              <stop
-                offset='99.93%'
-                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
-                stopOpacity={0}
-              />
-            </linearGradient>
-          </defs>
-          <XAxis
-            dataKey='x'
-            axisLine={false}
-            domain={['auto', 'auto']}
-            interval={0}
-            ticks={ticks}
-            tick={{ fill: TEXT_COLOR, fontSize: '14px' }}
-            tickFormatter={(tickString) => 
-              format(parseISO(tickString), dateFormat)
-            }
-            tickLine={false}
-          />
-          <YAxis
-            axisLine={false}
-            tickLine={false}
-            tick={false}
-            width={0}
-            domain={['auto', 'auto']}
-          />
-          <Tooltip
-            content={isActive ? <PortfolioGraphTooltip /> : <></>}
-            allowEscapeViewBox={{ x: true, y: false }}
-            isAnimationActive={false}
-            position={{ y: -155.83 }}
-            offset={-103}
-            cursor={isActive ? <CustomCursor /> : <></>}
-            active={isActive}
-          />
-          <Area
-            type='monotone'
-            dataKey='Portfolio Value'
-            stroke={TOTAL_RETURNS_STROKE_COLOR}
-            fillOpacity={1}
-            fill='url(#totalReturnsGradient)'
-            isAnimationActive={false}
-            onMouseEnter={() => {
-              if (!isActive) {
-                setIsActive(true)
-              }
-            }}
-            activeDot={isActive ? { stroke: 'black', strokeWidth: 2, fill: TOTAL_RETURNS_STROKE_COLOR } : <></>}
-          />
-          <Area
-            type='stepAfter'
-            dataKey='Net Deposits'
-            stroke={isActive ? NET_DEPOSITS_STROKE_COLOR : 'transparent'}
-            fillOpacity={0}
-            strokeDasharray='5 5'
-            isAnimationActive={false}
-            onMouseEnter={() => {
-              if (!isActive) {
-                setIsActive(true)
-              }
-            }}
-            activeDot={isActive ? <CustomizedDot /> : <></>}
-          />
-        </AreaChart>
-      </ResponsiveContainer> */}
     </ResponsiveContainerStyled>
   );
 }

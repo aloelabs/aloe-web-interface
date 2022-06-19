@@ -34,7 +34,7 @@ export function getEvenlySpacedDates(dates: string[], n: number) : string[] {
   const step = Math.ceil(updatedDates.length / n);
   const result = [];
   for (let i = 0; i < n; i++) {
-    result.push(updatedDates[i * step]);
+    result.push(updatedDates[i * step] || dates[0]);//TODO: find a better way to handle this
   }
   return result;
 }

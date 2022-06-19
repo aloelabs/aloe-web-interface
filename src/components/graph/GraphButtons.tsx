@@ -7,6 +7,26 @@ const WHITE = '#FFFFFF';
 const GRAPH_BUTTON_ACTIVE_BG_COLOR = '#0d171e';
 const GRAPH_BUTTON_TEXT_COLOR = '#3f5464'; //rgba(43, 64, 80, 1);
 
+export function buttonIdxToText(idx: number): string {
+  switch (idx) {
+    case 0:
+      return '1D';
+    case 1:
+      return '1W';
+    case 2:
+      return '1M';
+    case 3:
+      return '3M';
+    case 4:
+      return '1Y';
+    default:
+      return 'ALL';
+  }
+}
+
+
+
+
 const StyledGraphButton = styled.button.attrs(
   (props: { buttonWidth: number }) => props
 )`
@@ -73,42 +93,42 @@ export default function GraphButtons(props: GraphButtonsProps) {
   const graphButtons: GraphButtonProps[] = [
     {
       idx: 0,
-      text: '1D',
+      text: buttonIdxToText(0),
       active: true,
       width: 40,
       handleClick: () => handleClick(0),
     },
     {
       idx: 1,
-      text: '1W',
+      text: buttonIdxToText(1),
       active: false,
       width: 44,
       handleClick: () => handleClick(1),
     },
     {
       idx: 2,
-      text: '1M',
+      text: buttonIdxToText(2),
       active: false,
       width: 42,
       handleClick: () => handleClick(2),
     },
     {
       idx: 3,
-      text: '3M',
+      text: buttonIdxToText(3),
       active: false,
       width: 45,
       handleClick: () => handleClick(3),
     },
     {
       idx: 4,
-      text: '1Y',
+      text: buttonIdxToText(4),
       active: false,
       width: 38,
       handleClick: () => handleClick(4),
     },
     {
       idx: 5,
-      text: 'ALL',
+      text: buttonIdxToText(5),
       active: false,
       width: 49,
       handleClick: () => handleClick(5),
