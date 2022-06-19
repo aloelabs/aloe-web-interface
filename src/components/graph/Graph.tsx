@@ -6,9 +6,11 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
+  YAxis,
 } from 'recharts';
 import { format, parseISO } from 'date-fns/esm';
 import { CurveType } from 'recharts/types/shape/Curve';
+import { AxisDomain } from 'recharts/types/util/types';
 
 export function getIdealStep(diffInDays: number, numUniqueYears: number) : number {
   if (diffInDays <= 7) {
@@ -91,6 +93,7 @@ export type GraphProps = {
   showLegend?: boolean;
   LegendContent?: JSX.Element;
   allowEscapeViewBoxX?: boolean;
+  yAxisDomain?: AxisDomain;
   setIsActive?: (isActive: boolean) => void;
 };
 
@@ -111,6 +114,7 @@ export default function Graph(props: GraphProps) {
     showLegend,
     LegendContent,
     allowEscapeViewBoxX,
+    yAxisDomain,
     setIsActive,
   } = props;
 
@@ -142,6 +146,12 @@ export default function Graph(props: GraphProps) {
             format(parseISO(tickString), dateFormat)
           }
           tickLine={false}
+        />
+        <YAxis
+          axisLine={false}
+          tick={false}
+          width={0}
+          domain={yAxisDomain}
         />
         <Tooltip
           content={CustomTooltip}

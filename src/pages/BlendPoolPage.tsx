@@ -95,7 +95,7 @@ export default function BlendPoolPage() {
           <PoolInteractionTabs poolData={poolData} />
         </GridExpandingDiv>
         <div className='w-full py-4'>
-          <BlendAllocationGraph />
+          <BlendAllocationGraph poolData={poolData} />
           <PoolPositionWidget poolData={poolData} />
           <PoolStatsWidget poolData={poolData} />
           <PoolPieChartWidget poolData={poolData} />

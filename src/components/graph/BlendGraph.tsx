@@ -10,7 +10,7 @@ const TEXT_COLOR = '#82a0b6';
 const TOTAL_RETURNS_GRADIENT_COLOR = '#59d67c';
 const TOTAL_RETURNS_STROKE_COLOR = '#00C143';
 const UNISWAP_V2_STROKE_COLOR = '#865EF2';
-const HODL_STROKE_COLOR = '#C2D1DD';
+const TOKEN_STROKE_COLOR = '#C2D1DD';
 
 const ResponsiveContainerStyled = styled.div`
   position: relative;
@@ -59,8 +59,8 @@ function BlendGraphLegend() {
         <Text size='M' weight='medium' color={TEXT_COLOR}>Uniswap V2</Text>
       </LegendItem>
       <LegendItem>
-        <LegendItemBox color={HODL_STROKE_COLOR} />
-        <Text size='M' weight='medium' color={TEXT_COLOR}>50/50 HODL</Text>
+        <LegendItemBox color={TOKEN_STROKE_COLOR} />
+        <Text size='M' weight='medium' color={TEXT_COLOR}>Token</Text>
       </LegendItem>
     </LegendWrapper>
   );
@@ -68,12 +68,14 @@ function BlendGraphLegend() {
 
 export type BlendGraphProps = {
   data: any;
+  token0Key: string;
+  token1Key: string;
   fromDate: Date;
   toDate: Date;
 };
 
 export default function BlendGraph(props: BlendGraphProps) {
-  const { data, fromDate, toDate } = props;
+  const { data, token0Key, token1Key, fromDate, toDate } = props;
   const dates = data.map((d: any) => d.x) as string[];
   const numberOfUniqueYears = new Set(
     dates.map((d) => parseISO(d).getFullYear())
@@ -122,80 +124,23 @@ export default function BlendGraph(props: BlendGraphProps) {
           },
           {
             type: 'monotone',
-            dataKey: '50/50 HODL',
-            stroke: HODL_STROKE_COLOR,
+            dataKey: token0Key,
+            stroke: TOKEN_STROKE_COLOR,
+            fillOpacity: 0,
+            strokeDasharray: '5 5',
+          },
+          {
+            type: 'monotone',
+            dataKey: token1Key,
+            stroke: TOKEN_STROKE_COLOR,
             fillOpacity: 0,
             strokeDasharray: '5 5',
           }
         ]}
         showLegend={true}
         LegendContent={<BlendGraphLegend />}
+        yAxisDomain={['dataMin', 'dataMax']}
       />
-      {/* <ResponsiveContainer>
-        <AreaChart
-          width={964}
-          height={300}
-          data={data}
-          margin={{ top: 0, left: 0, bottom: 0, right: 0 }}
-        >
-          <defs>
-            <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>
-              <stop
-                offset='-29%'
-                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
-                stopOpacity={0.25}
-              />
-              <stop
-                offset='99.93%'
-                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
-                stopOpacity={0}
-              />
-            </linearGradient>
-          </defs>
-          <XAxis
-            dataKey='x'
-            axisLine={false}
-            domain={['auto', 'auto']}
-            interval={0}
-            ticks={ticks}
-            tick={{ fill: TEXT_COLOR, fontSize: '14px' }}
-            tickFormatter={(tickString) =>
-              format(parseISO(tickString), dateFormat)
-            }
-            tickLine={false}
-          />
-          <Tooltip
-            content={<BlendGraphTooltip />}
-            allowEscapeViewBox={{ x: false, y: false }}
-            isAnimationActive={false}
-          />
-          <Area
-            type='monotone'
-            dataKey='Total Returns'
-            stroke={TOTAL_RETURNS_STROKE_COLOR}
-            fillOpacity={1}
-            fill='url(#totalReturnsGradient)'
-            isAnimationActive={false}
-          />
-          <Area
-            type='monotone'
-            dataKey='Uniswap V2'
-            stroke={UNISWAP_V2_STROKE_COLOR}
-            fillOpacity={0}
-            strokeDasharray='5 5'
-            isAnimationActive={false}
-          />
-          <Area
-            type='monotone'
-            dataKey='50/50 HODL'
-            stroke={HODL_STROKE_COLOR}
-            fillOpacity={0}
-            strokeDasharray='5 5'
-            isAnimationActive={false}
-          />
-          <Legend iconType='rect' content={BlendGraphLegend}></Legend>
-        </AreaChart>
-      </ResponsiveContainer> */}
     </ResponsiveContainerStyled>
   );
 }
