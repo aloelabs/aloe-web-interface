@@ -120,7 +120,7 @@ const TooltipContainer = styled.div.attrs(
 
 export type TooltipProps = {
   buttonSize: 'S' | 'M' | 'L';
-  content: string;
+  content: string | React.ReactNode;
   position:
     | 'top-left'
     | 'top-center'
