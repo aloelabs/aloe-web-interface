@@ -48,7 +48,13 @@ const LegendItemBox = styled.div`
   border-radius: 8px;
 `;
 
-function BlendGraphLegend(token0Label: string, token1Label: string) {
+type BlendGraphLegendProps = {
+  token0Label: string;
+  token1Label: string;
+};
+
+function BlendGraphLegend(props: BlendGraphLegendProps) {
+  const { token0Label, token1Label } = props;
   return (
     <LegendWrapper>
       <LegendItem>
@@ -132,7 +138,7 @@ export default function BlendGraph(props: BlendGraphProps) {
           }
         ]}
         showLegend={true}
-        LegendContent={BlendGraphLegend(token0Key, token1Key)}
+        LegendContent={<BlendGraphLegend token0Label={token0Key} token1Label={token1Key} />}
         yAxisDomain={['dataMin', 'dataMax']}
       />
     </ResponsiveContainerStyled>

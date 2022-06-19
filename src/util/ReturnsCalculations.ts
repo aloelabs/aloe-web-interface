@@ -19,16 +19,23 @@ export type PoolReturns = PoolPerformanceSnapshot[];
 export type TokenReturns = TokenPerformanceSnapshot[];
 
 export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenReturns, token1Returns: TokenReturns) {
-    if (poolReturns.length !== token0Returns.length || poolReturns.length !== token1Returns.length || poolReturns.length === 0) {
+    const hasEmptyData = poolReturns.length === 0 || token0Returns.length === 0 || token1Returns.length === 0;
+    if (hasEmptyData) {
         // TODO: fail more gracefully than this
-        const errorString = poolReturns.length === 0 ? 'Inputs cannot be empty!' : 'Arrays should have identical lengths and matching timestamps!';
-        throw new Error(errorString);
+        throw new Error('Inputs cannot be empty!');
+    }
+    let initialIndex = 0;
+    for (let i = 0; i < poolReturns.length; i++) {
+        if (poolReturns[i].total_supply !== null) {
+            initialIndex = i;
+            break;
+        }
     }
 
-    const initialSupply = poolReturns[0].total_supply;
-    const initialP0 = token0Returns[0].price;
-    const initialP1 = token1Returns[0].price;
-    const initialPoolTVL = (poolReturns[0].inventory0 * initialP0) + (poolReturns[0].inventory1 * initialP1);
+    const initialSupply = poolReturns[initialIndex].total_supply;
+    const initialP0 = token0Returns[initialIndex].price;
+    const initialP1 = token1Returns[initialIndex].price;
+    const initialPoolTVL = (poolReturns[initialIndex].inventory0 * initialP0) + (poolReturns[initialIndex].inventory1 * initialP1);
     const initialPricePerShare = initialPoolTVL / initialSupply;
     const initialSqrt = Math.sqrt(initialP0 * initialP1);
 
@@ -37,7 +44,7 @@ export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenR
         amount1: 0.5 * initialPoolTVL / initialP1,
     };
 
-    return poolReturns.map((snapshot, i) => {
+    return poolReturns.slice(initialIndex).map((snapshot, i) => {
         const p0 = token0Returns[i].price;
         const p1 = token1Returns[i].price;
 
