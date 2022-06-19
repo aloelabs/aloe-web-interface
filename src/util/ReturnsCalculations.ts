@@ -50,9 +50,9 @@ export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenR
 
         const pricePerShare = ((snapshot.inventory0 * p0) + (snapshot.inventory1 * p1)) / snapshot.total_supply;
         const pricePerShare5050 = ((matching5050Portfolio.amount0 * p0) + (matching5050Portfolio.amount1 * p1)) / initialSupply;
-
+        const pool = pricePerShare === Infinity ? NaN : pricePerShare / initialPricePerShare;
         return {
-            pool: pricePerShare / initialPricePerShare,
+            pool: pool,
             fifty_fifty: pricePerShare5050 / initialPricePerShare,
             sqrt: Math.sqrt(p0 * p1) / initialSqrt,
             token0: p0 / initialP0,

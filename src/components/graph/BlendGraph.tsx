@@ -84,10 +84,13 @@ export type BlendGraphProps = {
 export default function BlendGraph(props: BlendGraphProps) {
   const { data, token0Key, token1Key, fromDate, toDate } = props;
   const dates = data.map((d: any) => d.x) as string[];
+  // TODO: move this logic to a util function and use it in both BlendGraph and PortfolioGraph
+  const updatedTo = new Date(dates[dates.length - 1]);
+  const updatedFrom = new Date(dates[0]);
   const numberOfUniqueYears = new Set(
     dates.map((d) => parseISO(d).getFullYear())
   ).size;
-  const diffInDays = differenceInDays(toDate, fromDate);
+  const diffInDays = differenceInDays(updatedTo, updatedFrom);
   const step = getIdealStep(diffInDays, numberOfUniqueYears);
   const dateFormat = getIdealDateFormat(diffInDays);
   const ticks = getEvenlySpacedDates(dates, step).slice(1);
