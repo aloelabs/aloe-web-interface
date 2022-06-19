@@ -7,10 +7,11 @@ import { Text } from '../common/Typography';
 import Graph, { getIdealDateFormat, getIdealStep } from './Graph';
 
 const TEXT_COLOR = '#82a0b6';
-const TOTAL_RETURNS_GRADIENT_COLOR = '#59d67c';
-const TOTAL_RETURNS_STROKE_COLOR = '#00C143';
-const UNISWAP_V2_STROKE_COLOR = '#865EF2';
-const TOKEN_STROKE_COLOR = '#C2D1DD';
+const GREEN_GRADIENT_COLOR = '#59d67c';
+const GREEN_STROKE_COLOR = '#00C143';
+const PURPLE_STROKE_COLOR = '#865EF2';
+const GRAY_STROKE_COLOR = '#C2D1DD';
+const GRAY_GRADIENT_COLOR = '#A7BDCE';
 
 const ResponsiveContainerStyled = styled.div`
   position: relative;
@@ -47,20 +48,20 @@ const LegendItemBox = styled.div`
   border-radius: 8px;
 `;
 
-function BlendGraphLegend() {
+function BlendGraphLegend(token0Label: string, token1Label: string) {
   return (
     <LegendWrapper>
       <LegendItem>
-        <LegendItemBox color={TOTAL_RETURNS_STROKE_COLOR} />
+        <LegendItemBox color={GRAY_STROKE_COLOR} />
         <Text size='M' weight='medium' color={TEXT_COLOR}>Pool Returns</Text>
       </LegendItem>
       <LegendItem>
-        <LegendItemBox color={UNISWAP_V2_STROKE_COLOR} />
-        <Text size='M' weight='medium' color={TEXT_COLOR}>Uniswap V2</Text>
+        <LegendItemBox color={GREEN_STROKE_COLOR} />
+        <Text size='M' weight='medium' color={TEXT_COLOR}>{token0Label}</Text>
       </LegendItem>
       <LegendItem>
-        <LegendItemBox color={TOKEN_STROKE_COLOR} />
-        <Text size='M' weight='medium' color={TEXT_COLOR}>Token</Text>
+        <LegendItemBox color={PURPLE_STROKE_COLOR} />
+        <Text size='M' weight='medium' color={TEXT_COLOR}>{token1Label}</Text>
       </LegendItem>
     </LegendWrapper>
   );
@@ -94,12 +95,12 @@ export default function BlendGraph(props: BlendGraphProps) {
           <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>
               <stop
                 offset='-29%'
-                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+                stopColor={GRAY_GRADIENT_COLOR}
                 stopOpacity={0.25}
               />
               <stop
-                offset='99.93%'
-                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+                offset='75%'
+                stopColor={GRAY_GRADIENT_COLOR}
                 stopOpacity={0}
               />
             </linearGradient>
@@ -110,35 +111,28 @@ export default function BlendGraph(props: BlendGraphProps) {
         charts={[
           {
             type: 'monotone',
-            dataKey: 'Total Returns',
-            stroke: TOTAL_RETURNS_STROKE_COLOR,
+            dataKey: 'Pool Returns',
+            stroke: GRAY_STROKE_COLOR,
             fill: 'url(#totalReturnsGradient)',
             fillOpacity: 1,
           },
           {
             type: 'monotone',
-            dataKey: 'Uniswap V2',
-            stroke: UNISWAP_V2_STROKE_COLOR,
-            fillOpacity: 0,
-            strokeDasharray: '5 5',
-          },
-          {
-            type: 'monotone',
             dataKey: token0Key,
-            stroke: TOKEN_STROKE_COLOR,
+            stroke: GREEN_STROKE_COLOR,
             fillOpacity: 0,
-            strokeDasharray: '5 5',
+            strokeDasharray: '2 2',
           },
           {
             type: 'monotone',
             dataKey: token1Key,
-            stroke: TOKEN_STROKE_COLOR,
+            stroke: PURPLE_STROKE_COLOR,
             fillOpacity: 0,
-            strokeDasharray: '5 5',
+            strokeDasharray: '2 2',
           }
         ]}
         showLegend={true}
-        LegendContent={<BlendGraphLegend />}
+        LegendContent={BlendGraphLegend(token0Key, token1Key)}
         yAxisDomain={['dataMin', 'dataMax']}
       />
     </ResponsiveContainerStyled>

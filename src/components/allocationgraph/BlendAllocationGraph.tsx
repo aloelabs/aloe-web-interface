@@ -20,6 +20,7 @@ import {
 } from '../../util/ReturnsCalculations';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { GetTokenData } from '../../data/TokenData';
+import { ethers } from 'ethers';
 
 const generateData = (
   from: Date,
@@ -96,21 +97,16 @@ function makeRequest(reqUrl: string) {
 }
 
 const poolMatcher = (pool: string) => {
-  switch (pool) {
-    case '0x0b76abb170519c292da41404fdc30bb5bef308fc':
-      return '0x0B76ABb170519C292da41404fDc30Bb5BEf308Fc';
-    case '0x021016fbb4d3aaeaa440508c5e06ce8c1039fccd':
-      return '0x021016FbB4d3AAeaA440508C5E06Ce8c1039FCCD';
-    case '0xe801c4175a0341e65dfef8f3b79e1889047afebb':
-      return '0xE801c4175A0341e65dFef8F3B79e1889047AfEbb';
-    case '0x37dc6fcb5c03d46b097b094785c9fa557aa32fd4':
-      return '0x37dc6FCb5C03d46b097B094785c9fA557aa32fd4';
-    default:
-      return pool;
-  }
+  // API expects the checksum address (one with proper capitalization).
+  // ethers can compute that for us:
+  return ethers.utils.getAddress(pool);
+  // TODO in the future the API may be ok with all lowercase / arbitrary capitalization,
+  // in which case this isn't needed
 };
 
 const tokenMatcher = (token: string) => {
+  // TODO once API is fixed, we probably won't need this. But could use checksummed addresses
+  // here too, if we feel like it
   switch (token) {
     case '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2':
       return '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
@@ -141,12 +137,12 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   const token1Key = `${token1Ticker} Price`;
   const initialData = [
     {
-      'Total Returns': 0,
+      'Pool Returns': 0,
       'Uniswap V2': 0,
       x: fromDate.toISOString(),
     },
     {
-      'Total Returns': 0,
+      'Pool Returns': 0,
       'Uniswap V2': 0,
       x: toDate.toISOString(),
     },
@@ -222,6 +218,15 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
             if (token0Data.length === token1Data.length * 2) {
               token0Data = token0Data.filter((_, i) => i % 2 === 0);
             }
+            // TODO: This is a temporary hack for USDC since API isn't returning prices for it rn.
+            if (token0Data.length === 0) {
+              token0Data = token1Data.map(entry => {
+                return {
+                  ...entry,
+                  price: 1.0
+                };
+              })
+            }
             try {
               const calculatedReturns = calculateReturns(
                 poolReturnsData,
@@ -231,10 +236,11 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
               let updatedData = [];
               for (let i = 0; i < calculatedReturns.length; i++) {
                 let updatedObj = {} as any;
-                updatedObj['Total Returns'] = calculatedReturns[i]['pool'];
-                updatedObj['Uniswap V2'] = calculatedReturns[i]['sqrt'];
-                updatedObj[token0Key] = calculatedReturns[i]['token0'];
-                updatedObj[token1Key] = calculatedReturns[i]['token1'];
+                updatedObj['Pool Returns'] = (calculatedReturns[i]['pool'] - 1.0) * 100;
+                // updatedObj['Uniswap V2'] = (calculatedReturns[i]['sqrt'] - 1.0) * 100;
+                // updatedObj['50/50 HODL'] = (calculatedReturns[i]['fifty_fifty'] - 1.0) * 100;
+                updatedObj[token0Key] = (calculatedReturns[i]['token0'] - 1.0) * 100;
+                updatedObj[token1Key] = (calculatedReturns[i]['token1'] - 1.0) * 100;
                 updatedObj['x'] = new Date(
                   calculatedReturns[i]['timestamp']
                 ).toISOString();
