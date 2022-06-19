@@ -318,7 +318,7 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
   const tooltipContent = <>As prices shift, tokens are moved between Uniswap{combinedSiloLabelA} to
   keep liquidity in range. Blend replicates Uniswap V2 payoffs with
   extreme capital efficiency, so most tokens can earn yield in{' '}
-  {combinedSiloLabelB}. Value marked as {<i>"Float"</i>} helps facilitate
+  {combinedSiloLabelB}. Value marked as {<em>"Float"</em>} helps facilitate
   gas-efficient withdrawals.</>;
 
   return (
