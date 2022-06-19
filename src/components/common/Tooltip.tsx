@@ -18,7 +18,10 @@ const ICON_GAPS = {
 }
 
 const InfoButton = styled.button.attrs(
-  (props: { icon: string, iconSize: 'S' | 'M' | 'L' }) => props
+  (props: { 
+    icon: string,
+    iconSize: 'S' | 'M' | 'L',
+  }) => props
 )`
   ${tw`flex justify-center items-center`}
   gap: ${(props) => ICON_GAPS[props.iconSize]}px;
@@ -53,9 +56,9 @@ const TooltipContainer = styled.div.attrs(
   ${tw`flex flex-col items-center justify-center absolute`}
   ${(props) => {
     if (props.position.startsWith('top')) {
-      return 'bottom: calc(100% + 8px);';
+      return 'bottom: calc(100% + 14px);';
     } else {
-      return 'top: calc(100% + 8px);';
+      return 'top: calc(100% + 14px);';
     }
   }}
   ${(props) => {
@@ -116,9 +119,8 @@ const TooltipContainer = styled.div.attrs(
 `;
 
 export type TooltipProps = {
-  content: string;
-  buttonText: string;
   buttonSize: 'S' | 'M' | 'L';
+  content: string;
   position:
     | 'top-left'
     | 'top-center'
@@ -126,12 +128,14 @@ export type TooltipProps = {
     | 'bottom-left'
     | 'bottom-center'
     | 'bottom-right';
+  buttonClassName?: string;
+  buttonText?: string;
   title?: string;
   filled?: boolean;
 };
 
-export function FilledTooltip(props: TooltipProps) {
-  const { content, buttonText, buttonSize, position, title, filled } = props;
+export default function Tooltip(props: TooltipProps) {
+  const { buttonSize, content, position, buttonClassName, buttonText, title, filled } = props;
   const [isOpen, setIsOpen] = React.useState(false);
   const tooltipRef = React.useRef<HTMLDivElement>(null);
   useClickOutside(tooltipRef, () => setIsOpen(false), isOpen);
@@ -149,10 +153,12 @@ export function FilledTooltip(props: TooltipProps) {
           </Text>
         </TooltipContainer>
       )}
-      <InfoButton icon={InfoIcon} iconSize={buttonSize} onClick={() => setIsOpen(!isOpen)}>
-        <Text size={buttonSize} weight='medium' color='rgba(130, 160, 182, 1)'>
-          {buttonText}
-        </Text>
+      <InfoButton icon={InfoIcon} iconSize={buttonSize} onClick={() => setIsOpen(!isOpen)} className={buttonClassName}>
+        {buttonText && (
+          <Text size={buttonSize} weight='medium' color='rgba(130, 160, 182, 1)'>
+            {buttonText}
+          </Text>
+        )}
       </InfoButton>
     </div>
   );

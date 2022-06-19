@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import { SectionLabel } from './DepositTab';
 import { Text } from '../common/Typography';
-import { FilledTooltip } from '../common/Tooltip';
+import Tooltip from '../common/Tooltip';
 
 const MESSAGE_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
 
@@ -100,8 +100,7 @@ export default function MaxSlippageInput(props: MaxSlippageInputProps) {
   return (
     <div className='w-full flex flex-col gap-y-2 mt-6'>
       <SectionLabel className='flex gap-x-2 mb-1'>
-        <FilledTooltip content='Est nisl feugiat turpis amet, in sit bibendum tincidunt et. Vitae aliquam quam tempor, facilisi.' buttonText='Max Slippage' buttonSize='S' position='top-left' filled={true} />
-        {/* <Text size='S' weight='medium' color={LABEL_TEXT_COLOR} className='inline'>Max Slippage</Text> <img src={InfoIcon} width={16} height={16} alt='info' /> */}
+        <Tooltip content='Est nisl feugiat turpis amet, in sit bibendum tincidunt et. Vitae aliquam quam tempor, facilisi.' buttonText='Max Slippage' buttonSize='S' position='top-left' filled={true} />
       </SectionLabel>
       <Tab.Group>
         <Tab.List>
