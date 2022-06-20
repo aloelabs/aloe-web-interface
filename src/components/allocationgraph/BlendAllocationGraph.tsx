@@ -187,9 +187,9 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
     }
   };
 
-  const pool = poolMatcher(poolData.poolAddress); //'0x0B76ABb170519C292da41404fDc30Bb5BEf308Fc';//'0x33cB657E7fd57F1f2d5f392FB78D5FA80806d1B4';//'0xE801c4175A0341e65dFef8F3B79e1889047AfEbb';
-  const token0 = tokenMatcher(token0Address); //'0x956f47f50a910163d8bf957cf5846d573e7f87ca';//'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';//'0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
-  const token1 = tokenMatcher(token1Address); //'0xc7283b66eb1eb5fb86327f08e1b5816b0720212b';//'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+  const pool = poolMatcher(poolData.poolAddress);
+  const token0 = tokenMatcher(token0Address);
+  const token1 = tokenMatcher(token1Address);
 
   useEffect(() => {
     let mounted = true;
