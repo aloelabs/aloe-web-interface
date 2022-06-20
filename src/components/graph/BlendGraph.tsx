@@ -1,10 +1,8 @@
 import React from 'react';
 import BlendGraphTooltip from './tooltips/BlendGraphTooltip';
-import { differenceInDays, parseISO } from 'date-fns/esm';
 import styled from 'styled-components';
-import { getEvenlySpacedDates } from '../../util/Dates';
 import { Text } from '../common/Typography';
-import Graph, { getIdealDateFormat, getIdealStep } from './Graph';
+import Graph from './Graph';
 
 const TEXT_COLOR = '#82a0b6';
 const GREEN_GRADIENT_COLOR = '#59d67c';
@@ -82,24 +80,12 @@ export type BlendGraphProps = {
 };
 
 export default function BlendGraph(props: BlendGraphProps) {
-  const { data, token0Key, token1Key, fromDate, toDate } = props;
-  const dates = data.map((d: any) => d.x) as string[];
-  // TODO: move this logic to a util function and use it in both BlendGraph and PortfolioGraph
-  const updatedTo = new Date(dates[dates.length - 1]);
-  const updatedFrom = new Date(dates[0]);
-  const numberOfUniqueYears = new Set(
-    dates.map((d) => parseISO(d).getFullYear())
-  ).size;
-  const diffInDays = differenceInDays(updatedTo, updatedFrom);
-  const step = getIdealStep(diffInDays, numberOfUniqueYears);
-  const dateFormat = getIdealDateFormat(diffInDays);
-  const ticks = getEvenlySpacedDates(dates, step).slice(1);
+  const { data, token0Key, token1Key } = props;
   return (
     <ResponsiveContainerStyled>
       <Graph
         data={data}
         containerHeight={330}
-        dateFormat={dateFormat}
         linearGradients={[
           <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>
               <stop
@@ -114,7 +100,6 @@ export default function BlendGraph(props: BlendGraphProps) {
               />
             </linearGradient>
         ]}
-        ticks={ticks}
         tickTextColor={TEXT_COLOR}
         CustomTooltip={<BlendGraphTooltip />}
         charts={[

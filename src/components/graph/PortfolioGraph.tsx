@@ -1,8 +1,6 @@
 import axios from 'axios';
 import {
   closestTo,
-  differenceInDays,
-  parseISO,
   subDays,
   subMinutes,
   subMonths,
@@ -11,10 +9,9 @@ import {
 } from 'date-fns/esm';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { getEvenlySpacedDates } from '../../util/Dates';
 import { CombinedPercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
-import Graph, { getIdealDateFormat, getIdealStep } from './Graph';
+import Graph from './Graph';
 import GraphButtons, { buttonIdxToText } from './GraphButtons';
 import PortfolioGraphTooltip, { PORTFOLIO_TOOLTIP_WIDTH } from './tooltips/PortfolioGraphTooltip';
 
@@ -182,27 +179,6 @@ export default function PortfolioGraph() {
   useEffect(() => {
     let mounted = true;
     const fetchPoolStats = async () => {
-      axios.all(
-        [
-          
-        ]
-      )
-      // const shareBalancesResponse = await axios.get(
-      //   // `http://34.94.221.78:3000/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/1651632134`
-      //   `http://34.94.221.78:3000/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
-      // );
-      // // const netDepositsResponse = await axios.get(
-      // //   `http://34.94.221.78:3000/net_deposits/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/1651632134`
-      // // );
-      // const poolResponse = await axios.get(
-      //   `http://34.94.221.78:3000/pool_returns/0xE801c4175A0341e65dFef8F3B79e1889047AfEbb/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
-      // );
-      // const wbtcResponse = await axios.get(
-      //   `http://34.94.221.78:3000/token_returns/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
-      // );
-      // const wethResponse = await axios.get(
-      //   `http://34.94.221.78:3000/token_returns/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
-      // );
       const getShareBalances = makeRequest(
         `http://34.94.221.78:3000/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
       );
@@ -270,16 +246,6 @@ export default function PortfolioGraph() {
     };
   }, [activeButton, toDate]);
 
-  const dates = data.map((d: any) => d.x) as string[];
-  const updatedTo = new Date(dates[dates.length - 1]);
-  const updatedFrom = new Date(dates[0]);
-  const numberOfUniqueYears = new Set(
-    dates.map((d) => parseISO(d).getFullYear())
-  ).size;
-  const diffInDays = differenceInDays(updatedTo, updatedFrom);
-  const step = getIdealStep(diffInDays, numberOfUniqueYears);
-  const dateFormat = getIdealDateFormat(diffInDays);
-  const ticks = getEvenlySpacedDates(dates, step).slice(1);
   const initialEstimatedValue = data[0]['Portfolio Value'];
   const currentEstimatedValue = data[data.length - 1]['Portfolio Value'];
   const estimatedValueChange = currentEstimatedValue - initialEstimatedValue;
@@ -333,8 +299,6 @@ export default function PortfolioGraph() {
             activeDot: <NetReturnsDot />,
           },
         ]}
-        dateFormat={dateFormat}
-        ticks={ticks}
         tickTextColor={TEXT_COLOR}
         linearGradients={[
           <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>
