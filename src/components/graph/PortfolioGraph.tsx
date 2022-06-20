@@ -5,7 +5,7 @@ import {
   subMinutes,
   subMonths,
   subWeeks,
-  subYears
+  subYears,
 } from 'date-fns/esm';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -13,7 +13,11 @@ import { CombinedPercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
 import Graph from './Graph';
 import GraphButtons, { buttonIdxToText } from './GraphButtons';
-import PortfolioGraphTooltip, { PORTFOLIO_TOOLTIP_WIDTH } from './tooltips/PortfolioGraphTooltip';
+import PortfolioGraphTooltip, {
+  PORTFOLIO_TOOLTIP_WIDTH,
+} from './tooltips/PortfolioGraphTooltip';
+
+const GRAPH_HEIGHT = 222.5;
 
 //TODO: remove this once API is fixed
 const TEMP_TIMESTAMP = 1651632134000;
@@ -23,10 +27,8 @@ const TOTAL_RETURNS_GRADIENT_COLOR = '#59d67c';
 const TOTAL_RETURNS_STROKE_COLOR = '#00C143';
 const NET_DEPOSITS_STROKE_COLOR = '#ccdfed';
 
-const InfoContainer = styled.div.attrs(
-  (props: { blur?: boolean}) => props
-)`
-  opacity: ${(props) => props.blur ? 0.2 : 1};
+const InfoContainer = styled.div.attrs((props: { blur?: boolean }) => props)`
+  opacity: ${(props) => (props.blur ? 0.2 : 1)};
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -84,6 +86,17 @@ const ValueAndChangeContainer = styled.div`
   }
 `;
 
+const GraphPlaceholderWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: ${GRAPH_HEIGHT}px;
+`;
+
 const CustomCursor = (props: any) => {
   const { points } = props;
   const { x, y } = points[0];
@@ -126,12 +139,9 @@ function NetReturnsDot(props: any) {
 }
 
 function makeRequest(reqUrl: string) {
-  return axios.get(
-    reqUrl,
-    {
-      timeout: 10000,
-    }
-  );
+  return axios.get(reqUrl, {
+    timeout: 10000,
+  });
 }
 
 export default function PortfolioGraph() {
@@ -140,12 +150,15 @@ export default function PortfolioGraph() {
   const [fromDate, setFromDate] = useState(subWeeks(now, 2));
   const [toDate, setToDate] = useState(subWeeks(now, 1));
   const [isTooltipActive, setIsTooltipActive] = useState(false);
-  const [data, setData] = useState(
-    [{ 'Portfolio Value': 0, 'Net Deposits': 0, x: fromDate.toISOString() },
-    { 'Portfolio Value': 0, 'Net Deposits': 0, x: toDate.toISOString() }]
-  );
+  const [data, setData] = useState([
+    { 'Portfolio Value': 0, 'Net Deposits': 0, x: fromDate.toISOString() },
+    { 'Portfolio Value': 0, 'Net Deposits': 0, x: toDate.toISOString() },
+  ]);
+  const [graphLoading, setGraphLoading] = useState(true);
+  const [graphError, setGraphError] = useState(false);
 
   const handleClick = (key: number) => {
+    setGraphLoading(true);
     setActiveButton(key);
     let now = new Date(TEMP_TIMESTAMP);
     now = subWeeks(now, 1);
@@ -183,65 +196,97 @@ export default function PortfolioGraph() {
     let mounted = true;
     const fetchPoolStats = async () => {
       const getShareBalances = makeRequest(
-        `http://34.94.221.78:3000/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+        `http://34.94.221.78:3000/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(
+          activeButton
+        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
       // const netDepositsResponse = await axios.get(
       //   `http://34.94.221.78:3000/net_deposits/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/1651632134`
       // );
       const getPool = makeRequest(
-        `http://34.94.221.78:3000/pool_returns/0xE801c4175A0341e65dFef8F3B79e1889047AfEbb/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+        `http://34.94.221.78:3000/pool_returns/0xE801c4175A0341e65dFef8F3B79e1889047AfEbb/1/${buttonIdxToText(
+          activeButton
+        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
       const getWbtc = makeRequest(
-        `http://34.94.221.78:3000/token_returns/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+        `http://34.94.221.78:3000/token_returns/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/1/${buttonIdxToText(
+          activeButton
+        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
       const getWeth = makeRequest(
-        `http://34.94.221.78:3000/token_returns/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/1/${buttonIdxToText(activeButton).toLowerCase()}/${(subMinutes(toDate, 2).getTime()/1000).toFixed(0)}`
+        `http://34.94.221.78:3000/token_returns/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/1/${buttonIdxToText(
+          activeButton
+        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
-      axios.all([getShareBalances, getPool, getWbtc, getWeth]).then(axios.spread((shareBalancesResponse, poolResponse, wbtcResponse, wethResponse) => {
-        const shareBalanaces = shareBalancesResponse.data;
-        // const netDeposits = netDepositsResponse.data;
-        const poolReturns = poolResponse.data;
-        const wbtcReturns = wbtcResponse.data;
-        const wethReturns = wethResponse.data;
-        if (mounted) {
-          let totalSupplyData = {} as any;
-          let portfolioData = [];
-          const shareBalancesKeys = Object.keys(shareBalanaces);
-          // const netDepositsKeys = Object.keys(netDeposits);
-          for (let i = 0; i < poolReturns.length; i++) {
-            const poolReturn = poolReturns[i];
-            const wbtcReturn = wbtcReturns[i];
-            const wethReturn = wethReturns[i];
-            const timestamp = poolReturn.timestamp;
-            totalSupplyData[new Date(timestamp).toISOString()] = {
-              value: (poolReturn.inventory0 * wbtcReturn.price + poolReturn.inventory1 * wethReturn.price),
-              supply: poolReturn.total_supply,
-            };
-          }
-          const dates = Object.keys(totalSupplyData);
-          for (let i = 0; i < shareBalancesKeys.length; i++) {
-            const shareBalancesKey = shareBalancesKeys[i];
-            // const netDepositsKey = netDepositsKeys[i];
-            const shareBalancesValue = shareBalanaces[shareBalancesKey];
-            // const netDepositsValue = netDeposits[netDepositsKey];
-            for (let j = 0; j < shareBalancesValue.length; j++) {
-              const timestamp = shareBalancesValue[j].timestamp * 1000;
-              const date = new Date(timestamp);
-              const closestDate = closestTo(date, dates.map((d) => new Date(d)));
-              if (closestDate) {
-                const obj = totalSupplyData[closestDate.toISOString()];
-                const percentOwned = shareBalancesValue[j].balance / obj.supply;
-                portfolioData.push({
-                  'Portfolio Value': percentOwned * obj.value,
-                  'Net Deposits': 0,//netDepositsValue[j].net_deposit,
-                  x: new Date(timestamp).toISOString(),
-                });
+      axios
+        .all([getShareBalances, getPool, getWbtc, getWeth])
+        .then(
+          axios.spread(
+            (
+              shareBalancesResponse,
+              poolResponse,
+              wbtcResponse,
+              wethResponse
+            ) => {
+              const shareBalanaces = shareBalancesResponse.data;
+              // const netDeposits = netDepositsResponse.data;
+              const poolReturns = poolResponse.data;
+              const wbtcReturns = wbtcResponse.data;
+              const wethReturns = wethResponse.data;
+              let totalSupplyData = {} as any;
+              let portfolioData = [];
+              const shareBalancesKeys = Object.keys(shareBalanaces);
+              // const netDepositsKeys = Object.keys(netDeposits);
+              for (let i = 0; i < poolReturns.length; i++) {
+                const poolReturn = poolReturns[i];
+                const wbtcReturn = wbtcReturns[i];
+                const wethReturn = wethReturns[i];
+                const timestamp = poolReturn.timestamp;
+                totalSupplyData[new Date(timestamp).toISOString()] = {
+                  value:
+                    poolReturn.inventory0 * wbtcReturn.price +
+                    poolReturn.inventory1 * wethReturn.price,
+                  supply: poolReturn.total_supply,
+                };
+              }
+              const dates = Object.keys(totalSupplyData);
+              for (let i = 0; i < shareBalancesKeys.length; i++) {
+                const shareBalancesKey = shareBalancesKeys[i];
+                // const netDepositsKey = netDepositsKeys[i];
+                const shareBalancesValue = shareBalanaces[shareBalancesKey];
+                // const netDepositsValue = netDeposits[netDepositsKey];
+                for (let j = 0; j < shareBalancesValue.length; j++) {
+                  const timestamp = shareBalancesValue[j].timestamp * 1000;
+                  const date = new Date(timestamp);
+                  const closestDate = closestTo(
+                    date,
+                    dates.map((d) => new Date(d))
+                  );
+                  if (closestDate) {
+                    const obj = totalSupplyData[closestDate.toISOString()];
+                    const percentOwned =
+                      shareBalancesValue[j].balance / obj.supply;
+                    portfolioData.push({
+                      'Portfolio Value': percentOwned * obj.value,
+                      'Net Deposits': 0, //netDepositsValue[j].net_deposit,
+                      x: new Date(timestamp).toISOString(),
+                    });
+                  }
+                }
+              }
+              if (mounted) {
+                setData(portfolioData);
+                setGraphLoading(false);
               }
             }
+          )
+        )
+        .catch(() => {
+          if (mounted) {
+            setGraphError(true);
+            setGraphLoading(false);
           }
-          setData(portfolioData);
-        }
-      }));
+        });
     };
     fetchPoolStats();
     return () => {
@@ -256,9 +301,7 @@ export default function PortfolioGraph() {
     (estimatedValueChange / initialEstimatedValue) * 100 || 0;
   return (
     <ResponsiveContainerStyled>
-      <InfoContainer
-        blur={isTooltipActive}
-      >
+      <InfoContainer blur={isTooltipActive}>
         <Text size='XL' weight='medium' color='rgba(130, 160, 182, 1)'>
           Estimated Value
         </Text>
@@ -279,51 +322,68 @@ export default function PortfolioGraph() {
       <GraphButtonsWrapper blur={isTooltipActive}>
         <GraphButtons activeButton={activeButton} handleClick={handleClick} />
       </GraphButtonsWrapper>
-      <Graph
-        data={data}
-        containerHeight={222.5}
-        containerClassName='absolute bottom-0'
-        charts={[
-          {
-            type: 'monotone',
-            dataKey: 'Portfolio Value',
-            stroke: TOTAL_RETURNS_STROKE_COLOR,
-            fillOpacity: 1,
-            fill: 'url(#totalReturnsGradient)',
-            activeDot: <TotalReturnsDot />,
-          },
-          {
-            type: 'stepAfter',
-            dataKey: 'Net Deposits',
-            stroke: isTooltipActive ? NET_DEPOSITS_STROKE_COLOR : 'transparent',
-            fill: 'none',
-            fillOpacity: 0,
-            strokeDasharray: '5 5',
-            activeDot: <NetReturnsDot />,
-          },
-        ]}
-        tickTextColor={TEXT_COLOR}
-        linearGradients={[
-          <linearGradient id='totalReturnsGradient' x1='0' y1='0' x2='0' y2='1'>
-            <stop
-              offset='-29%'
-              stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
-              stopOpacity={0.25}
-            />
-            <stop
-              offset='99.93%'
-              stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
-              stopOpacity={0}
-            />
-          </linearGradient>,
-        ]}
-        CustomTooltip={<PortfolioGraphTooltip />}
-        tooltipPosition={{ x: undefined, y: -155.83 }}
-        tooltipOffset={-(PORTFOLIO_TOOLTIP_WIDTH / 2)}
-        tooltipCursor={<CustomCursor />}
-        setIsActive={setIsTooltipActive}
-        allowEscapeViewBoxX={true}
-      />
+      {graphLoading && (
+        <GraphPlaceholderWrapper>
+          <Text size='M' weight='medium'>
+            Loading...
+          </Text>
+        </GraphPlaceholderWrapper>
+      )}
+      {!graphLoading && (
+        <Graph
+          data={data}
+          containerHeight={GRAPH_HEIGHT}
+          containerClassName='absolute bottom-0'
+          charts={[
+            {
+              type: 'monotone',
+              dataKey: 'Portfolio Value',
+              stroke: TOTAL_RETURNS_STROKE_COLOR,
+              fillOpacity: 1,
+              fill: 'url(#totalReturnsGradient)',
+              activeDot: <TotalReturnsDot />,
+            },
+            {
+              type: 'stepAfter',
+              dataKey: 'Net Deposits',
+              stroke: isTooltipActive
+                ? NET_DEPOSITS_STROKE_COLOR
+                : 'transparent',
+              fill: 'none',
+              fillOpacity: 0,
+              strokeDasharray: '5 5',
+              activeDot: <NetReturnsDot />,
+            },
+          ]}
+          tickTextColor={TEXT_COLOR}
+          linearGradients={[
+            <linearGradient
+              id='totalReturnsGradient'
+              x1='0'
+              y1='0'
+              x2='0'
+              y2='1'
+            >
+              <stop
+                offset='-29%'
+                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+                stopOpacity={0.25}
+              />
+              <stop
+                offset='99.93%'
+                stopColor={TOTAL_RETURNS_GRADIENT_COLOR}
+                stopOpacity={0}
+              />
+            </linearGradient>,
+          ]}
+          CustomTooltip={<PortfolioGraphTooltip />}
+          tooltipPosition={{ x: undefined, y: -155.83 }}
+          tooltipOffset={-(PORTFOLIO_TOOLTIP_WIDTH / 2)}
+          tooltipCursor={<CustomCursor />}
+          setIsActive={setIsTooltipActive}
+          allowEscapeViewBoxX={true}
+        />
+      )}
     </ResponsiveContainerStyled>
   );
 }

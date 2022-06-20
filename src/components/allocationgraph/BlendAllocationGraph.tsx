@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BlendGraph from '../graph/BlendGraph';
 import {
-  add,
-  differenceInDays,
   subDays,
   subMinutes,
   subMonths,
@@ -21,6 +19,7 @@ import {
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { GetTokenData } from '../../data/TokenData';
 import { ethers } from 'ethers';
+import { Text } from '../common/Typography';
 
 //TODO REMOVE WE ONCE API IS FIXED
 const TEMP_TIMESTAMP = 1651632134000;
@@ -169,9 +168,10 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
           activeButton
         ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
-      axios.all([getPoolReturns, getToken0, getToken1]).then(
-        axios.spread((poolReturns, token0, token1) => {
-          if (mounted) {
+      axios
+        .all([getPoolReturns, getToken0, getToken1])
+        .then(
+          axios.spread((poolReturns, token0, token1) => {
             const poolReturnsData = poolReturns.data as PoolReturns;
             let token0Data = token0.data as TokenReturns;
             const token1Data = token1.data as TokenReturns;
@@ -181,12 +181,12 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
             }
             // TODO: This is a temporary hack for USDC since API isn't returning prices for it rn.
             if (token0Data.length === 0) {
-              token0Data = token1Data.map(entry => {
+              token0Data = token1Data.map((entry) => {
                 return {
                   ...entry,
-                  price: 1.0
+                  price: 1.0,
                 };
-              })
+              });
             }
             try {
               const calculatedReturns = calculateReturns(
@@ -197,29 +197,38 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
               let updatedData = [];
               for (let i = 0; i < calculatedReturns.length; i++) {
                 let updatedObj = {} as any;
-                updatedObj['Pool Returns'] = (calculatedReturns[i]['pool'] - 1.0) * 100;
+                updatedObj['Pool Returns'] =
+                  (calculatedReturns[i]['pool'] - 1.0) * 100;
                 // updatedObj['Uniswap V2'] = (calculatedReturns[i]['sqrt'] - 1.0) * 100;
                 // updatedObj['50/50 HODL'] = (calculatedReturns[i]['fifty_fifty'] - 1.0) * 100;
-                updatedObj[token0Key] = (calculatedReturns[i]['token0'] - 1.0) * 100;
-                updatedObj[token1Key] = (calculatedReturns[i]['token1'] - 1.0) * 100;
+                updatedObj[token0Key] =
+                  (calculatedReturns[i]['token0'] - 1.0) * 100;
+                updatedObj[token1Key] =
+                  (calculatedReturns[i]['token1'] - 1.0) * 100;
                 updatedObj['x'] = new Date(
                   calculatedReturns[i]['timestamp']
                 ).toISOString();
                 updatedData.push(updatedObj);
               }
-              setData(updatedData);
-              setGraphError(false);
-              setGraphLoading(false);
+              if (mounted) {
+                setData(updatedData);
+                setGraphError(false);
+                setGraphLoading(false);
+              }
             } catch {
-              setGraphError(false);
-              setGraphLoading(false);
+              if (mounted) {
+                setGraphError(true);
+                setGraphLoading(false);
+              }
             }
+          })
+        )
+        .catch(() => {
+          if (mounted) {
+            setGraphError(true);
+            setGraphLoading(false);
           }
-        })
-      ).catch(() => {
-        setGraphError(true);
-        setGraphLoading(false);
-      });
+        });
     }
     fetchData();
     return () => {
@@ -243,18 +252,14 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
           <GraphButtons activeButton={activeButton} handleClick={handleClick} />
         </GraphButtonsWrapper>
         {graphLoading && (
-          <div>
-            <p className='text-center'>
-              Loading...
-            </p>
-          </div>
+          <Text size='M' weight='medium'>
+            Loading...
+          </Text>
         )}
         {!graphLoading && graphError && (
-          <div>
-            <p className='text-center'>
-              There was an error loading the graph. Please try again later.
-            </p>
-          </div>
+          <Text size='M' weight='medium'>
+            There was an error loading the graph. Please try again later.
+          </Text>
         )}
         {!graphLoading && !graphError && (
           <BlendGraph
