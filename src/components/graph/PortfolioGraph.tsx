@@ -15,6 +15,9 @@ import Graph from './Graph';
 import GraphButtons, { buttonIdxToText } from './GraphButtons';
 import PortfolioGraphTooltip, { PORTFOLIO_TOOLTIP_WIDTH } from './tooltips/PortfolioGraphTooltip';
 
+//TODO: remove this once API is fixed
+const TEMP_TIMESTAMP = 1651632134000;
+
 const TEXT_COLOR = '#82a0b6';
 const TOTAL_RETURNS_GRADIENT_COLOR = '#59d67c';
 const TOTAL_RETURNS_STROKE_COLOR = '#00C143';
@@ -133,7 +136,7 @@ function makeRequest(reqUrl: string) {
 
 export default function PortfolioGraph() {
   const [activeButton, setActiveButton] = useState(0);
-  const now = new Date(1651632134000);
+  const now = new Date(TEMP_TIMESTAMP);
   const [fromDate, setFromDate] = useState(subWeeks(now, 2));
   const [toDate, setToDate] = useState(subWeeks(now, 1));
   const [isTooltipActive, setIsTooltipActive] = useState(false);
@@ -144,7 +147,7 @@ export default function PortfolioGraph() {
 
   const handleClick = (key: number) => {
     setActiveButton(key);
-    let now = new Date(1651632134000);
+    let now = new Date(TEMP_TIMESTAMP);
     now = subWeeks(now, 1);
     switch (key) {
       case 0:

@@ -22,47 +22,8 @@ import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { GetTokenData } from '../../data/TokenData';
 import { ethers } from 'ethers';
 
-const generateData = (
-  from: Date,
-  to: Date,
-  base1: number,
-  base2: number,
-  base3: number
-) => {
-  let difference = differenceInDays(to, from);
-  let interval = {};
-  if (difference <= 1) {
-    interval = { minutes: 15 };
-  } else if (difference <= 7) {
-    interval = { hours: 3 };
-  } else if (difference <= 31) {
-    interval = { hours: 8 };
-  } else if (difference <= 31 * 3) {
-    interval = { days: 1 };
-  } else if (difference <= 367) {
-    interval = { weeks: 1 };
-  } else {
-    interval = { months: 1 };
-  }
-  let data = [];
-  let currentDate = from;
-  while (currentDate <= to) {
-    base1 += Math.random() * 0.3 * Math.pow(-1, Math.ceil(Math.random() * 2));
-    base2 += Math.random() * 0.3 * Math.pow(-1, Math.ceil(Math.random() * 2));
-    base3 += Math.random() * 0.3 * Math.pow(-1, Math.ceil(Math.random() * 2));
-    base1 = Math.abs(base1);
-    base2 = Math.abs(base2);
-    base3 = Math.abs(base3);
-    data.push({
-      'Total Returns': base1,
-      'Uniswap V2': base2,
-      '50/50 HODL': base3,
-      x: currentDate.toISOString(),
-    });
-    currentDate = add(currentDate, interval);
-  }
-  return data;
-};
+//TODO REMOVE WE ONCE API IS FIXED
+const TEMP_TIMESTAMP = 1651632134000;
 
 const GraphButtonsWrapper = styled.div`
   ${tw`w-max`}
@@ -122,11 +83,10 @@ export type BlendAllocationGraphProps = {
 export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   const { poolData } = props;
   const [activeButton, setActiveButton] = useState(0);
-  const now = new Date(1651632134000);
+  const now = new Date(TEMP_TIMESTAMP);
   const [fromDate, setFromDate] = useState(subDays(now, 1));
   const [toDate, setToDate] = useState(now);
   const [graphLoading, setGraphLoading] = useState(true);
-  const [graphEmpty, setGraphEmpty] = useState(false);
   const [graphError, setGraphError] = useState(false);
 
   const token0Address = poolData.token0Address.toLowerCase();
@@ -156,7 +116,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   const handleClick = (key: number) => {
     setGraphLoading(true);
     setActiveButton(key);
-    let now = new Date(1651632134000);
+    let now = new Date(TEMP_TIMESTAMP);
     switch (key) {
       case 0:
         setFromDate(subDays(now, 1));
@@ -216,6 +176,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
             let token0Data = token0.data as TokenReturns;
             const token1Data = token1.data as TokenReturns;
             if (token0Data.length === token1Data.length * 2) {
+              //TODO: This is a temporary fix since the API is currently returning duplicate data
               token0Data = token0Data.filter((_, i) => i % 2 === 0);
             }
             // TODO: This is a temporary hack for USDC since API isn't returning prices for it rn.
@@ -247,18 +208,15 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
                 updatedData.push(updatedObj);
               }
               setData(updatedData);
-              setGraphEmpty(false);
               setGraphError(false);
               setGraphLoading(false);
-            } catch (e) {
-              setGraphEmpty(true);
+            } catch {
               setGraphError(false);
               setGraphLoading(false);
             }
           }
         })
-      ).catch((e) => {
-        setGraphEmpty(false);
+      ).catch(() => {
         setGraphError(true);
         setGraphLoading(false);
       });
@@ -291,21 +249,14 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
             </p>
           </div>
         )}
-        {!graphLoading && graphEmpty && !graphError && (
-          <div>
-            <p className='text-center'>
-              No data available for this period.
-            </p>
-          </div>
-        )}
-        {!graphLoading && !graphEmpty && graphError && (
+        {!graphLoading && graphError && (
           <div>
             <p className='text-center'>
               There was an error loading the graph. Please try again later.
             </p>
           </div>
         )}
-        {!graphLoading && !graphEmpty && !graphError && (
+        {!graphLoading && !graphError && (
           <BlendGraph
             data={data}
             token0Key={token0Key}
