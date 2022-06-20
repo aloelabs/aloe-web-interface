@@ -276,6 +276,7 @@ export default function PortfolioGraph() {
               }
               if (mounted) {
                 setData(portfolioData);
+                setGraphError(false);
                 setGraphLoading(false);
               }
             }
@@ -329,7 +330,14 @@ export default function PortfolioGraph() {
           </Text>
         </GraphPlaceholderWrapper>
       )}
-      {!graphLoading && (
+      {!graphLoading && graphError && (
+        <GraphPlaceholderWrapper>
+          <Text size='M' weight='medium'>
+            There was an error loading the graph. Please try again later.
+          </Text>
+        </GraphPlaceholderWrapper>
+      )}
+      {!graphLoading && !graphError && (
         <Graph
           data={data}
           containerHeight={GRAPH_HEIGHT}
