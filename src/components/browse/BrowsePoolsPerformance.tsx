@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
+import { API_URL } from '../../data/constants/Values';
 import { GlobalStats } from '../../data/GlobalStats';
 import { Display, Text } from '../common/Typography';
 
@@ -50,9 +51,9 @@ export default function BrowsePoolsPerformance(
   useEffect(() => {
     let mounted = true;
     const fetchGlobalStats = async () => {
-      const res = await axios.get('http://34.94.221.78:3000/global_stats');
+      const res = await axios.get(`${API_URL}/global_stats`);
       const data = res.data[0];
-      if (mounted) {
+      if (mounted && data) {
         setGlobalStats({
           poolCount: data['pool_count'],
           users: data['users'],

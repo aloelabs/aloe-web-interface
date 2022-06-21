@@ -4,6 +4,7 @@ import { BlendPoolMarkers, FeeTier } from './BlendPoolMarkers';
 
 import AloeBlendABI from '../assets/abis/AloeBlend.json';
 import UniswapV3PoolABI from '../assets/abis/UniswapV3Pool.json';
+import { API_URL } from './constants/Values';
 
 export async function fetchBlendPoolData(
   address: string,
@@ -53,7 +54,7 @@ export async function fetchBlendPoolData(
 }
 
 export default async function findPools(provider: ethers.providers.BaseProvider) {
-  const response = await axios.get('http://34.94.221.78:3000/deployed_pools/1');
+  const response = await axios.get(`${API_URL}/deployed_pools/1`);
   const data = response.data;
   const poolAddresses = data.map((pool: any) => pool['pool_address']);
   const promises: Promise<BlendPoolMarkers>[] = poolAddresses.map(

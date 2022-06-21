@@ -17,6 +17,7 @@ import {
   RESPONSIVE_BREAKPOINT_MD,
   RESPONSIVE_BREAKPOINT_SM
 } from '../data/constants/Breakpoints';
+import { API_URL } from '../data/constants/Values';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { PoolStats } from '../data/PoolStats';
@@ -82,10 +83,10 @@ export default function BlendPoolPage() {
     let mounted = true;
     const fetchPoolStats = async () => {
       const response = await axios.get(
-        `http://34.94.221.78:3000/pool_stats/${poolData?.poolAddress}/1/`
+        `${API_URL}/pool_stats/${poolData?.poolAddress}/1/`
       );
       const data = response.data[0];
-      if (mounted) {
+      if (mounted && data) {
         setPoolStats({
           annualPercentageRate: data['annual_percentage_rate'],
           totalValueLocked: data['total_value_locked'],

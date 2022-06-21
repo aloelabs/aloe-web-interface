@@ -11,6 +11,7 @@ import {
   RESPONSIVE_BREAKPOINT_LG,
   RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import { API_URL } from '../../data/constants/Values';
 import { PoolStats } from '../../data/PoolStats';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
@@ -174,10 +175,10 @@ export default function BrowseCard(props: BrowseCardProps) {
     let mounted = true;
     const fetchPoolStats = async () => {
       const response = await axios.get(
-        `http://34.94.221.78:3000/pool_stats/${blendPoolMarkers.poolAddress}/1`
+        `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
       );
       const data = response.data[0];
-      if (mounted) {
+      if (mounted && data) {
         setPoolStats({
           totalValueLocked: data['total_value_locked'],
           performanceSinceInception: data['performance_since_inception'],
