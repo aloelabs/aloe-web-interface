@@ -28,7 +28,7 @@ export function getIdealDateFormat(diffInDays: number) : string {
     return 'ha';
   } else if (diffInDays <= 7) {
     return 'iii';
-  } else if (diffInDays <= 31 * 3) {
+  } else if (diffInDays <= 31 * 5) {
     return 'MMM dd';
   } else if (diffInDays <= 366) {
     return 'MMM';
