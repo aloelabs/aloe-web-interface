@@ -20,9 +20,7 @@ import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { GetTokenData } from '../../data/TokenData';
 import { ethers } from 'ethers';
 import { Text } from '../common/Typography';
-
-//TODO REMOVE WE ONCE API IS FIXED
-const TEMP_TIMESTAMP = 1651632134000;
+import { fixTimestamp } from '../../util/Dates';
 
 const GraphButtonsWrapper = styled.div`
   ${tw`w-max`}
@@ -82,7 +80,7 @@ export type BlendAllocationGraphProps = {
 export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   const { poolData } = props;
   const [activeButton, setActiveButton] = useState(0);
-  const now = new Date(TEMP_TIMESTAMP);
+  const now = new Date(subDays(Date.now(), 1));
   const [fromDate, setFromDate] = useState(subDays(now, 1));
   const [toDate, setToDate] = useState(now);
   const [graphLoading, setGraphLoading] = useState(true);
@@ -115,7 +113,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   const handleClick = (key: number) => {
     setGraphLoading(true);
     setActiveButton(key);
-    let now = new Date(TEMP_TIMESTAMP);
+    let now = new Date(subDays(Date.now(), 1));
     switch (key) {
       case 0:
         setFromDate(subDays(now, 1));
@@ -192,7 +190,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
               const calculatedReturns = calculateReturns(
                 poolReturnsData,
                 token0Data,
-                token1Data
+                token1Data,
               );
               let updatedData = [];
               for (let i = 0; i < calculatedReturns.length; i++) {
@@ -205,9 +203,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
                   (calculatedReturns[i]['token0'] - 1.0) * 100;
                 updatedObj[token1Key] =
                   (calculatedReturns[i]['token1'] - 1.0) * 100;
-                updatedObj['x'] = new Date(
-                  calculatedReturns[i]['timestamp']
-                ).toISOString();
+                updatedObj['x'] = new Date(fixTimestamp(calculatedReturns[i]['timestamp'].toString())).toISOString();
                 updatedData.push(updatedObj);
               }
               if (mounted) {
@@ -215,7 +211,8 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
                 setGraphError(false);
                 setGraphLoading(false);
               }
-            } catch {
+            } catch (e) {
+              console.log(e);
               if (mounted) {
                 setGraphError(true);
                 setGraphLoading(false);
@@ -223,7 +220,8 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
             }
           })
         )
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           if (mounted) {
             setGraphError(true);
             setGraphLoading(false);

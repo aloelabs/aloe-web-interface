@@ -1,5 +1,7 @@
 import { add, addMinutes, subMinutes } from 'date-fns/esm';
 
+const UNIX_TIMESTAMP_REGEX = /^[0-9]{10}$/;
+
 /**
  *
  * @param date a date
@@ -37,4 +39,19 @@ export function getEvenlySpacedDates(dates: string[], n: number) : string[] {
     result.push(updatedDates[i * step] || dates[0]);//TODO: find a better way to handle this
   }
   return result;
+}
+
+export function isUnixTimestamp(str: string): boolean {
+  return UNIX_TIMESTAMP_REGEX.test(str);
+}
+
+/**
+ * 
+ * @param timestamp a timestamp (either a string or a number)
+ * @returns either a string or number, depending on the input, but if the input was a number
+ * and it was a unix timestamp (i.e. 10 digits), it will return a 13-digit number representing
+ * the unix timestamp with the milliseconds appended
+ */
+export function fixTimestamp(timestamp: string | number): string | number {
+  return isUnixTimestamp(timestamp.toString()) ? parseInt(timestamp.toString()) * 1000 : timestamp;
 }
