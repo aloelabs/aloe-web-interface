@@ -1,4 +1,5 @@
 import Big from "big.js";
+import { closestTo } from "date-fns";
 
 interface PoolPerformanceSnapshot {
     timestamp: string; // TODO this should be a number like `TokenPerformanceSnapshot`, but Matt hasn't standardized the API yet
@@ -24,14 +25,13 @@ export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenR
         // TODO: fail more gracefully than this
         throw new Error('Inputs cannot be empty!');
     }
-    let initialIndex = 0;
-    for (let i = 0; i < poolReturns.length; i++) {
-        if (poolReturns[i].total_supply !== null) {
-            initialIndex = i;
-            break;
-        }
-    }
 
+    // Copy to avoid mutating the actual data
+    const poolReturnsCopy = [...poolReturns];
+    // Whether the pool contains a total_supply that is null
+    const containsNull = poolReturnsCopy.some(r => r.total_supply === null);
+    // If the pool contains a total_supply that is null, we want to start after the last null total_supply
+    const initialIndex = containsNull ? poolReturnsCopy.length - poolReturnsCopy.reverse().findIndex(r => r.total_supply === null) : 0;
     const initialSupply = poolReturns[initialIndex].total_supply;
     const initialP0 = token0Returns[initialIndex].price;
     const initialP1 = token1Returns[initialIndex].price;
@@ -45,14 +45,14 @@ export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenR
     };
 
     return poolReturns.slice(initialIndex).map((snapshot, i) => {
-        const p0 = token0Returns[i].price;
-        const p1 = token1Returns[i].price;
-
+        const index = i + initialIndex;
+        const p0 = token0Returns[index].price;
+        const p1 = token1Returns[index].price;
+        
         const pricePerShare = ((snapshot.inventory0 * p0) + (snapshot.inventory1 * p1)) / snapshot.total_supply;
         const pricePerShare5050 = ((matching5050Portfolio.amount0 * p0) + (matching5050Portfolio.amount1 * p1)) / initialSupply;
-        const pool = pricePerShare === Infinity ? NaN : pricePerShare / initialPricePerShare;
         return {
-            pool: pool,
+            pool: pricePerShare / initialPricePerShare,
             fifty_fifty: pricePerShare5050 / initialPricePerShare,
             sqrt: Math.sqrt(p0 * p1) / initialSqrt,
             token0: p0 / initialP0,
