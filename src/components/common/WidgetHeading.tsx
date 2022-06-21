@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text } from './Typography';
 
 export type WidgetHeadingProps = {
   children?: React.ReactNode;
@@ -6,8 +7,8 @@ export type WidgetHeadingProps = {
 
 export default function WidgetHeading(props: WidgetHeadingProps) {
   return (
-    <h2 className='pb-2 text-xl text-left text-grey-1000 font-semibold'>
+    <Text size='L' weight='medium' color='rgba(255, 255, 255, 1)'>
       {props.children}
-    </h2>
+    </Text>
   );
 }

@@ -10,7 +10,7 @@ import { GetTokenData } from '../data/TokenData';
 import { FeeTier } from '../data/BlendPoolMarkers';
 import { GetSiloData } from '../data/SiloData';
 import { Text } from '../components/common/Typography';
-import { FilledTooltip } from '../components/common/Tooltip';
+import Tooltip from '../components/common/Tooltip';
 
 const PORTFOLIO_TITLE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -96,7 +96,7 @@ export default function PortfolioPage() {
             <Text size='XL' weight='medium' color={PORTFOLIO_TITLE_TEXT_COLOR}>
               Your External Positions
             </Text>
-            <FilledTooltip
+            <Tooltip
               content='Est nisl feugiat turpis amet, in sit bibendum tincidunt et. Vitae aliquam quam tempor, facilisi.'
               buttonText='What is this?'
               buttonSize='L'
