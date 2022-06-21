@@ -16,6 +16,7 @@ import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetSiloData } from '../data/SiloData';
 import { GetTokenData } from '../data/TokenData';
+import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -89,6 +90,9 @@ export default function BlendPoolPage() {
             silo0={GetSiloData(poolData.silo0Address.toLowerCase())}
             silo1={GetSiloData(poolData.silo1Address.toLowerCase())}
           />
+          <a href={`https://etherscan.io/address/${poolData.poolAddress}`}>
+            <OpenIcon width={24} height={24} />
+          </a>
           <AbsoluteFeeTierContainer feeTier={poolData.feeTier} />
         </div>
         <GridExpandingDiv className='w-full min-w-[340px] md:mt-24 md:grid-flow-row-dense'>
