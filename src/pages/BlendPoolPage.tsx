@@ -6,6 +6,7 @@ import { PreviousPageButton } from '../components/common/Buttons';
 import FeeTierContainer from '../components/common/FeeTierContainer';
 import RiskCard from '../components/common/RiskCard';
 import { Text } from '../components/common/Typography';
+import WidgetHeading from '../components/common/WidgetHeading';
 import PoolInteractionTabs from '../components/pool/PoolInteractionTabs';
 import TokenPairHeader from '../components/pool/TokenPairHeader';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
@@ -16,6 +17,7 @@ import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetSiloData } from '../data/SiloData';
 import { GetTokenData } from '../data/TokenData';
+import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -89,6 +91,9 @@ export default function BlendPoolPage() {
             silo0={GetSiloData(poolData.silo0Address.toLowerCase())}
             silo1={GetSiloData(poolData.silo1Address.toLowerCase())}
           />
+          <a href={`https://etherscan.io/address/${poolData.poolAddress}`}>
+            <OpenIcon width={24} height={24} />
+          </a>
           <AbsoluteFeeTierContainer feeTier={poolData.feeTier} />
         </div>
         <GridExpandingDiv className='w-full min-w-[340px] md:mt-24 md:grid-flow-row-dense'>
@@ -100,7 +105,7 @@ export default function BlendPoolPage() {
           <PoolStatsWidget poolData={poolData} />
           <PoolPieChartWidget poolData={poolData} />
           <div className='flex flex-col gap-y-6 mt-16'>
-            <Text size='L' weight='medium'>About Aloe Blend Pool</Text>
+            <WidgetHeading>About Aloe Blend Pool</WidgetHeading>
             <Text size='M' weight='medium' color={ABOUT_MESSAGE_TEXT_COLOR} className='flex flex-col gap-y-6'>
               <p>
                 Placing funds into a Blend Vault will allow Aloe to use
@@ -119,7 +124,7 @@ export default function BlendPoolPage() {
             </Text>
           </div>
           <div className='flex flex-col gap-y-6 mt-16'>
-            <Text size='L' weight='medium'>Investing Risk</Text>
+            <WidgetHeading>Investing Risk</WidgetHeading>
             <RiskCard />
           </div>
         </div>

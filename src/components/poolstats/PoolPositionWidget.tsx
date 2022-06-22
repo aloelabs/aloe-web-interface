@@ -6,6 +6,7 @@ import { RESPONSIVE_BREAKPOINT_MD } from '../../data/constants/Breakpoints';
 import { formatUSD } from '../../util/Numbers';
 import { PercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
+import WidgetHeading from '../common/WidgetHeading';
 
 const PERFORMANCE_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 const PERFORMANCE_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
@@ -45,7 +46,7 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
   // TODO: Incorporate the pool data into the widget
   return (
     <Wrapper>
-      <Text size='L' weight='medium'>Your Position</Text>
+      <WidgetHeading>Your Position</WidgetHeading>
       <PerformanceCardGrid>
         <PerformanceCard>
           <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Total Value</Text>
