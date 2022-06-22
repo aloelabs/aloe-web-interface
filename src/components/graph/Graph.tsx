@@ -13,7 +13,10 @@ import { CurveType } from 'recharts/types/shape/Curve';
 import { AxisDomain } from 'recharts/types/util/types';
 import { getEvenlySpacedDates } from '../../util/Dates';
 
-export function getIdealStep(diffInDays: number, numUniqueYears: number) : number {
+export function getIdealStep(
+  diffInDays: number,
+  numUniqueYears: number
+): number {
   if (diffInDays <= 7) {
     return 5;
   } else if (diffInDays <= 366) {
@@ -23,7 +26,7 @@ export function getIdealStep(diffInDays: number, numUniqueYears: number) : numbe
   }
 }
 
-export function getIdealDateFormat(diffInDays: number) : string {
+export function getIdealDateFormat(diffInDays: number): string {
   if (diffInDays <= 1) {
     return 'ha';
   } else if (diffInDays <= 7) {
@@ -60,7 +63,7 @@ function CustomizedResponsiveContainer(
   const { className, height, children, setIsActive } = props;
   return (
     <div
-      onMouseEnter={() => {
+      onMouseOver={() => {
         if (setIsActive) {
           setIsActive(true);
         }
@@ -114,7 +117,7 @@ export default function Graph(props: GraphProps) {
     yAxisDomain,
     setIsActive,
   } = props;
-  
+
   const dates = data.map((d: any) => d.x) as string[];
   const updatedTo = new Date(dates[dates.length - 1]);
   const updatedFrom = new Date(dates[0]);
@@ -157,12 +160,7 @@ export default function Graph(props: GraphProps) {
           }
           tickLine={false}
         />
-        <YAxis
-          axisLine={false}
-          tick={false}
-          width={0}
-          domain={yAxisDomain}
-        />
+        <YAxis axisLine={false} tick={false} width={0} domain={yAxisDomain} />
         <Tooltip
           content={CustomTooltip}
           allowEscapeViewBox={{ x: allowEscapeViewBoxX, y: false }}

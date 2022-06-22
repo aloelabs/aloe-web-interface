@@ -109,6 +109,8 @@ const CustomCursor = (props: any) => {
       x2={x}
       strokeWidth={1}
       height={140}
+      // Prevents propogation of onMouseOver which would result in countless unnecessary calls
+      className='pointer-events-none'
     />
   );
 };
