@@ -1,30 +1,30 @@
+import Big from 'big.js';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import TokenAmountInput from '../common/TokenAmountInput';
-import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
+import styled from 'styled-components';
+import tw from 'twin.macro';
+import { useAccount, useBalance, useSigner } from 'wagmi';
+import { withdraw } from '../../connector/BlendWithdrawActions';
 import {
   BlendPoolDrawData,
-  ResolveBlendPoolDrawData,
+  ResolveBlendPoolDrawData
 } from '../../data/BlendPoolDataResolver';
-import { PrimaryButton } from '../common/Buttons';
-import { BlendPoolContext } from '../../data/context/BlendPoolContext';
-import { useAccount, useBalance, useSigner } from 'wagmi';
-import Big from 'big.js';
-import { prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
+import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import {
   DEFAULT_RATIO_CHANGE,
-  RATIO_CHANGE_CUTOFF,
+  RATIO_CHANGE_CUTOFF
 } from '../../data/constants/Values';
-import { withdraw } from '../../connector/BlendWithdrawActions';
+import { BlendPoolContext } from '../../data/context/BlendPoolContext';
+import { GetTokenData } from '../../data/TokenData';
+import { prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
+import { FilledStylizedButton } from '../common/Buttons';
 import Pending from '../common/Pending';
+import TokenAmountInput from '../common/TokenAmountInput';
+import { SectionLabel, TabWrapper } from './DepositTab';
+import MaxSlippageInput from './MaxSlippageInput';
 import ConfirmWithdrawalModal from './modal/ConfirmWithdrawalModal';
 import SharesWithdrawnModal from './modal/SharesWithdrawnModal';
 import SubmittingOrderModal from './modal/SubmittingOrderModal';
 import TransactionFailedModal from './modal/TransactionFailedModal';
-import { SectionLabel, TabWrapper } from './DepositTab';
-import styled from 'styled-components';
-import tw from 'twin.macro';
-import { GetTokenData } from '../../data/TokenData';
-import MaxSlippageInput from './MaxSlippageInput';
 
 export type WithdrawTabProps = {
   poolData: BlendPoolMarkers;
@@ -271,10 +271,14 @@ export default function WithdrawTab(props: WithdrawTabProps) {
         </div>
         <MaxSlippageInput updateMaxSlippage={(updatedMaxSlippage) => setMaxSlippage(updatedMaxSlippage)} />
         <div className='w-full mt-8'>
-          <PrimaryButton
+          <FilledStylizedButton
             className='w-full py-2'
             name={buttonLabel}
+            size='M'
             onClick={onButtonClick}
+            backgroundColor={'rgba(26, 41, 52, 1)'}
+            color={'rgba(255, 255, 255, 1)'}
+            fillWidth={true}
             disabled={[
               ButtonState.INSUFFICIENT_SHARES,
               ButtonState.PENDING_TRANSACTION,
@@ -288,7 +292,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
                 <span>{buttonLabel}</span>
               )}
             </div>
-          </PrimaryButton>
+          </FilledStylizedButton>
         </div>
       </div>
       <ConfirmWithdrawalModal

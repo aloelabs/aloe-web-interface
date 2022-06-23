@@ -1,18 +1,20 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SearchIcon from '../assets/svg/search.svg';
+import { ReactComponent as PlusIcon } from '../assets/svg/white_plus.svg';
 import BrowseCard from '../components/browse/BrowseCard';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
-import { TertiaryButton } from '../components/common/Buttons';
+import { OutlinedGradientRoundedButtonWithIcon } from '../components/common/Buttons';
 import {
   DropdownOption,
   DropdownWithPlaceholder,
+  DropdownWithPlaceholderOption,
   MultiDropdown,
-  MultiDropdownOption
+  MultiDropdownOption,
 } from '../components/common/Dropdown';
 import { FilterBadge } from '../components/common/FilterBadge';
 import { TextInput } from '../components/common/Input';
-import Pagination from '../components/common/Pagination';
+import Pagination, { ItemsPerPage } from '../components/common/Pagination';
 import { Display } from '../components/common/Typography';
 import WideAppPage from '../components/common/WideAppPage';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
@@ -22,7 +24,7 @@ import {
   BROWSE_CARD_WIDTH_MD,
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
-  RESPONSIVE_BREAKPOINT_MD
+  RESPONSIVE_BREAKPOINT_MD,
 } from '../data/constants/Breakpoints';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetTokenData } from '../data/TokenData';
@@ -68,7 +70,7 @@ export default function BlendPoolSelectPage() {
     MultiDropdownOption[]
   >([]);
   const [page, setPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [itemsPerPage, setItemsPerPage] = useState<10 | 20 | 50 | 100>(10);
   const sortByOptions = [
     {
       label: 'Default',
@@ -85,9 +87,9 @@ export default function BlendPoolSelectPage() {
       value: 'oldest',
       isDefault: false,
     },
-  ] as DropdownOption[];
+  ] as DropdownWithPlaceholderOption[];
   const [selectedSortByOption, setSelectedSortByOption] =
-    useState<DropdownOption>(sortByOptions[0]);
+    useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
@@ -217,7 +219,7 @@ export default function BlendPoolSelectPage() {
     setPage(page);
   };
 
-  const handleItemsPerPageChange = (itemsPerPage: number) => {
+  const handleItemsPerPageChange = (itemsPerPage: ItemsPerPage) => {
     setItemsPerPage(itemsPerPage);
   };
 
@@ -262,7 +264,7 @@ export default function BlendPoolSelectPage() {
           <DropdownWithPlaceholder
             options={sortByOptions}
             selectedOption={selectedSortByOption}
-            onSelect={(option: DropdownOption) => {
+            onSelect={(option: DropdownWithPlaceholderOption) => {
               setSelectedSortByOption(option);
             }}
             placeholder='Sort By'
@@ -274,12 +276,16 @@ export default function BlendPoolSelectPage() {
             rel='noopener noreferrer'
             tabIndex={-1}
           >
-            <TertiaryButton
+            <OutlinedGradientRoundedButtonWithIcon
+              size='L'
+              position='trailing'
+              activeGradientId='#plus-icon-gradient'
+              svgColorType='stroke'
               name='Deploy New Pool'
-              className='flex-none px-8 py-3'
+              Icon={<PlusIcon />}
             >
-              Deploy&nbsp;New&nbsp;Pool
-            </TertiaryButton>
+              <span>Deploy&nbsp;New&nbsp;Pool</span>
+            </OutlinedGradientRoundedButtonWithIcon>
           </a>
         </div>
         <BrowseCards>

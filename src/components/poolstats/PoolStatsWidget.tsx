@@ -6,6 +6,7 @@ import {
   roundPercentage
 } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
+import WidgetHeading from '../common/WidgetHeading';
 
 const ROUNDING_PRECISION = 2;
 const POOL_STAT_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
@@ -40,9 +41,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
 
   return (
     <Wrapper>
-      <Text size='L' weight='medium'>
-        Stats
-      </Text>
+      <WidgetHeading>Stats</WidgetHeading>
       <PoolStatsWidgetGrid>
         <PoolStat>
           <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>

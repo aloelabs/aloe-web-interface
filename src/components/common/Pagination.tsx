@@ -3,26 +3,14 @@ import styled from 'styled-components';
 import { ELLIPSIS, usePagination } from '../../data/hooks/UsePagination';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid';
 import tw from 'twin.macro';
+import { Dropdown } from './Dropdown';
 
 const MAX_DISPLAYED_COUNT = 6;
-const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
 
 const Wrapper = styled.div`
   ${tw`w-full flex justify-between`}
   margin-top: 42px;
   margin-bottom: 34px;
-`;
-
-// Temporary until the dropdown component is merged
-const TemporaryDropdown = styled.select`
-  ${tw`flex justify-center items-center`}
-  width: 109px;
-  height: 42px;
-  background-color: transparent;
-  outline: 1px solid rgba(26, 41, 52, 1);
-  border-radius: 100px;
-  font-size: 12px;
-  padding: 12px 8px 12px 12px;
 `;
 
 const PaginationRangeText = styled.span`
@@ -82,12 +70,21 @@ const EllipsisWrapper = styled.span`
   height: 40px;
 `;
 
+export type ItemsPerPage = 10 | 20 | 50 | 100;
+
+const ItemsPerPageToOption = (itemsPerPage: ItemsPerPage) => {
+  return {
+    label: `${itemsPerPage.toString()} Results`,
+    value: itemsPerPage.toString(),
+  }
+}
+
 export type PaginationProps = {
   totalItems: number;
-  itemsPerPage: number;
+  itemsPerPage: ItemsPerPage;
   currentPage: number;
   onPageChange: (page: number) => void;
-  onItemsPerPageChange: (itemsPerPage: number) => void;
+  onItemsPerPageChange: (itemsPerPage: ItemsPerPage) => void;
 };
 
 export default function Pagination(props: PaginationProps) {
@@ -98,6 +95,12 @@ export default function Pagination(props: PaginationProps) {
     onPageChange,
     onItemsPerPageChange,
   } = props;
+  const itemsPerPageValues: ItemsPerPage[] = [10, 20, 50, 100];
+  const itemsPerPageOptions = itemsPerPageValues.map((value) => ({
+    label: `${value.toString()} Results`,
+    value: value.toString(),
+  }));
+  const itemsPerPageOption = ItemsPerPageToOption(itemsPerPage);
 
   const firstPage = 1;
   const lastPage = Math.ceil(totalItems / itemsPerPage);
@@ -130,18 +133,15 @@ export default function Pagination(props: PaginationProps) {
   return (
     <Wrapper>
       <div className='flex items-center gap-4'>
-        <TemporaryDropdown
-          defaultValue={itemsPerPage}
-          onChange={(e) =>
-            onItemsPerPageChange(parseInt(e.target.selectedOptions[0].value))
+        <Dropdown
+          options={itemsPerPageOptions}
+          selectedOption={itemsPerPageOption}
+          onSelect={(updatedOption) =>
+            onItemsPerPageChange(parseInt(updatedOption.value) as ItemsPerPage)
           }
-        >
-          {ITEMS_PER_PAGE_OPTIONS.map((itemsPerPageOption) => (
-            <option key={itemsPerPageOption} value={itemsPerPageOption}>
-              {itemsPerPageOption} Results
-            </option>
-          ))}
-        </TemporaryDropdown>
+          placeAbove={true}
+          small={true}
+        />
         <PaginationRangeText>
           {startItem} - {endItem} of {totalItems}
         </PaginationRangeText>

@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { PrimaryButton, SecondaryButton } from '../common/Buttons';
 import { CloseableModal } from '../common/Modal';
 
 import { useAccount, useConnect } from 'wagmi';
 import { FormatAddress } from '../../util/FormatAddress';
+import {
+  FilledStylizedButton,
+  OutlinedGradientRoundedButton
+} from '../common/Buttons';
 import { mapConnectorNameToIcon } from './ConnectorIconMap';
+
 
 export default function ConnectWalletButton() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -24,13 +28,13 @@ export default function ConnectWalletButton() {
 
   return (
     <div>
-      <PrimaryButton
+      <OutlinedGradientRoundedButton
         name={buttonText}
-        className='w-full py-2 px-8 whitespace-pre'
+        size='S'
         onClick={() => setModalOpen(true)}
       >
         {buttonText}
-      </PrimaryButton>
+      </OutlinedGradientRoundedButton>
       <CloseableModal open={modalOpen} setOpen={setModalOpen} title={'Connect Wallet'}>
         <div className='w-full'>
           {accountData ? (
@@ -49,13 +53,16 @@ export default function ConnectWalletButton() {
                   Connected to {accountData.connector?.name}
                 </div>
               </div>
-              <SecondaryButton
-                className='px-4 py-1'
+              <FilledStylizedButton
                 name='Disconnect'
+                size='M'
+                backgroundColor='rgba(26, 41, 52, 1)'
+                color={'rgba(255, 255, 255, 1)'}
+                fillWidth={true}
                 onClick={disconnect}
               >
                 Disconnect
-              </SecondaryButton>
+              </FilledStylizedButton>
             </div>
           ) : (
             // No account connected, display connection options
@@ -91,14 +98,18 @@ export default function ConnectWalletButton() {
                     alt=''
                     className='w-10 h-10 mr-4'
                   />
-                  <SecondaryButton
-                    className='px-8 py-2 w-full grow '
+                  <FilledStylizedButton
+                    name='Disconnect'
+                    size='M'
+                    backgroundColor='rgba(26, 41, 52, 1)'
+                    color={'rgba(255, 255, 255, 1)'}
+                    fillWidth={true}
                     disabled={!connector.ready}
                     onClick={() => connect(connector)}
                   >
                     {connector.name}
                     {!connector.ready && ' (unsupported)'}
-                  </SecondaryButton>
+                  </FilledStylizedButton>
                 </div>
               ))}
             </div>
