@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import { PoolStats } from '../../data/PoolStats';
 import {
+  formatUSDCompact,
   roundPercentage
 } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
@@ -104,10 +105,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {(poolStats?.total_value_locked || 0).toLocaleString('en-US', {
-              style: 'currency',
-              currency: 'USD',
-            })}
+            {formatUSDCompact(poolStats?.total_value_locked || 0)}
           </Display>
         </PoolStat>
         <PoolStat>

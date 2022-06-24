@@ -20,7 +20,7 @@ import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
 import { useContractRead } from 'wagmi';
 import AloeBlendABI from '../../assets/abis/AloeBlend.json';
-import { String1E, toBig } from '../../util/Numbers';
+import { formatUSD, formatUSDCompact, String1E, toBig } from '../../util/Numbers';
 import { BigNumber } from 'ethers';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
@@ -173,15 +173,14 @@ export default function BrowseCard(props: BrowseCardProps) {
       addressOrName: props.blendPoolMarkers.poolAddress,
       contractInterface: AloeBlendABI,
     },
-    'totalSupply',
+    'totalSupply'
   );
-  
+
   const [poolStats, setPoolStats] = useState<PoolStats>();
 
   useEffect(() => {
     let mounted = true;
     const fetchPoolStats = async () => {
-      
       const poolStatsResponse = await axios.get(
         `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
       );
@@ -233,7 +232,9 @@ export default function BrowseCard(props: BrowseCardProps) {
 
   let pricePerShare = 0;
   if (poolStats && totalSupplyContract[0].data) {
-    const totalSupply = toBig(BigNumber.from(totalSupplyContract[0].data)).div(String1E(18)).toNumber();
+    const totalSupply = toBig(BigNumber.from(totalSupplyContract[0].data))
+      .div(String1E(18))
+      .toNumber();
     pricePerShare = poolStats.total_value_locked / totalSupply;
   }
 
@@ -270,23 +271,22 @@ export default function BrowseCard(props: BrowseCardProps) {
           <InfoCategoryContainer>
             <InfoCategory>Price per Share</InfoCategory>
             <span className='text-2xl'>
-              {pricePerShare.toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              })} USD
+              {
+                formatUSD(pricePerShare)
+              }{' '}
+              USD
             </span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <InfoCategory>APR</InfoCategory>
-            <span className='text-2xl'>{poolStats?.annual_percentage_rate}%</span>
+            <span className='text-2xl'>
+              {poolStats?.annual_percentage_rate}%
+            </span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <InfoCategory>TVL</InfoCategory>
             <span className='text-2xl'>
-              {poolStats && poolStats.total_value_locked.toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              })}
+              {formatUSDCompact(poolStats?.total_value_locked || 0)}
             </span>
           </InfoCategoryContainer>
         </ResponsiveBodySubContainer>

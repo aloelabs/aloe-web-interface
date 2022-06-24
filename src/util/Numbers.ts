@@ -1,6 +1,13 @@
 import Big from 'big.js';
 import { ethers } from 'ethers';
 
+const compactCurrencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  notation: 'compact',
+  maximumSignificantDigits: 3,
+});
+
 export function toBig(value: ethers.BigNumber): Big {
   return new Big(value.toString());
 }
@@ -18,6 +25,10 @@ export function prettyFormatBalance(amount?: Big, decimals?: number): string {
 
 export function formatUSD(amount: number): string {
   return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+
+export function formatUSDCompact(amount: number): string {
+  return compactCurrencyFormatter.format(amount);
 }
 
 /**
