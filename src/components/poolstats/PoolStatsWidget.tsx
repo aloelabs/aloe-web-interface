@@ -53,7 +53,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
             {roundPercentage(
-              poolStats?.annualPercentageRate || 0,
+              poolStats?.annual_percentage_rate || 0,
               ROUNDING_PRECISION
             )}
             %
@@ -104,7 +104,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {(poolStats?.totalValueLocked || 0).toLocaleString('en-US', {
+            {(poolStats?.total_value_locked || 0).toLocaleString('en-US', {
               style: 'currency',
               currency: 'USD',
             })}

@@ -6,7 +6,6 @@ import BrowseCard from '../components/browse/BrowseCard';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
 import { OutlinedGradientRoundedButtonWithIcon } from '../components/common/Buttons';
 import {
-  DropdownOption,
   DropdownWithPlaceholder,
   DropdownWithPlaceholderOption,
   MultiDropdown,

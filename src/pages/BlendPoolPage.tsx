@@ -87,13 +87,9 @@ export default function BlendPoolPage() {
       const response = await axios.get(
         `${API_URL}/pool_stats/${poolData?.poolAddress}/1/`
       );
-      const data = response.data[0];
-      if (mounted && data) {
-        setPoolStats({
-          annualPercentageRate: data['annual_percentage_rate'],
-          totalValueLocked: data['total_value_locked'],
-          performanceSinceInception: data['performance_since_inception'],
-        });
+      const poolStatsData = response.data[0] as PoolStats;
+      if (mounted && poolStatsData) {
+        setPoolStats(poolStatsData);
       }
     };
     if (poolData) {

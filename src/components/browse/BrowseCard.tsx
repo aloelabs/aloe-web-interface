@@ -18,6 +18,10 @@ import { GetTokenData } from '../../data/TokenData';
 import { getProminentColor } from '../../util/Colors';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
+import { useContractRead } from 'wagmi';
+import AloeBlendABI from '../../assets/abis/AloeBlend.json';
+import { String1E, toBig } from '../../util/Numbers';
+import { BigNumber } from 'ethers';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -164,26 +168,26 @@ export default function BrowseCard(props: BrowseCardProps) {
   const silo1 = GetSiloData(blendPoolMarkers.silo1Address.toLocaleLowerCase());
   const feeTier = PrintFeeTier(blendPoolMarkers.feeTier);
 
-  /**
-   * Placeholders until we have the actual data
-   */
-  const pricePerShare = 729.48;
-
+  const totalSupplyContract = useContractRead(
+    {
+      addressOrName: props.blendPoolMarkers.poolAddress,
+      contractInterface: AloeBlendABI,
+    },
+    'totalSupply',
+  );
+  
   const [poolStats, setPoolStats] = useState<PoolStats>();
 
   useEffect(() => {
     let mounted = true;
     const fetchPoolStats = async () => {
-      const response = await axios.get(
+      
+      const poolStatsResponse = await axios.get(
         `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
       );
-      const data = response.data[0];
-      if (mounted && data) {
-        setPoolStats({
-          totalValueLocked: data['total_value_locked'],
-          performanceSinceInception: data['performance_since_inception'],
-          annualPercentageRate: data['annual_percentage_rate'],
-        });
+      const poolStatsData = poolStatsResponse.data[0] as PoolStats;
+      if (mounted && poolStatsData) {
+        setPoolStats(poolStatsData);
       }
     };
     fetchPoolStats();
@@ -227,6 +231,12 @@ export default function BrowseCard(props: BrowseCardProps) {
     0.16
   );
 
+  let pricePerShare = 0;
+  if (poolStats && totalSupplyContract[0].data) {
+    const totalSupply = toBig(BigNumber.from(totalSupplyContract[0].data)).div(String1E(18)).toNumber();
+    pricePerShare = poolStats.total_value_locked / totalSupply;
+  }
+
   return (
     <CardWrapper to={link} border={cardBorderGradient} shadow={cardShadowColor}>
       <CardTitleWrapper gradient={cardTitleBackgroundGradient}>
@@ -260,17 +270,20 @@ export default function BrowseCard(props: BrowseCardProps) {
           <InfoCategoryContainer>
             <InfoCategory>Price per Share</InfoCategory>
             <span className='text-2xl'>
-              ${pricePerShare.toLocaleString('en-US')} USD
+              {pricePerShare.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              })} USD
             </span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <InfoCategory>APR</InfoCategory>
-            <span className='text-2xl'>{poolStats?.annualPercentageRate}%</span>
+            <span className='text-2xl'>{poolStats?.annual_percentage_rate}%</span>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <InfoCategory>TVL</InfoCategory>
             <span className='text-2xl'>
-              {poolStats?.totalValueLocked.toLocaleString('en-US', {
+              {poolStats && poolStats.total_value_locked.toLocaleString('en-US', {
                 style: 'currency',
                 currency: 'USD',
               })}
