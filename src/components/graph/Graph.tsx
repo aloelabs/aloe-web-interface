@@ -63,16 +63,8 @@ function CustomizedResponsiveContainer(
   const { className, height, children, setIsActive } = props;
   return (
     <div
-      onMouseOver={() => {
-        if (setIsActive) {
-          setIsActive(true);
-        }
-      }}
-      onMouseLeave={() => {
-        if (setIsActive) {
-          setIsActive(false);
-        }
-      }}
+      onMouseOver={setIsActive ? () => setIsActive(true) : undefined}
+      onMouseLeave={setIsActive ? () => setIsActive(false) : undefined}
     >
       <ResponsiveContainer className={className} height={height}>
         {children}
