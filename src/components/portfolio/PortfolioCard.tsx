@@ -177,15 +177,20 @@ export default function PortfolioCard(props: PortfolioCardProps) {
   const [token0Color, setToken0Color] = useState<string>('');
   const [token1Color, setToken1Color] = useState<string>('');
   useEffect(() => {
-    /**
-     * Add whatever async logic needed to calculate the gradients.
-     */
+    let mounted = true;
     getProminentColor(token0.iconPath || '').then((color) => {
-      setToken0Color(color);
+      if (mounted) {
+        setToken0Color(color);
+      }
     });
     getProminentColor(token1.iconPath || '').then((color) => {
-      setToken1Color(color);
+      if (mounted) {
+        setToken1Color(color);
+      }
     });
+    return () => {
+      mounted = false;
+    };
   });
   // Create the variables for the gradients.
   const cardTitleBackgroundGradient = `linear-gradient(90deg, ${rgba(

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput } from '../common/Input';
+import { SquareInputWithIcon } from '../common/Input';
 import styled from 'styled-components';
 import Big from 'big.js';
 
@@ -50,7 +50,7 @@ export default function ToggleableRatioChange(
         <span className='text-sm pr-3 text-grey-800'>
           Max&nbsp;Ratio&nbsp;Change
         </span>
-        <TextInput
+        {/* <TextInput
           className='grow text-right'
           placeholder='0.00'
           disabled={props.closed}
@@ -61,7 +61,7 @@ export default function ToggleableRatioChange(
             }
           }}
           value={props.value}
-        />
+        />*/}
         <div className='mx-4 select-none'>%</div>
       </div>
       <div className='text-sm text-grey-800 my-3'>{props.children}</div>
