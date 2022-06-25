@@ -83,6 +83,7 @@ export type PaginationProps = {
   totalItems: number;
   itemsPerPage: ItemsPerPage;
   currentPage: number;
+  loading: boolean;
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (itemsPerPage: ItemsPerPage) => void;
 };
@@ -92,6 +93,7 @@ export default function Pagination(props: PaginationProps) {
     totalItems,
     itemsPerPage,
     currentPage,
+    loading,
     onPageChange,
     onItemsPerPageChange,
   } = props;
@@ -107,8 +109,8 @@ export default function Pagination(props: PaginationProps) {
 
   useEffect(() => {
     // If the current page is out of range, set it to the last page
-    if (currentPage > lastPage) {
-      onPageChange(lastPage);
+    if (!loading && currentPage > lastPage) {
+      onPageChange(Math.max(lastPage, 1));
     }
   });
 
@@ -127,7 +129,7 @@ export default function Pagination(props: PaginationProps) {
     onPageChange(currentPage + 1);
   };
 
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const startItem = totalItems > 0 ? Math.max((currentPage - 1) * itemsPerPage + 1, 1) : 0;
   const endItem = Math.min(startItem + itemsPerPage - 1, totalItems);
 
   return (
