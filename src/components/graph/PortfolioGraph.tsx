@@ -9,6 +9,7 @@ import {
 } from 'date-fns/esm';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { API_URL } from '../../data/constants/Values';
 import { CombinedPercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
 import Graph from './Graph';
@@ -195,25 +196,25 @@ export default function PortfolioGraph() {
     let mounted = true;
     const fetchPoolStats = async () => {
       const getShareBalances = makeRequest(
-        `http://34.94.221.78:3000/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(
+        `${API_URL}/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(
           activeButton
         ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
       // const netDepositsResponse = await axios.get(
-      //   `http://34.94.221.78:3000/net_deposits/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/1651632134`
+      //   `${API_URL}/net_deposits/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(activeButton).toLowerCase()}/1651632134`
       // );
       const getPool = makeRequest(
-        `http://34.94.221.78:3000/pool_returns/0xE801c4175A0341e65dFef8F3B79e1889047AfEbb/1/${buttonIdxToText(
+        `${API_URL}/pool_returns/0xE801c4175A0341e65dFef8F3B79e1889047AfEbb/1/${buttonIdxToText(
           activeButton
         ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
       const getWbtc = makeRequest(
-        `http://34.94.221.78:3000/token_returns/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/1/${buttonIdxToText(
+        `${API_URL}/token_returns/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/1/${buttonIdxToText(
           activeButton
         ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
       const getWeth = makeRequest(
-        `http://34.94.221.78:3000/token_returns/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/1/${buttonIdxToText(
+        `${API_URL}/token_returns/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/1/${buttonIdxToText(
           activeButton
         ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
