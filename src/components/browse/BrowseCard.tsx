@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,13 +9,20 @@ import {
   BROWSE_CARD_WIDTH_MD,
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
-  RESPONSIVE_BREAKPOINT_MD
+  RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import { API_URL } from '../../data/constants/Values';
+import { PoolStats } from '../../data/PoolStats';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
-import { getProminentColor } from '../../util/Colors';
+import { getBrighterColor, getProminentColor, rgb, rgba } from '../../util/Colors';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
+import { useContractRead } from 'wagmi';
+import AloeBlendABI from '../../assets/abis/AloeBlend.json';
+import { formatUSD, formatUSDCompact, String1E, toBig } from '../../util/Numbers';
+import { BigNumber } from 'ethers';
+import { Display, Text } from '../common/Typography';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -121,29 +129,6 @@ const InfoCategoryContainer = styled.div`
   gap: 4px;
 `;
 
-const InfoCategory = styled.span`
-  ${tw`text-sm`}
-  color: ${INFO_CATEGORY_TEXT_COLOR};
-`;
-
-const rgb = (color: string) => {
-  return `rgb(${color})`;
-};
-
-const rgba = (color: string, alpha: number) => {
-  return `rgba(${color}, ${alpha})`;
-};
-
-// Very naive logic to get the brighter color used to pick which color to
-// use for the shadow
-const getBrighterColor = (color0: string, color1: string) => {
-  const values0 = color0.split(',').map((v) => parseInt(v.trim()));
-  const values1 = color1.split(',').map((v) => parseInt(v.trim()));
-  const avg0 = (values0[0] + values0[1] + values0[2]) / 3;
-  const avg1 = (values1[0] + values1[1] + values1[2]) / 3;
-  return avg0 > avg1 ? color0 : color1;
-};
-
 export type BrowseCardProps = {
   blendPoolMarkers: BlendPoolMarkers;
 };
@@ -161,20 +146,38 @@ export default function BrowseCard(props: BrowseCardProps) {
   const silo1 = GetSiloData(blendPoolMarkers.silo1Address.toLocaleLowerCase());
   const feeTier = PrintFeeTier(blendPoolMarkers.feeTier);
 
-  /**
-   * Placeholders until we have the actual data
-   */
-  const pricePerShare = 729.48;
-  const aprFee = '10%';
-  const totalValueLocked = '$379M';
+  const totalSupplyContract = useContractRead(
+    {
+      addressOrName: props.blendPoolMarkers.poolAddress,
+      contractInterface: AloeBlendABI,
+    },
+    'totalSupply'
+  );
+
+  const [poolStats, setPoolStats] = useState<PoolStats>();
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchPoolStats = async () => {
+      const poolStatsResponse = await axios.get(
+        `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
+      );
+      const poolStatsData = poolStatsResponse.data[0] as PoolStats;
+      if (mounted && poolStatsData) {
+        setPoolStats(poolStatsData);
+      }
+    };
+    fetchPoolStats();
+    return () => {
+      mounted = false;
+    };
+  }, [blendPoolMarkers.poolAddress]);
 
   const [token0Color, setToken0Color] = useState<string>('');
   const [token1Color, setToken1Color] = useState<string>('');
 
+  // TODO: Move this to a utility function
   useEffect(() => {
-    /**
-     * Add whatever async logic needed to calculate the gradients.
-     */
     let mounted = true;
     const calculateProminentColors = async () => {
       const token0Color = await getProminentColor(token0.iconPath || '');
@@ -203,12 +206,20 @@ export default function BrowseCard(props: BrowseCardProps) {
     0.16
   );
 
+  let pricePerShare = 0;
+  if (poolStats && totalSupplyContract[0].data) {
+    const totalSupply = toBig(BigNumber.from(totalSupplyContract[0].data))
+      .div(String1E(18))
+      .toNumber();
+    pricePerShare = poolStats.total_value_locked / totalSupply;
+  }
+
   return (
     <CardWrapper to={link} border={cardBorderGradient} shadow={cardShadowColor}>
       <CardTitleWrapper gradient={cardTitleBackgroundGradient}>
-        <span className='text-2xl font-bold'>
+        <Display size='M' weight='semibold'>
           {token0.ticker}-{token1.ticker}
-        </span>
+        </Display>
         <CardSubTitleWrapper>
           <TokenPairIcons
             token0IconPath={token0.iconPath}
@@ -216,12 +227,12 @@ export default function BrowseCard(props: BrowseCardProps) {
             token0AltText={`${token0.name}'s Icon`}
             token1AltText={`${token1.name}'s Icon`}
           />
-          <FeeTierContainer>Uniswap Fee Tier - {feeTier}</FeeTierContainer>
+          <FeeTierContainer><Text size='S' weight='medium'>Uniswap Fee Tier - {feeTier}</Text></FeeTierContainer>
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
-          <span>Invest your</span>
+          <Text size='M' weight='medium'>Invest your</Text>
           <InvestedTypes
             token0={token0}
             token1={token1}
@@ -234,18 +245,21 @@ export default function BrowseCard(props: BrowseCardProps) {
         <BodyDivider />
         <ResponsiveBodySubContainer>
           <InfoCategoryContainer>
-            <InfoCategory>Price per Share</InfoCategory>
-            <span className='text-2xl'>
-              ${pricePerShare.toLocaleString('en-US')} USD
-            </span>
+            <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>Price per Share</Text>
+            <Text size='XL' weight='medium'>
+              {
+                formatUSD(pricePerShare)
+              }{' '}
+              USD
+            </Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
-            <InfoCategory>APR</InfoCategory>
-            <span className='text-2xl'>{aprFee}</span>
+            <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>APR</Text>
+            <Text size='XL' weight='medium'>{poolStats?.annual_percentage_rate}%</Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
-            <InfoCategory>TVL</InfoCategory>
-            <span className='text-2xl'>{totalValueLocked}</span>
+            <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>TVL</Text>
+            <Text size='XL' weight='medium'>{formatUSDCompact(poolStats?.total_value_locked || 0)}</Text>
           </InfoCategoryContainer>
         </ResponsiveBodySubContainer>
       </CardBodyWrapper>

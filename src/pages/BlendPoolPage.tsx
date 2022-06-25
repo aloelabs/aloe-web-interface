@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import axios from 'axios';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
@@ -12,9 +13,15 @@ import TokenPairHeader from '../components/pool/TokenPairHeader';
 import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
 import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
-import { RESPONSIVE_BREAKPOINT_LG, RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_SM } from '../data/constants/Breakpoints';
+import {
+  RESPONSIVE_BREAKPOINT_LG,
+  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_SM
+} from '../data/constants/Breakpoints';
+import { API_URL } from '../data/constants/Values';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import { BlendTableContext } from '../data/context/BlendTableContext';
+import { PoolStats } from '../data/PoolStats';
 import { GetSiloData } from '../data/SiloData';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
@@ -67,12 +74,32 @@ const GridExpandingDiv = styled.div`
 `;
 
 export default function BlendPoolPage() {
+  const [poolStats, setPoolStats] = React.useState<PoolStats>();
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
 
   const { poolDataMap, fetchPoolData } = useContext(BlendTableContext);
 
   const poolData = poolDataMap.get(params.pooladdress || '');
+  useEffect(() => {
+    let mounted = true;
+    const fetchPoolStats = async () => {
+      const response = await axios.get(
+        `${API_URL}/pool_stats/${poolData?.poolAddress}/1/`
+      );
+      const poolStatsData = response.data[0] as PoolStats;
+      if (mounted && poolStatsData) {
+        setPoolStats(poolStatsData);
+      }
+    };
+    if (poolData) {
+      fetchPoolStats();
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [poolData]);
+
   if (!poolData) {
     if (params.pooladdress) {
       fetchPoolData(params.pooladdress);
@@ -102,24 +129,23 @@ export default function BlendPoolPage() {
         <div className='w-full py-4'>
           <BlendAllocationGraph poolData={poolData} />
           <PoolPositionWidget poolData={poolData} />
-          <PoolStatsWidget poolData={poolData} />
+          <PoolStatsWidget poolStats={poolStats} />
           <PoolPieChartWidget poolData={poolData} />
           <div className='flex flex-col gap-y-6 mt-16'>
             <WidgetHeading>About Aloe Blend Pool</WidgetHeading>
             <Text size='M' weight='medium' color={ABOUT_MESSAGE_TEXT_COLOR} className='flex flex-col gap-y-6'>
               <p>
-                Placing funds into a Blend Vault will allow Aloe to use
-                Uniswap V3 and yield-earning silos on your behalf.
+                Placing funds into a Blend Vault will allow Aloe to use Uniswap
+                V3 and yield-earning silos on your behalf.
               </p>
               <p>
-                When you deposit to the vault, your tokens are pooled
-                together with all other users. Once conditions are right,
-                the vault can be "rebalanced". some tokens get placed in
-                Uniswap, and some in the token's silo. Blend is designed to
-                allocate tokens such that overall value will be split 50/50
-                between the two tokens, just like Uniswap V2. In Aloe Blend,
-                you earn yield from both Uniswap V3 and the silos, unlike
-                Uniswap V2.
+                When you deposit to the vault, your tokens are pooled together
+                with all other users. Once conditions are right, the vault can
+                be "rebalanced". some tokens get placed in Uniswap, and some in
+                the token's silo. Blend is designed to allocate tokens such that
+                overall value will be split 50/50 between the two tokens, just
+                like Uniswap V2. In Aloe Blend, you earn yield from both Uniswap
+                V3 and the silos, unlike Uniswap V2.
               </p>
             </Text>
           </div>

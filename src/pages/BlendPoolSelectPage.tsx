@@ -1,19 +1,18 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import SearchIcon from '../assets/svg/search.svg';
 import { ReactComponent as PlusIcon } from '../assets/svg/white_plus.svg';
 import BrowseCard from '../components/browse/BrowseCard';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
 import { OutlinedGradientRoundedButtonWithIcon } from '../components/common/Buttons';
 import {
-  DropdownOption,
   DropdownWithPlaceholder,
+  DropdownWithPlaceholderOption,
   MultiDropdown,
   MultiDropdownOption,
 } from '../components/common/Dropdown';
 import { FilterBadge } from '../components/common/FilterBadge';
-import { TextInput } from '../components/common/Input';
-import Pagination from '../components/common/Pagination';
+import { RoundedInputWithIcon } from '../components/common/Input';
+import Pagination, { ItemsPerPage } from '../components/common/Pagination';
 import { Display } from '../components/common/Typography';
 import WideAppPage from '../components/common/WideAppPage';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
@@ -27,6 +26,7 @@ import {
 } from '../data/constants/Breakpoints';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetTokenData } from '../data/TokenData';
+import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -58,8 +58,13 @@ const BrowseCards = styled.div`
   align-items: center;
 `;
 
+const SearchInputWrapper = styled.div`
+  width: 420px;
+`;
+
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
+  const [activeSearchText, setActiveSearchText] = useState<string>('');
   const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
   const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
   const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
@@ -69,7 +74,7 @@ export default function BlendPoolSelectPage() {
     MultiDropdownOption[]
   >([]);
   const [page, setPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [itemsPerPage, setItemsPerPage] = useState<10 | 20 | 50 | 100>(10);
   const sortByOptions = [
     {
       label: 'Default',
@@ -86,9 +91,9 @@ export default function BlendPoolSelectPage() {
       value: 'oldest',
       isDefault: false,
     },
-  ] as DropdownOption[];
+  ] as DropdownWithPlaceholderOption[];
   const [selectedSortByOption, setSelectedSortByOption] =
-    useState<DropdownOption>(sortByOptions[0]);
+    useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
@@ -120,7 +125,7 @@ export default function BlendPoolSelectPage() {
   }, [loadData]);
 
   useEffect(() => {
-    if (searchText.length > 0 && pools.length > 0) {
+    if (activeSearchText.length > 0 && pools.length > 0) {
       setFilteredPools(
         pools.filter((pool) => {
           const {
@@ -141,7 +146,7 @@ export default function BlendPoolSelectPage() {
               token0Label,
               token1Label,
             ].findIndex((field) => {
-              return field.toLowerCase().includes(searchText.toLowerCase());
+              return field.toLowerCase().includes(activeSearchText.toLowerCase());
             }) !== -1
           );
         })
@@ -149,7 +154,7 @@ export default function BlendPoolSelectPage() {
     } else if (pools.length > 0) {
       setFilteredPools(pools);
     }
-  }, [searchText, pools]);
+  }, [activeSearchText, pools]);
 
   useEffect(() => {
     if (activeTokenOptions.length > 0) {
@@ -218,7 +223,7 @@ export default function BlendPoolSelectPage() {
     setPage(page);
   };
 
-  const handleItemsPerPageChange = (itemsPerPage: number) => {
+  const handleItemsPerPageChange = (itemsPerPage: ItemsPerPage) => {
     setItemsPerPage(itemsPerPage);
   };
 
@@ -243,32 +248,39 @@ export default function BlendPoolSelectPage() {
           )}
         </div>
         <div className='py-4 flex flex-row items-center justify-between text-lg'>
-          <TextInput
-            className='lg:basis-5/12 md:basis-1/2 md:grow-0 sm:basis-0 sm:grow sm:mr-12'
-            icon={SearchIcon}
-            placeholder='Search by name or symbol'
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
+          <div className='flex gap-x-4'>
+            <SearchInputWrapper>
+              <RoundedInputWithIcon
+                value={searchText}
+                size='L'
+                onChange={(e) => setSearchText(e.target.value)}
+                Icon={<SearchIcon />}
+                svgColorType='fill'
+                placeholder='Search by name, symbol or address'
+                fullWidth={true}
+                onIconClick={() => setActiveSearchText(searchText)}
+                onEnter={() => setActiveSearchText(searchText)}
+              />
+            </SearchInputWrapper>
 
-          <MultiDropdown
-            options={tokenOptions}
-            activeOptions={activeTokenOptions}
-            handleChange={(selectedOptions) => {
-              setActiveTokenOptions(selectedOptions);
-            }}
-            placeholder='All Tokens'
-            selectedText='Tokens'
-          />
-          <DropdownWithPlaceholder
-            options={sortByOptions}
-            selectedOption={selectedSortByOption}
-            onSelect={(option: DropdownOption) => {
-              setSelectedSortByOption(option);
-            }}
-            placeholder='Sort By'
-          />
-
+            <MultiDropdown
+              options={tokenOptions}
+              activeOptions={activeTokenOptions}
+              handleChange={(selectedOptions) => {
+                setActiveTokenOptions(selectedOptions);
+              }}
+              placeholder='All Tokens'
+              selectedText='Tokens'
+            />
+            <DropdownWithPlaceholder
+              options={sortByOptions}
+              selectedOption={selectedSortByOption}
+              onSelect={(option: DropdownWithPlaceholderOption) => {
+                setSelectedSortByOption(option);
+              }}
+              placeholder='Sort By'
+            />
+          </div>
           <a
             href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
             target='_blank'

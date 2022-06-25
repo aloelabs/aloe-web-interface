@@ -1,17 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
-import { ResolveBlendPoolDrawData } from '../../data/BlendPoolDataResolver';
-
-import { BlendPoolContext } from '../../data/context/BlendPoolContext';
+import { PoolStats } from '../../data/PoolStats';
 import {
-  prettyFormatBalance,
-  roundPercentage,
-  String1E,
-  toBig,
+  formatUSDCompact,
+  roundPercentage
 } from '../../util/Numbers';
-import { useAccount, useBalance } from 'wagmi';
 import { Display, Text } from '../common/Typography';
 import WidgetHeading from '../common/WidgetHeading';
 
@@ -40,87 +34,91 @@ const PoolStat = styled.div`
 `;
 
 export type PoolStatsWidgetProps = {
-  poolData: BlendPoolMarkers;
+  poolStats: PoolStats | undefined;
 };
 
 export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
-  const drawData = ResolveBlendPoolDrawData(props.poolData);
-
-  const { poolStats } = useContext(BlendPoolContext);
-
-  const [{ data: accountData }] = useAccount();
-  const [{ data: shareBalanceData }] = useBalance({
-    addressOrName: accountData?.address,
-    token: props.poolData.poolAddress,
-    watch: true,
-  });
-
-  const sharesBalance = shareBalanceData
-    ? toBig(shareBalanceData.value)
-    : undefined;
-
-  const token0Reserves = prettyFormatBalance(
-    poolStats?.inventory0.total,
-    poolStats?.token0Decimals
-  );
-  const token1Reserves = prettyFormatBalance(
-    poolStats?.inventory1.total,
-    poolStats?.token1Decimals
-  );
-
-  const token0OwedToUser =
-    !poolStats || !sharesBalance || poolStats.outstandingShares.eq(0)
-      ? '-'
-      : prettyFormatBalance(
-          poolStats.inventory0.total
-            .mul(sharesBalance)
-            .div(poolStats.outstandingShares),
-          poolStats.token0Decimals
-        );
-  const token1OwedToUser =
-    !poolStats || !sharesBalance || poolStats.outstandingShares.eq(0)
-      ? '-'
-      : prettyFormatBalance(
-          poolStats.inventory1.total
-            .mul(sharesBalance)
-            .div(poolStats.outstandingShares),
-          poolStats.token1Decimals
-        );
-  const poolSharesBalance = sharesBalance
-    ? sharesBalance.div(String1E(18)).toExponential(4)
-    : '-';
+  const { poolStats } = props;
 
   return (
     <Wrapper>
       <WidgetHeading>Stats</WidgetHeading>
       <PoolStatsWidgetGrid>
         <PoolStat>
-          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>APR</Text>
-          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>
-            {roundPercentage(12, ROUNDING_PRECISION)}%
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            APR
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            {roundPercentage(
+              poolStats?.annual_percentage_rate || 0,
+              ROUNDING_PRECISION
+            )}
+            %
           </Display>
         </PoolStat>
         <PoolStat>
-          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>CAPR</Text>
-          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            CAPR
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
             {roundPercentage(23, ROUNDING_PRECISION)}%
           </Display>
         </PoolStat>
         <PoolStat>
-          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>Volume 24H</Text>
-          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>$125.30 M</Display>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            Volume 24H
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            $125.30 M
+          </Display>
         </PoolStat>
         <PoolStat>
-          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>Liquidity</Text>
-          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>$125.30 M</Display>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            Liquidity
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            $125.30 M
+          </Display>
         </PoolStat>
         <PoolStat>
-          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>TVL</Text>
-          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>$125.30 M</Display>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            TVL
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            {formatUSDCompact(poolStats?.total_value_locked || 0)}
+          </Display>
         </PoolStat>
         <PoolStat>
-          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>Lorem Ipsum</Text>
-          <Display size='S' weight='semibold' color={POOL_STAT_VALUE_TEXT_COLOR}>$125.30 M</Display>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            Lorem Ipsum
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            $125.30 M
+          </Display>
         </PoolStat>
       </PoolStatsWidgetGrid>
     </Wrapper>

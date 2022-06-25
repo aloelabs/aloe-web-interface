@@ -19,6 +19,7 @@ import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
 import { PercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
+import { formatUSD } from '../../util/Numbers';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const TOKEN_PAIR_FIGURE_COLOR = 'rgba(255, 255, 255, 0.6)';
@@ -176,15 +177,20 @@ export default function PortfolioCard(props: PortfolioCardProps) {
   const [token0Color, setToken0Color] = useState<string>('');
   const [token1Color, setToken1Color] = useState<string>('');
   useEffect(() => {
-    /**
-     * Add whatever async logic needed to calculate the gradients.
-     */
+    let mounted = true;
     getProminentColor(token0.iconPath || '').then((color) => {
-      setToken0Color(color);
+      if (mounted) {
+        setToken0Color(color);
+      }
     });
     getProminentColor(token1.iconPath || '').then((color) => {
-      setToken1Color(color);
+      if (mounted) {
+        setToken1Color(color);
+      }
     });
+    return () => {
+      mounted = false;
+    };
   });
   // Create the variables for the gradients.
   const cardTitleBackgroundGradient = `linear-gradient(90deg, ${rgba(
@@ -234,7 +240,7 @@ export default function PortfolioCard(props: PortfolioCardProps) {
             Estimated Value
           </Text>
           <div className='flex gap-2 items-center'>
-            <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
+            <ValueText>{formatUSD(estimatedValue)}</ValueText>
             <PercentChange percent={percentageChange} />
           </div>
         </BodySubContainer>

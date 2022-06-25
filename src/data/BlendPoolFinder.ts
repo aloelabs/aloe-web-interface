@@ -4,6 +4,7 @@ import { BlendPoolMarkers, FeeTier } from './BlendPoolMarkers';
 
 import AloeBlendABI from '../assets/abis/AloeBlend.json';
 import UniswapV3PoolABI from '../assets/abis/UniswapV3Pool.json';
+import { API_URL } from './constants/Values';
 
 export async function fetchBlendPoolData(
   address: string,
@@ -52,36 +53,10 @@ export async function fetchBlendPoolData(
   };
 }
 
-export default async function findPools(
-  factoryAddress: string,
-  factoryCreationBlock: number,
-  provider: ethers.providers.BaseProvider
-) {
-  const params: Map<string, string | number> = new Map();
-  params.set('fromBlock', factoryCreationBlock);
-  params.set('toBlock', 'latest');
-  params.set('address', factoryAddress);
-  params.set(
-    'topic0',
-    '0xfb83ca910097c70646250238daf4abcd392f91992164890d564d81e0e218f2b2'
-  );
-  params.set('apikey', process.env.REACT_APP_ETHERSCAN_API_KEY ?? '');
-
-  const formattedParams = Array.from(params.entries())
-    .map((item) => `${item[0]}=${item[1]}`)
-    .join('&');
-  const response = await axios.get<any>(
-    `https://api.etherscan.io/api?module=logs&action=getLogs&${formattedParams}`
-  );
-
-  const factoryLogs = response?.data?.result;
-  if (!factoryLogs) return null;
-
-  const poolAddresses = factoryLogs.map((log: any) => {
-    const address = String(log['topics'][1]).slice(-40);
-    return `0x${address}`;
-  });
-
+export default async function findPools(provider: ethers.providers.BaseProvider) {
+  const response = await axios.get(`${API_URL}/deployed_pools/1`);
+  const data = response.data;
+  const poolAddresses = data.map((pool: any) => pool['pool_address']);
   const promises: Promise<BlendPoolMarkers>[] = poolAddresses.map(
     (address: string) => fetchBlendPoolData(address, provider)
   );
@@ -93,6 +68,6 @@ export default async function findPools(
   });
   return {
     poolDataMap,
-    poolAddresses,
-  };
+    poolAddresses
+  }
 }
