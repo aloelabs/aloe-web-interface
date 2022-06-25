@@ -21,6 +21,7 @@ import { GetTokenData } from '../../data/TokenData';
 import { ethers } from 'ethers';
 import { Text } from '../common/Typography';
 import { fixTimestamp } from '../../util/Dates';
+import { API_URL } from '../../data/constants/Values';
 
 const GraphButtonsWrapper = styled.div`
   ${tw`w-max`}
@@ -152,17 +153,17 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
     let mounted = true;
     async function fetchData() {
       const getPoolReturns = makeRequest(
-        `http://34.94.221.78:3000/pool_returns/${pool}/1/${buttonIdxToText(
+        `${API_URL}/pool_returns/${pool}/1/${buttonIdxToText(
           activeButton
         ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
       const getToken0 = makeRequest(
-        `http://34.94.221.78:3000/token_returns/${token0}/1/${buttonIdxToText(
+        `${API_URL}/token_returns/${token0}/1/${buttonIdxToText(
           activeButton
         ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
       const getToken1 = makeRequest(
-        `http://34.94.221.78:3000/token_returns/${token1}/1/${buttonIdxToText(
+        `${API_URL}/token_returns/${token1}/1/${buttonIdxToText(
           activeButton
         ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
