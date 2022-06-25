@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -8,13 +9,19 @@ import {
   BROWSE_CARD_WIDTH_MD,
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
-  RESPONSIVE_BREAKPOINT_MD
+  RESPONSIVE_BREAKPOINT_MD,
 } from '../../data/constants/Breakpoints';
+import { API_URL } from '../../data/constants/Values';
+import { PoolStats } from '../../data/PoolStats';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
 import { getBrighterColor, getProminentColor, rgb, rgba } from '../../util/Colors';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
+import { useContractRead } from 'wagmi';
+import AloeBlendABI from '../../assets/abis/AloeBlend.json';
+import { formatUSD, formatUSDCompact, String1E, toBig } from '../../util/Numbers';
+import { BigNumber } from 'ethers';
 import { Display, Text } from '../common/Typography';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
@@ -139,12 +146,32 @@ export default function BrowseCard(props: BrowseCardProps) {
   const silo1 = GetSiloData(blendPoolMarkers.silo1Address.toLocaleLowerCase());
   const feeTier = PrintFeeTier(blendPoolMarkers.feeTier);
 
-  /**
-   * Placeholders until we have the actual data
-   */
-  const pricePerShare = 729.48;
-  const aprFee = '10%';
-  const totalValueLocked = '$379M';
+  const totalSupplyContract = useContractRead(
+    {
+      addressOrName: props.blendPoolMarkers.poolAddress,
+      contractInterface: AloeBlendABI,
+    },
+    'totalSupply'
+  );
+
+  const [poolStats, setPoolStats] = useState<PoolStats>();
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchPoolStats = async () => {
+      const poolStatsResponse = await axios.get(
+        `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
+      );
+      const poolStatsData = poolStatsResponse.data[0] as PoolStats;
+      if (mounted && poolStatsData) {
+        setPoolStats(poolStatsData);
+      }
+    };
+    fetchPoolStats();
+    return () => {
+      mounted = false;
+    };
+  }, [blendPoolMarkers.poolAddress]);
 
   const [token0Color, setToken0Color] = useState<string>('');
   const [token1Color, setToken1Color] = useState<string>('');
@@ -179,6 +206,14 @@ export default function BrowseCard(props: BrowseCardProps) {
     0.16
   );
 
+  let pricePerShare = 0;
+  if (poolStats && totalSupplyContract[0].data) {
+    const totalSupply = toBig(BigNumber.from(totalSupplyContract[0].data))
+      .div(String1E(18))
+      .toNumber();
+    pricePerShare = poolStats.total_value_locked / totalSupply;
+  }
+
   return (
     <CardWrapper to={link} border={cardBorderGradient} shadow={cardShadowColor}>
       <CardTitleWrapper gradient={cardTitleBackgroundGradient}>
@@ -212,16 +247,19 @@ export default function BrowseCard(props: BrowseCardProps) {
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>Price per Share</Text>
             <Text size='XL' weight='medium'>
-              ${pricePerShare.toLocaleString('en-US')} USD
+              {
+                formatUSD(pricePerShare)
+              }{' '}
+              USD
             </Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>APR</Text>
-            <Text size='XL' weight='medium'>{aprFee}</Text>
+            <Text size='XL' weight='medium'>{poolStats?.annual_percentage_rate}%</Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>TVL</Text>
-            <Text size='XL' weight='medium'>{totalValueLocked}</Text>
+            <Text size='XL' weight='medium'>{formatUSDCompact(poolStats?.total_value_locked || 0)}</Text>
           </InfoCategoryContainer>
         </ResponsiveBodySubContainer>
       </CardBodyWrapper>

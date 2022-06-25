@@ -8,6 +8,7 @@ import {
   RESPONSIVE_BREAKPOINT_SM
 } from '../../data/constants/Breakpoints';
 import { TokenData } from '../../data/TokenData';
+import { formatUSD } from '../../util/Numbers';
 import { OutlinedGradientButtonWithIcon } from '../common/Buttons';
 import FeeTierContainer from '../common/FeeTierContainer';
 import PercentChange from '../common/PercentChange';
@@ -93,7 +94,7 @@ export default function ExternalPortfolioCard(
             Estimated Value
           </Text>
           <ValuePercentContainer>
-            <ValueText>${estimatedValue.toLocaleString('en-US')}</ValueText>
+            <ValueText>{formatUSD(estimatedValue)}</ValueText>
             <PercentChange percent={percentageChange} />
           </ValuePercentContainer>
         </BodySubContainer>
