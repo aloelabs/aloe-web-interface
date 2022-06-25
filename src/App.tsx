@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import React, { Suspense, useEffect } from 'react';
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 
 import WagmiProvider from './connector/WagmiProvider';
 import Header from './components/header/Header';
@@ -12,7 +12,7 @@ import GovernancePage from './pages/GovernancePage';
 import AppBody from './components/common/AppBody';
 import { RedirectPartialPath } from './util/RedirectPartialPath';
 import { BlendTableProvider } from './data/context/BlendTableContext';
-import InputExamplesPage from './pages/InputExamplesPage';
+import ScrollToTop from './util/ScrollToTop';
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
       <Suspense fallback={null}>
         <WagmiProvider>
           <BlendTableProvider>
+            <ScrollToTop />
             <AppBody>
               <Header />
               <main className='flex-grow'>
@@ -49,7 +50,6 @@ function App() {
                   </Route>
                   <Route path='/portfolio' element={<PortfolioPage />} />
                   <Route path='/governance' element={<GovernancePage />} />
-                  <Route path='/inputs' element={<InputExamplesPage />} />
                   <Route path='/' element={<Navigate replace to='/blend' />} />
                   <Route path='*' element={<Navigate to='/' />} />
                 </Routes>
