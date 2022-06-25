@@ -69,8 +69,8 @@ export default function Header() {
         </div>
         <VerticalDivider />
         <div className='flex flex-row align-middle items-center h-full text-md'>
-          {MenuItems.map((menuitem) => (
-            <>
+          {MenuItems.map((menuitem, index) => (
+            <React.Fragment key={index}>
               <StyledNavLink
                 size='M'
                 weight='medium'
@@ -83,7 +83,7 @@ export default function Header() {
                 {menuitem.title}
               </StyledNavLink>
               <VerticalDivider />
-            </>
+            </React.Fragment>
           ))}
         </div>
       </div>
