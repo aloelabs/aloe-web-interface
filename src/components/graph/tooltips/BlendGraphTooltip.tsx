@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { format, parseISO } from 'date-fns';
-import { Text } from '../common/Typography';
+import { Text } from '../../common/Typography';
 
 const TOOLTIP_BG_COLOR = 'rgba(0, 0, 0, 0.4)';
 const TOOLTIP_BORDER_COLOR = 'rgba(255, 255, 255, 0.1)';

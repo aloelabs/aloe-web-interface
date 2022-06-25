@@ -17,7 +17,7 @@ import {
 import FeeTierContainer from '../common/FeeTierContainer';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
-import PercentChange from '../common/PercentChange';
+import { PercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
 import { formatUSD } from '../../util/Numbers';
 

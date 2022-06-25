@@ -10,6 +10,7 @@ import { GetTokenData } from '../data/TokenData';
 import { FeeTier } from '../data/BlendPoolMarkers';
 import { GetSiloData } from '../data/SiloData';
 import { Text } from '../components/common/Typography';
+import PortfolioGraph from '../components/graph/PortfolioGraph';
 import Tooltip from '../components/common/Tooltip';
 
 const PORTFOLIO_TITLE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
@@ -29,6 +30,9 @@ export default function PortfolioPage() {
   return (
     <AppPage>
       <Container>
+        <div className='w-full'>
+          <PortfolioGraph />
+        </div>
         <div className='w-full'>
           <EmptyPortfolio />
         </div>

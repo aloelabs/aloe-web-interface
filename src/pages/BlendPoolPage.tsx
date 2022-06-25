@@ -30,7 +30,7 @@ const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
   position: absolute;
-  bottom: -56px;
+  top: 140px;
   left: 67px;
 `;
 
@@ -127,7 +127,7 @@ export default function BlendPoolPage() {
           <PoolInteractionTabs poolData={poolData} />
         </GridExpandingDiv>
         <div className='w-full py-4'>
-          <BlendAllocationGraph />
+          <BlendAllocationGraph poolData={poolData} />
           <PoolPositionWidget poolData={poolData} />
           <PoolStatsWidget poolStats={poolStats} />
           <PoolPieChartWidget poolData={poolData} />

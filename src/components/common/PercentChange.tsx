@@ -4,6 +4,8 @@ import PositiveChangeIcon from '../../assets/svg/positive_change_chevron.svg';
 import NegativeChangeIcon from '../../assets/svg/negative_change_chevron.svg';
 import styled from 'styled-components';
 import { Text } from './Typography';
+import { ReactComponent as UpArrow } from '../../assets/svg/up_arrow.svg';
+import { ReactComponent as DownArrow } from '../../assets/svg/down_arrow.svg';
 
 const POSITIVE_PERCENT_BG_COLOR = 'rgba(0, 193, 67, 0.1)';
 const POSITIVE_PERCENT_TEXT_COLOR = 'rgb(0, 193, 67)';
@@ -46,7 +48,7 @@ export type PercentChangeProps = {
   percent: number;
 };
 
-export default function PercentChange(props: PercentChangeProps) {
+export function PercentChange(props: PercentChangeProps) {
   const { percent } = props;
   if (percent >= 0) {
     return (
@@ -63,6 +65,58 @@ export default function PercentChange(props: PercentChangeProps) {
           {roundPercentage(percent, PERCENT_ROUNDING_PRECISION)}%
         </Text>
       </NegativePercentChangeContainer>
+    );
+  }
+}
+
+const CombinedPercentChangeContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  border-radius: 8px;
+  padding: 8px 10px;
+`;
+
+const PositiveCombinedPercentChangeContainer = styled(
+  CombinedPercentChangeContainer
+)`
+  background: ${POSITIVE_PERCENT_BG_COLOR};
+`;
+
+const NegativeCombinedPercentChangeContainer = styled(
+  CombinedPercentChangeContainer
+)`
+  background: ${NEGATIVE_PERCENT_BG_COLOR};
+`;
+
+export type CombinedPercentChangeProps = {
+  value: number;
+  percent: number;
+};
+
+export function CombinedPercentChange(props: CombinedPercentChangeProps) {
+  const { value, percent } = props;
+  if (percent >= 0) {
+    return (
+      <PositiveCombinedPercentChangeContainer>
+        <UpArrow />
+        <Text size='S' weight='medium' color={POSITIVE_PERCENT_TEXT_COLOR}>
+          {value.toLocaleString('en-US', {
+              style: 'currency',
+              currency: 'USD',
+            })} ({roundPercentage(percent, PERCENT_ROUNDING_PRECISION)}%)
+        </Text>
+      </PositiveCombinedPercentChangeContainer>
+    );
+  } else {
+    return (
+      <NegativeCombinedPercentChangeContainer>
+        <DownArrow />
+        <Text size='S' weight='medium' color={NEGATIVE_PERCENT_TEXT_COLOR}>
+          {value} ({roundPercentage(percent, PERCENT_ROUNDING_PRECISION)}%)
+        </Text>
+      </NegativeCombinedPercentChangeContainer>
     );
   }
 }
