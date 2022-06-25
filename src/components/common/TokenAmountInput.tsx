@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import ErrorIcon from '../../assets/svg/interaction_error.svg';
+import { SquareInputWithMax } from './Input';
 import { Text } from './Typography';
 
 const INPUT_LABEL_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
@@ -37,44 +38,6 @@ const formatNumberInput = (input: string, max?: string): string | null => {
   } else return null;
 };
 
-const InputWrapper = styled.div`
-  position: relative;
-`;
-
-const AmountInput = styled.input`
-  ${tw`text-left flex-grow w-full relative`}
-  background-color: rgba(13, 23, 30, 1);
-  padding: 16px 64px 16px 24px;
-  border-radius: 8px;
-  color: rgba(204, 223, 237, 1);
-  caret-color: rgba(82, 182, 154, 1);
-
-  &::placeholder {
-    color: rgba(75, 105, 128, 1);
-  }
-  
-  &:focus,
-  &.active {
-    outline: none;
-    background-color: rgba(26, 41, 52, 1);
-  }
-`;
-
-const MaxButton = styled.button`
-  ${tw`text-sm ml-3 p-0 w-10`}
-  color: rgba(0, 193, 67, 1);
-  position: absolute;
-  top: calc(50% - 9.45px);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18.9px;
-  right: 24px;
-
-  &:disabled {
-    color: rgba(75, 105, 128, 1);
-  }
-`;
-
 const ErrorMessageWrapper = styled.div`
   ${tw`flex items-center gap-x-2 mt-2`}
 `;
@@ -89,40 +52,40 @@ const ErrorMessageText = styled.div`
 export default function TokenAmountInput(props: TokenAmountInputProps) {
   return (
     <div className='w-full'>
-        <div className='flex items-center justify-between mb-2'>
-          <Text size='M' weight='medium' color={INPUT_LABEL_TEXT_COLOR}>{props.tokenLabel}</Text>
-          <Text size='XS' weight='medium' color={BALANCE_VALUE_TEXT_COLOR}>Balance: {props?.max || '-'}</Text>
-        </div>
-        <InputWrapper>
-          <AmountInput
-            className={props.value !== '' ? 'active' : ''}
-            placeholder='0.00'
-            onChange={(event) => {
-              const output = formatNumberInput(event.target.value, props.max);
-              if (output !== null) {
-                props.onChange(output);
-              }
-            }}
-            value={props.value}
-          />
-          <MaxButton
-            onClick={() => {
-              props.max && props.onChange(props.max.toString());
-            }}
-            className=''
-            disabled={props.maxed}
-          >
-            MAX
-          </MaxButton>
-        </InputWrapper>
-        {props.error && (
-          <ErrorMessageWrapper>
-            <img src={ErrorIcon} width={16} height={16} alt='error' />
-            <ErrorMessageText>
-              {props.errorMessage ? props.errorMessage : 'Invalid input'}
-            </ErrorMessageText>
-          </ErrorMessageWrapper>
-        )}
+      <div className='flex items-center justify-between mb-2'>
+        <Text size='M' weight='medium' color={INPUT_LABEL_TEXT_COLOR}>
+          {props.tokenLabel}
+        </Text>
+        <Text size='XS' weight='medium' color={BALANCE_VALUE_TEXT_COLOR}>
+          Balance: {props?.max || '-'}
+        </Text>
+      </div>
+      {/* <InputWrapper> */}
+      <SquareInputWithMax
+        size='L'
+        inputClassName={props.value !== '' ? 'active' : ''}
+        placeholder='0.00'
+        onChange={(event) => {
+          const output = formatNumberInput(event.target.value, props.max);
+          if (output !== null) {
+            props.onChange(output);
+          }
+        }}
+        value={props.value}
+        onMaxClick={() => {
+          props.max && props.onChange(props.max.toString());
+        }}
+        maxDisabled={props.maxed}
+        fullWidth={true}
+      />
+      {props.error && (
+        <ErrorMessageWrapper>
+          <img src={ErrorIcon} width={16} height={16} alt='error' />
+          <ErrorMessageText>
+            {props.errorMessage ? props.errorMessage : 'Invalid input'}
+          </ErrorMessageText>
+        </ErrorMessageWrapper>
+      )}
     </div>
   );
 }
