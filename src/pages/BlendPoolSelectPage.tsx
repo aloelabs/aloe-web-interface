@@ -146,7 +146,9 @@ export default function BlendPoolSelectPage() {
               token0Label,
               token1Label,
             ].findIndex((field) => {
-              return field.toLowerCase().includes(activeSearchText.toLowerCase());
+              return field
+                .toLowerCase()
+                .includes(activeSearchText.toLowerCase());
             }) !== -1
           );
         })
@@ -247,7 +249,7 @@ export default function BlendPoolSelectPage() {
             </FilterBadge>
           )}
         </div>
-        <div className='py-4 flex flex-row items-center justify-between text-lg'>
+        <div className='py-4 flex flex-row items-center justify-between'>
           <div className='flex gap-x-4'>
             <SearchInputWrapper>
               <RoundedInputWithIcon

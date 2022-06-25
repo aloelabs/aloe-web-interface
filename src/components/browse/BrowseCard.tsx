@@ -10,6 +10,7 @@ import {
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
   RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_SM,
 } from '../../data/constants/Breakpoints';
 import { API_URL } from '../../data/constants/Values';
 import { PoolStats } from '../../data/PoolStats';
@@ -62,6 +63,9 @@ const CardWrapper = styled(NavLink).attrs(
   @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
     width: ${BROWSE_CARD_WIDTH_MD};
     margin: 0 auto;
+  }
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    width: 100%;
   }
 `;
 
