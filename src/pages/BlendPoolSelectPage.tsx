@@ -64,6 +64,7 @@ const SearchInputWrapper = styled.div`
 
 export default function BlendPoolSelectPage() {
   const [searchText, setSearchText] = useState<string>('');
+  const [activeSearchText, setActiveSearchText] = useState<string>('');
   const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
   const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
   const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
@@ -124,7 +125,7 @@ export default function BlendPoolSelectPage() {
   }, [loadData]);
 
   useEffect(() => {
-    if (searchText.length > 0 && pools.length > 0) {
+    if (activeSearchText.length > 0 && pools.length > 0) {
       setFilteredPools(
         pools.filter((pool) => {
           const {
@@ -145,7 +146,7 @@ export default function BlendPoolSelectPage() {
               token0Label,
               token1Label,
             ].findIndex((field) => {
-              return field.toLowerCase().includes(searchText.toLowerCase());
+              return field.toLowerCase().includes(activeSearchText.toLowerCase());
             }) !== -1
           );
         })
@@ -153,7 +154,7 @@ export default function BlendPoolSelectPage() {
     } else if (pools.length > 0) {
       setFilteredPools(pools);
     }
-  }, [searchText, pools]);
+  }, [activeSearchText, pools]);
 
   useEffect(() => {
     if (activeTokenOptions.length > 0) {
@@ -257,6 +258,8 @@ export default function BlendPoolSelectPage() {
                 svgColorType='fill'
                 placeholder='Search by name, symbol or address'
                 fullWidth={true}
+                onIconClick={() => setActiveSearchText(searchText)}
+                onEnter={() => setActiveSearchText(searchText)}
               />
             </SearchInputWrapper>
 
