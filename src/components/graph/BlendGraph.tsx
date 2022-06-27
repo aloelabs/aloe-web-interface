@@ -3,6 +3,7 @@ import BlendGraphTooltip from './tooltips/BlendGraphTooltip';
 import styled from 'styled-components';
 import { Text } from '../common/Typography';
 import Graph from './Graph';
+import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
 
 const TEXT_COLOR = '#82a0b6';
 const GREEN_GRADIENT_COLOR = '#59d67c';
@@ -37,6 +38,10 @@ const LegendItem = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 8px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    flex-direction: column;
+  }
 `;
 
 const LegendItemBox = styled.div`

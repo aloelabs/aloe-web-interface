@@ -25,6 +25,7 @@ import { PoolStats } from '../data/PoolStats';
 import { GetSiloData } from '../data/SiloData';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
+import tw from 'twin.macro';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -32,6 +33,11 @@ const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
   position: absolute;
   top: 140px;
   left: 67px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    top: 196px;
+    left: 50px;
+  }
 `;
 
 type PoolParams = {
@@ -73,6 +79,20 @@ const GridExpandingDiv = styled.div`
   }
 `;
 
+const HeaderBarContainer = styled.div`
+  ${tw`flex items-center relative pt-16`}
+  flex-direction: row;
+  gap: 32px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    display: grid;
+    grid-template-columns: fit-content(35px) fit-content(400px) fit-content(24px);
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+`;
+
 export default function BlendPoolPage() {
   const [poolStats, setPoolStats] = React.useState<PoolStats>();
   const params = useParams<PoolParams>();
@@ -110,20 +130,20 @@ export default function BlendPoolPage() {
   return (
     <BlendPoolProvider poolData={poolData}>
       <PoolBodyWrapper>
-        <div className='flex items-center gap-8 relative pt-16'>
+        <HeaderBarContainer>
           <PreviousPageButton onClick={() => navigate('../pools')} />
           <TokenPairHeader
             token0={GetTokenData(poolData.token0Address.toLowerCase())}
             token1={GetTokenData(poolData.token1Address.toLowerCase())}
             silo0={GetSiloData(poolData.silo0Address.toLowerCase())}
             silo1={GetSiloData(poolData.silo1Address.toLowerCase())}
+            feeTier={poolData.feeTier}
           />
           <a href={`https://etherscan.io/address/${poolData.poolAddress}`}>
             <OpenIcon width={24} height={24} />
           </a>
-          <AbsoluteFeeTierContainer feeTier={poolData.feeTier} />
-        </div>
-        <GridExpandingDiv className='w-full min-w-[340px] md:mt-24 md:grid-flow-row-dense'>
+        </HeaderBarContainer>
+        <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
           <PoolInteractionTabs poolData={poolData} />
         </GridExpandingDiv>
         <div className='w-full py-4'>

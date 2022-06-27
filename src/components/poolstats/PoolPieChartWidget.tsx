@@ -7,6 +7,7 @@ import { ResolveBlendPoolDrawData } from '../../data/BlendPoolDataResolver';
 
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import Tooltip from '../common/Tooltip';
+import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
 
 export type PoolStatsWidgetProps = {
   poolData: BlendPoolMarkers;
@@ -51,6 +52,15 @@ function getCoordinatesForPercent(percent: number) {
   return [x, y];
 }
 
+const TokenAllocationWrapper = styled.div`
+  ${tw`w-full h-full mt-4 flex flex-nowrap`}
+  flex-direction: row;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    flex-direction: column;
+  }
+`;
+
 const ExpandingPath = styled.path`
   transition: all 0.15s ease-in;
 
@@ -94,6 +104,11 @@ const PieChartLabel = styled.div`
 const TokenAllocationBreakdown = styled.div`
   ${tw`flex flex-col justify-center gap-y-12`};
   margin-left: 45px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    margin-left: 0;
+    margin-top: 32px;
+  }
 `;
 
 const TokenLabel = styled.div`
@@ -325,7 +340,7 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
     <div className='w-full flex flex-col items-start justify-start mb-8'>
       {/* TODO: Update styling of widget header to spec, add info icon, and ensure spacing around the component is to spec */}
       <WidgetHeading>Token Allocation <Tooltip buttonSize='S' buttonClassName='ml-1 mr-1' content={tooltipContent} position='top-center' filled={true} /></WidgetHeading>
-      <div className='w-full h-full mt-4 flex flex-row flex-nowrap'>
+      <TokenAllocationWrapper>
         <div className='w-[227px] h-[227px] relative'>
           <PieChartContainer>
             <svg viewBox='-1 -1 2 2' overflow='visible'>
@@ -432,7 +447,7 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
             </div>
           </div>
         </TokenAllocationBreakdown>
-      </div>
+      </TokenAllocationWrapper>
     </div>
   );
 }

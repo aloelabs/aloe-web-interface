@@ -10,18 +10,28 @@ import NextChevronInactive from '../../assets/svg/next_chevron_inactive.svg';
 import PreviousChevronActive from '../../assets/svg/previous_chevron_active.svg';
 import PreviousChevronInactive from '../../assets/svg/previous_chevron_inactive.svg';
 import { Text } from './Typography';
+import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
 
 const DESCRIPTION_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 const Wrapper = styled.div`
   ${tw`w-full flex`}
+  flex-direction: row;
   background-color: rgba(13, 23, 30, 1);
   border-radius: 12px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    flex-direction: column;
+  }
 `;
 
 const RiskImage = styled.img`
   width: 256px;
   height: 256px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    margin: 0 auto;
+  }
 `;
 
 const Title = styled.div`
@@ -54,6 +64,23 @@ const NavigationDot = styled.div`
     width: 14px;
     border-radius: 100px;
     background-color: rgba(255, 255, 255, 1);
+  }
+`;
+
+const RiskBody = styled.div`
+  ${tw`w-full flex flex-col justify-between`}
+  padding: 32px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    padding-top: 8px;
+  }
+`;
+
+const RiskInfo = styled.div`
+  ${tw`flex flex-col gap-y-2`}
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    min-height: 120px;
   }
 `;
 
@@ -94,11 +121,11 @@ export default function RiskCard() {
   return (
     <Wrapper>
       <RiskImage src={image} />
-      <div className='w-full flex flex-col justify-between p-8'>
-        <div className='flex flex-col gap-y-2'>
+      <RiskBody>
+        <RiskInfo>
           {title}
           {description}
-        </div>
+        </RiskInfo>
         <div className='flex items-center justify-between'>
           <NavigationButton disabled={isPreviousButtonDisabled} onClick={() => setCurrentCardIndex(currentCardIndex - 1)}>
             <img src={isPreviousButtonDisabled ? PreviousChevronInactive : PreviousChevronActive} alt='Previous' />
@@ -112,7 +139,7 @@ export default function RiskCard() {
             <img src={isNextButtonDisabled ? NextChevronInactive : NextChevronActive} alt='Next' />
           </NavigationButton>
         </div>
-      </div>
+      </RiskBody>
     </Wrapper>
   );
 }
