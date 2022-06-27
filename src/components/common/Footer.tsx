@@ -5,6 +5,7 @@ import DiscordFooterIcon from '../../assets/svg/discord_footer.svg';
 import TwitterFooterIcon from '../../assets/svg/twitter_footer.svg';
 import MediumFooterIcon from '../../assets/svg/medium_footer.svg';
 import { Text } from './Typography';
+import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
 
 const FOOTER_LINK_TEXT_COLOR = 'rgba(75, 105, 128, 1)';
 
@@ -16,6 +17,11 @@ const StyledFooter = styled.footer`
   padding-left: 188px;
   padding-right: 180px;
   z-index: 40;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 `;
 
 const FooterLink = styled(Text)`

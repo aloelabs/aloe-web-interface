@@ -4,13 +4,18 @@ import { CloseableModal } from '../common/Modal';
 import { useAccount, useConnect } from 'wagmi';
 import { FormatAddress } from '../../util/FormatAddress';
 import {
+  FilledGradientButton,
   FilledStylizedButton,
   OutlinedGradientRoundedButton
 } from '../common/Buttons';
 import { mapConnectorNameToIcon } from './ConnectorIconMap';
 
 
-export default function ConnectWalletButton() {
+export default function ConnectWalletButton(props: {
+  size?: 'S' | 'M' | 'L';
+  fillWidth?: boolean;
+  square?: boolean;
+}) {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const [{ data: connectData, error: connectError }, connect] = useConnect();
@@ -28,13 +33,27 @@ export default function ConnectWalletButton() {
 
   return (
     <div>
-      <OutlinedGradientRoundedButton
-        name={buttonText}
-        size='S'
-        onClick={() => setModalOpen(true)}
-      >
-        {buttonText}
-      </OutlinedGradientRoundedButton>
+      {props.square && (
+        <FilledGradientButton
+          name={buttonText}
+          size={props.size || 'S'}
+          onClick={() => setModalOpen(true)}
+          fillWidth={props.fillWidth}
+          className='!rounded-none !pt-5 !pb-5'
+        >
+          {buttonText}
+        </FilledGradientButton>
+      )}
+      {!props.square && (
+        <OutlinedGradientRoundedButton
+          name={buttonText}
+          size={props.size || 'S'}
+          onClick={() => setModalOpen(true)}
+          fillWidth={props.fillWidth}
+        >
+          {buttonText}
+        </OutlinedGradientRoundedButton>
+      )}
       <CloseableModal open={modalOpen} setOpen={setModalOpen} title={'Connect Wallet'}>
         <div className='w-full'>
           {accountData ? (

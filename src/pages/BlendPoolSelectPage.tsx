@@ -9,6 +9,7 @@ import {
   DropdownWithPlaceholderOption,
   MultiDropdown,
   MultiDropdownOption,
+  FilterDropdownPopup,
 } from '../components/common/Dropdown';
 import { FilterBadge } from '../components/common/FilterBadge';
 import { RoundedInputWithIcon } from '../components/common/Input';
@@ -23,10 +24,14 @@ import {
   BROWSE_CARD_WIDTH_XL,
   RESPONSIVE_BREAKPOINT_LG,
   RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_SM,
+  RESPONSIVE_BREAKPOINTS,
 } from '../data/constants/Breakpoints';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
+import useMediaQuery from '../data/hooks/UseMediaQuery';
+import tw from 'twin.macro';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -50,6 +55,17 @@ const PageWrapper = styled.div`
   }
 `;
 
+const InnerSearchBar = styled.div`
+  ${tw`flex gap-x-4`}
+  width: 100%;
+  flex-direction: row;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    flex-direction: column;
+    row-gap: 12px;
+  }
+`;
+
 const BrowseCards = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -60,6 +76,16 @@ const BrowseCards = styled.div`
 
 const SearchInputWrapper = styled.div`
   width: 420px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    max-width: 420px;
+    width: 100%;
+    min-width: 300px;
+  }
+`;
+
+const DropdownContainer = styled.div`
+  ${tw`flex flex-row gap-x-4`}
 `;
 
 export default function BlendPoolSelectPage() {
@@ -70,6 +96,9 @@ export default function BlendPoolSelectPage() {
   const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
   const [poolsToDisplay, setPoolsToDisplay] = useState<BlendPoolMarkers[]>([]);
   const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
+  const [pendingTokenOptions, setPendingTokenOptions] = useState<
+    MultiDropdownOption[]
+  >([]);
   const [activeTokenOptions, setActiveTokenOptions] = useState<
     MultiDropdownOption[]
   >([]);
@@ -92,8 +121,13 @@ export default function BlendPoolSelectPage() {
       isDefault: false,
     },
   ] as DropdownWithPlaceholderOption[];
+  const [pendingSortByOption, setPendingSortByOption] =
+    useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
   const [selectedSortByOption, setSelectedSortByOption] =
     useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
+
+  const isDesktop = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
+  const isTablet = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
 
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
@@ -118,6 +152,7 @@ export default function BlendPoolSelectPage() {
     );
     setTokenOptions(tokenOptionData);
     setActiveTokenOptions(tokenOptionData);
+    setPendingTokenOptions(tokenOptionData);
   }, [poolDataMap]);
 
   useEffect(() => {
@@ -249,57 +284,92 @@ export default function BlendPoolSelectPage() {
             </FilterBadge>
           )}
         </div>
-        <div className='py-4 flex flex-row items-center justify-between'>
-          <div className='flex gap-x-4'>
-            <SearchInputWrapper>
-              <RoundedInputWithIcon
-                value={searchText}
-                size='L'
-                onChange={(e) => setSearchText(e.target.value)}
-                Icon={<SearchIcon />}
-                svgColorType='fill'
-                placeholder='Search by name, symbol or address'
-                fullWidth={true}
-                onIconClick={() => setActiveSearchText(searchText)}
-                onEnter={() => setActiveSearchText(searchText)}
+        <div className='py-4 flex items-center justify-between'>
+          <InnerSearchBar>
+              <SearchInputWrapper>
+                <RoundedInputWithIcon
+                  value={searchText}
+                  size='L'
+                  onChange={(e) => setSearchText(e.target.value)}
+                  Icon={<SearchIcon />}
+                  svgColorType='fill'
+                  placeholder='Search by name, symbol or address'
+                  fullWidth={true}
+                  onIconClick={() => setActiveSearchText(searchText)}
+                  onEnter={() => setActiveSearchText(searchText)}
+                />
+              </SearchInputWrapper>
+              <DropdownContainer>
+                <MultiDropdown
+                  options={tokenOptions}
+                  activeOptions={activeTokenOptions}
+                  handleChange={(selectedOptions) => {
+                    setPendingTokenOptions(selectedOptions);
+                    setActiveTokenOptions(selectedOptions);
+                  }}
+                  placeholder='All Tokens'
+                  selectedText='Tokens'
+                />
+                <DropdownWithPlaceholder
+                  options={sortByOptions}
+                  selectedOption={selectedSortByOption}
+                  onSelect={(option: DropdownWithPlaceholderOption) => {
+                    setPendingSortByOption(option);
+                    setSelectedSortByOption(option);
+                  }}
+                  placeholder='Sort By'
+                />
+              </DropdownContainer>
+            {/* {!isTablet && (
+              <FilterDropdownPopup
+                sortProps={{
+                  options: sortByOptions,
+                  selectedOption: pendingSortByOption,
+                  onSelect: (option: DropdownWithPlaceholderOption) => {
+                    console.log('onSelect', option);
+                    setPendingSortByOption(option);
+                  },
+                  placeholder: 'Sort By',
+                }}
+                filterProps={{
+                  options: tokenOptions,
+                  activeOptions: pendingTokenOptions,
+                  handleChange: (selectedOptions) => {
+                    setPendingTokenOptions(selectedOptions);
+                  },
+                  placeholder: 'All Tokens',
+                  selectedText: 'Tokens',
+                }}
+                onSave={() => {
+                  setSelectedSortByOption(pendingSortByOption);
+                  setActiveTokenOptions(pendingTokenOptions);
+                }}
+                onCancel={() => {
+                  setPendingSortByOption(selectedSortByOption);
+                  setPendingTokenOptions(activeTokenOptions);
+                }}
               />
-            </SearchInputWrapper>
-
-            <MultiDropdown
-              options={tokenOptions}
-              activeOptions={activeTokenOptions}
-              handleChange={(selectedOptions) => {
-                setActiveTokenOptions(selectedOptions);
-              }}
-              placeholder='All Tokens'
-              selectedText='Tokens'
-            />
-            <DropdownWithPlaceholder
-              options={sortByOptions}
-              selectedOption={selectedSortByOption}
-              onSelect={(option: DropdownWithPlaceholderOption) => {
-                setSelectedSortByOption(option);
-              }}
-              placeholder='Sort By'
-            />
-          </div>
-          <a
-            href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
-            target='_blank'
-            rel='noopener noreferrer'
-            tabIndex={-1}
-          >
-            <OutlinedGradientRoundedButtonWithIcon
-              size='L'
-              position='trailing'
-              activeGradientId='#plus-icon-gradient'
-              svgColorType='stroke'
-              name='Deploy New Pool'
-              Icon={<PlusIcon />}
+            )} */}
+          </InnerSearchBar>
+          {isDesktop && (
+            <a
+              href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
+              target='_blank'
+              rel='noopener noreferrer'
+              tabIndex={-1}
             >
-              <span>Deploy&nbsp;New&nbsp;Pool</span>
-            </OutlinedGradientRoundedButtonWithIcon>
-          </a>
+              <OutlinedGradientRoundedButtonWithIcon
+                size='L'
+                position='trailing'
+                activeGradientId='#plus-icon-gradient'
+                svgColorType='stroke'
+                name='Deploy New Pool'
+                Icon={<PlusIcon />}
+              >
+                <span>Deploy&nbsp;New&nbsp;Pool</span>
+              </OutlinedGradientRoundedButtonWithIcon>
+            </a>
+          )}
         </div>
         <BrowseCards>
           {poolsToDisplay.map((pool, index) => {

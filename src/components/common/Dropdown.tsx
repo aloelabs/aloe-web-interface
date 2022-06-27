@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import DropdownArrowDown from '../../assets/svg/dropdown_arrow_down.svg';
 import DropdownArrowUp from '../../assets/svg/dropdown_arrow_up.svg';
 import { CheckIcon } from '@heroicons/react/solid';
 import useClickOutside from '../../data/hooks/UseClickOutside';
-import { Text } from './Typography';
+import { Display, Text } from './Typography';
+import { CloseableModal, FullScreenModal } from './Modal';
+import { RadioGroup } from '@headlessui/react';
+import { FilledGradientButton } from './Buttons';
+import CloseIcon from '../../assets/svg/close_modal.svg';
 
 const DROPDOWN_HEADER_BORDER_COLOR = 'rgba(34, 54, 69, 1)';
 const DROPDOWN_LIST_BG_COLOR = 'rgba(7, 14, 18, 1)';
@@ -89,6 +93,34 @@ const CheckContainer = styled.div`
   &.active {
     background-color: ${CHECKBOX_BG_COLOR_ACTIVE};
   }
+`;
+
+const DropdownModalContainer = styled.div`
+  ${tw`flex flex-col`}
+  position: relative;
+`;
+
+const DropdownModalInnerContainer = styled.div`
+  ${tw`flex flex-col`}
+  height: 100vh;
+`;
+
+const DropdownModalHeader = styled.div`
+  ${tw`flex flex-row items-center justify-center relative`}
+  background-color: rgba(6,11,15,1);
+  width: 100%;
+  padding: 16px;
+`;
+
+const ModalMultiDropdownOptions = styled.div`
+  ${tw`flex flex-col`}
+  gap: 8px;
+`;
+
+const FilterOptionsContainer = styled.div`
+  ${tw`flex flex-col gap-y-4 p-2`}
+  flex-grow: 1;
+  overflow-y: auto;
 `;
 
 export type DropdownOption = {
@@ -309,6 +341,187 @@ export function MultiDropdown(props: MultiDropdownProps) {
             );
           })}
         </MultiDropdownList>
+      )}
+    </DropdownWrapper>
+  );
+}
+
+export type DropdownModalProps = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  children?: ReactElement;
+};
+
+export function DropdownModal(props: DropdownModalProps) {
+  const { open, setOpen, children } = props;
+  return (
+    <FullScreenModal open={open} setOpen={setOpen}>
+      <DropdownModalContainer>{children}</DropdownModalContainer>
+    </FullScreenModal>
+  );
+}
+
+export type FilterDropdownPopupProps = {
+  sortProps: DropdownWithPlaceholderProps;
+  filterProps: MultiDropdownProps;
+  onSave: () => void;
+  onCancel: () => void;
+};
+
+export function FilterDropdownPopup(props: FilterDropdownPopupProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleList = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const selectItem = (option: MultiDropdownOption, index: number) => {
+    let updatedOptions;
+    if (
+      props.filterProps.activeOptions.some(
+        (currentOption) => currentOption.value === option.value
+      )
+    ) {
+      updatedOptions = props.filterProps.activeOptions.filter(
+        (currentOption) => currentOption.value !== option.value
+      );
+    } else {
+      updatedOptions = [...props.filterProps.activeOptions, option];
+    }
+    props.filterProps.handleChange(updatedOptions);
+  };
+
+  return (
+    <DropdownWrapper>
+      <DropdownHeader onClick={toggleList}>
+        <Text size='M'>Filter</Text>
+        <img
+          className='absolute right-6'
+          src={isOpen ? DropdownArrowUp : DropdownArrowDown}
+          alt=''
+        />
+      </DropdownHeader>
+      {isOpen && (
+        <DropdownModal open={isOpen} setOpen={setIsOpen}>
+          <DropdownModalInnerContainer>
+            <DropdownModalHeader>
+              <Text size='M' className='w-full text-center'>
+                Filter
+              </Text>
+              <div className='absolute right-4 w-6 h-6'>
+                <button
+                  type='button'
+                  className='w-fit inline-flex justify-center rounded-full text-white focus:outline-none sm:w-auto sm:text-sm'
+                  onClick={() => {
+                    props.onCancel();
+                    setIsOpen(false);
+                  }}
+                >
+                  <img src={CloseIcon} width={24} height={24} alt='close' className='' />
+                </button>
+              </div>
+            </DropdownModalHeader>
+            <FilterOptionsContainer>
+              <div>
+                <div className='mb-2'>
+                  <Text size='M' weight='bold'>
+                    Sort By
+                  </Text>
+                </div>
+                <RadioGroup
+                  value={props.sortProps.selectedOption.value}
+                  onChange={(value: string) => {
+                    const selectedOption = props.sortProps.options.find(
+                      (option) => option.value === value
+                    );
+                    props.sortProps.onSelect(
+                      selectedOption || props.sortProps.options[0]
+                    );
+                  }}
+                  className='flex flex-col gap-y-2'
+                >
+                  {props.sortProps.options.map((option, index) => (
+                    <>
+                      <RadioGroup.Option value={option.value}>
+                        {({ checked }) => (
+                          <DropdownOptionContainer
+                            className={checked ? 'active' : ''}
+                          >
+                            <Text size='M'>{option.label}</Text>
+                          </DropdownOptionContainer>
+                        )}
+                      </RadioGroup.Option>
+                    </>
+                  ))}
+                </RadioGroup>
+              </div>
+              <div>
+                <div className='mb-2'>
+                  <Text size='M' weight='bold'>
+                    Active Tokens
+                  </Text>
+                </div>
+                <ModalMultiDropdownOptions>
+                  {props.filterProps.options.map((option, index) => {
+                    const { label, icon } = option;
+                    const isActive = props.filterProps.activeOptions.some(
+                      (currentOption) => currentOption.value === option.value
+                    );
+                    return (
+                      <MultiDropdownOptionContainer
+                        className={
+                          props.filterProps.activeOptions.some(
+                            (currentOption) =>
+                              currentOption.value === option.value
+                          )
+                            ? 'active'
+                            : ''
+                        }
+                        key={index}
+                        onClick={() => selectItem(option, index)}
+                      >
+                        {icon && (
+                          <img
+                            className='bg-white w-5 h-5 rounded-full'
+                            src={icon}
+                            width={20}
+                            height={20}
+                            alt=''
+                          />
+                        )}
+                        <div className='flex-grow h-6'>
+                          <Text size='M'>{label}</Text>
+                        </div>
+                        <CheckContainer className={isActive ? 'active' : ''}>
+                          {isActive && (
+                            <CheckIcon
+                              color='black'
+                              className='w-5 h-5'
+                              width={20}
+                              height={20}
+                            />
+                          )}
+                        </CheckContainer>
+                      </MultiDropdownOptionContainer>
+                    );
+                  })}
+                </ModalMultiDropdownOptions>
+              </div>
+            </FilterOptionsContainer>
+            <div className='w-full mt-auto p-2'>
+              <FilledGradientButton
+                size='M'
+                fillWidth={true}
+                onClick={() => {
+                  props.onSave();
+                  setIsOpen(false);
+                }}
+              >
+                Save
+              </FilledGradientButton>
+            </div>
+          </DropdownModalInnerContainer>
+        </DropdownModal>
       )}
     </DropdownWrapper>
   );
