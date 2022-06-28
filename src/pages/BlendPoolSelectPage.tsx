@@ -9,7 +9,6 @@ import {
   DropdownWithPlaceholderOption,
   MultiDropdown,
   MultiDropdownOption,
-  FilterDropdownPopup,
 } from '../components/common/Dropdown';
 import { FilterBadge } from '../components/common/FilterBadge';
 import { RoundedInputWithIcon } from '../components/common/Input';
