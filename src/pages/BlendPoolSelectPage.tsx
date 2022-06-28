@@ -27,6 +27,7 @@ import {
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
+import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -146,7 +147,9 @@ export default function BlendPoolSelectPage() {
               token0Label,
               token1Label,
             ].findIndex((field) => {
-              return field.toLowerCase().includes(activeSearchText.toLowerCase());
+              return field
+                .toLowerCase()
+                .includes(activeSearchText.toLowerCase());
             }) !== -1
           );
         })
@@ -300,9 +303,14 @@ export default function BlendPoolSelectPage() {
           </a>
         </div>
         <BrowseCards>
-          {poolsToDisplay.map((pool, index) => {
-            return <BrowseCard blendPoolMarkers={pool} key={index} />;
-          })}
+          {poolsToDisplay.length === 0 &&
+            [...Array(5)].map((_placeholder, index) => (
+              <BrowseCardPlaceholder key={index} />
+            ))}
+          {poolsToDisplay.length > 0 &&
+            poolsToDisplay.map((pool, index) => (
+              <BrowseCard blendPoolMarkers={pool} key={index} />
+            ))}
         </BrowseCards>
         <Pagination
           currentPage={page}
