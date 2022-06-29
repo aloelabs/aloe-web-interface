@@ -6,7 +6,8 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import { Display } from './Typography';
 
-const DEFAULT_BORDER_GRADIENT = 'linear-gradient(90deg, #9BAAF3 0%, #7BD8C0 100%)';
+const DEFAULT_BORDER_GRADIENT =
+  'linear-gradient(90deg, #9BAAF3 0%, #7BD8C0 100%)';
 const LOADING_BORDER_GRADIENT = 'rgba(43, 64, 80, 1)';
 export const LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 export const VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
@@ -17,11 +18,11 @@ const StyledDialog = styled.div`
 `;
 
 const ModalWrapper = styled.div.attrs(
-  (props: { borderGradient: string; }) => props
+  (props: { borderGradient: string }) => props
 )`
   ${tw`inline-block bg-grey-50 align-bottom rounded-lg text-left overflow-hidden transition-all sm:my-4 sm:align-middle`}
   transform: translateY(0);
-  width: 368px;
+  min-width: 368px;//TODO: make sure this doesn't break any modals
   max-width: 100%;
   background-color: rgba(13, 23, 30, 1);
   color: rgba(255, 255, 255, 1);
@@ -34,7 +35,7 @@ const ModalWrapper = styled.div.attrs(
     pointer-events: none;
     border-radius: 8px;
     padding: 1.25px;
-    background: ${props => props.borderGradient};
+    background: ${(props) => props.borderGradient};
     -webkit-mask: linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -136,7 +137,7 @@ function ModalBase(props: ModalBaseProps) {
             props.setOpen(false);
           }}
         >
-          <div className='flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0'>
+          <div className='flex items-center justify-center min-h-screen text-center'>
             <Transition.Child
               as={Fragment}
               enter='ease-out duration-300'
@@ -166,9 +167,7 @@ function ModalBase(props: ModalBaseProps) {
               leaveTo='opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95'
             >
               <ModalWrapper borderGradient={borderGradient}>
-                <div className='p-8'>
-                  {props.children}
-                </div>
+                <div className='p-8'>{props.children}</div>
               </ModalWrapper>
             </Transition.Child>
           </div>
@@ -187,9 +186,17 @@ export type CloseableModalProps = ModalProps & {
 export function CloseableModal(props: CloseableModalProps) {
   const cancelButtonRef = useRef(null);
   return (
-    <ModalBase open={props.open} setOpen={props.setOpen} onClose={props.onClose} initialFocusRef={cancelButtonRef} borderGradient={props.borderGradient}>
+    <ModalBase
+      open={props.open}
+      setOpen={props.setOpen}
+      onClose={props.onClose}
+      initialFocusRef={cancelButtonRef}
+      borderGradient={props.borderGradient}
+    >
       <div className='w-full flex flex-row items-center justify-between mb-8'>
-        <Display size='M' weight='semibold'>{props.title}</Display>
+        <Display size='M' weight='semibold'>
+          {props.title}
+        </Display>
         <button
           type='button'
           className='w-fit inline-flex justify-center rounded-full text-white focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm'
@@ -215,14 +222,20 @@ type LoadingModalProps = ModalProps & {
 export function LoadingModal(props: LoadingModalProps) {
   const borderGradient = props.borderGradient || LOADING_BORDER_GRADIENT;
   return (
-    <ModalBase open={props.open} setOpen={(_open: boolean) => {}} borderGradient={borderGradient}>
+    <ModalBase
+      open={props.open}
+      setOpen={(_open: boolean) => {}}
+      borderGradient={borderGradient}
+    >
       <div className='w-full flex flex-row items-center justify-between mb-8'>
-        <Display size='M' weight='semibold'>{props.title}</Display>
+        <Display size='M' weight='semibold'>
+          {props.title}
+        </Display>
         <LoaderWrapper>
           <Loader src={LoadingIcon} alt='loader' />
         </LoaderWrapper>
       </div>
       {props.children}
     </ModalBase>
-  )
+  );
 }
