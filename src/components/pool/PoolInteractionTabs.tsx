@@ -6,11 +6,14 @@ import WithdrawTab from './WithdrawTab';
 import tw from 'twin.macro';
 import styled from 'styled-components';
 import ConnectWallet from './ConnectWallet';
+import { useAccount } from 'wagmi';
 
 export const MODAL_BLACK_TEXT_COLOR = 'rgba(7, 14, 18, 1)';
 
 const Wrapper = styled.div`
-  ${tw`w-full rounded-md`}
+  ${tw`rounded-md`}
+  width: 100%;
+  max-width: 500px;
   background-color: rgba(13, 23, 30, 1);
 `;
 
@@ -98,7 +101,10 @@ export type PoolInteractionTabsProps = {
 };
 
 export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
-  const walletNotConnected = false;
+  const [{ data: accountData }] = useAccount({
+    fetchEns: true,
+  });
+  const walletNotConnected = !accountData || !accountData.address;
 
   return (
     <Wrapper>

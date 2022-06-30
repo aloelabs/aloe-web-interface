@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import DepositIllustration from '../../assets/svg/deposit_illustration.svg';
+import { Display, Text } from '../common/Typography';
 import ConnectWalletButton from '../header/ConnectWalletButton';
 
 const Wrapper = styled.div`
@@ -23,21 +24,6 @@ const Wrapper = styled.div`
   }
 `;
 
-const ConnectWalletHeader = styled.div`
-  /* font-family: 'ClashDisplay-Variable'; */
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 32px;
-  color: rgba(255, 255, 255, 1);
-`;
-
-const ConnectWalletSubHeader = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: rgba(204, 223, 237, 1);
-`;
-
 export default function ConnectWallet() {
   return (
     <Wrapper>
@@ -45,13 +31,13 @@ export default function ConnectWallet() {
         <img src={DepositIllustration} alt='connect wallet illustrastion' />
       </div>
       <div className='flex flex-col gap-y-2 mb-8'>
-        <ConnectWalletHeader>Connect your wallet to start investing with Aloe</ConnectWalletHeader>
-        <ConnectWalletSubHeader>
+        <Display size='M' weight='semibold'>Connect your wallet to start investing with Aloe</Display>
+        <Text size='S' weight='medium' color='rgba(204, 223, 237, 1)'>
           By investing with Aloe, you will be able to lorem ipsum something
           something
-        </ConnectWalletSubHeader>
+        </Text>
       </div>
-      <ConnectWalletButton />
+      <ConnectWalletButton secondaryStyle={true} />
     </Wrapper>
   );
 }
