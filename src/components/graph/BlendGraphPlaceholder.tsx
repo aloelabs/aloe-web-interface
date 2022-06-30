@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import tw from 'twin.macro';
+import { RESPONSIVE_BREAKPOINT_MD } from '../../data/constants/Breakpoints';
 
 export const BlendGraphPlaceholder = styled.div`
   ${tw`flex flex-col items-start justify-evenly`}
@@ -16,14 +17,14 @@ export const BlendGraphPlaceholder = styled.div`
   background-repeat: no-repeat;
   background-size: 900px 300px;
   display: inline-block;
-  animation: shimmer 1s forwards linear infinite;
+  animation: shimmerBlendGraph 1s forwards linear infinite;
   overflow: hidden;
   position: relative;
   left: -32px;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
 
-  @keyframes shimmer {
+  @keyframes shimmerBlendGraph {
     0% {
       background-position: -900px 0;
     }

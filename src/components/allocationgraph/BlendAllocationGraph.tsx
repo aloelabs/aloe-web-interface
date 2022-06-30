@@ -50,6 +50,33 @@ const Container = styled.div`
   width: 100%;
 `;
 
+const GraphButtonsPlaceholder = styled.div`
+  width: 334px;
+  height: 44px;
+  border-radius: 4px;
+  background: #0d171e;
+  background-image: linear-gradient(
+    to right,
+    #0d171e 0%,
+    #131f28 20%,
+    #0d171e 40%,
+    #0d171e 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 334px 44px;
+  display: inline-block;
+  animation: shimmerGraphButtons 1s forwards linear infinite;
+
+  @keyframes shimmerGraphButtons {
+    0% {
+      background-position: -334px 0;
+    }
+    100% {
+      background-position: 334px 0;
+    }
+  }
+`;
+
 // TODO: move this to a separate file
 function makeRequest(reqUrl: string) {
   return axios.get(reqUrl, {
@@ -60,6 +87,9 @@ function makeRequest(reqUrl: string) {
 const poolMatcher = (pool: string) => {
   // API expects the checksum address (one with proper capitalization).
   // ethers can compute that for us:
+  if (pool === '') {
+    return '';
+  }
   return ethers.utils.getAddress(pool);
   // TODO in the future the API may be ok with all lowercase / arbitrary capitalization,
   // in which case this isn't needed
@@ -77,7 +107,7 @@ const tokenMatcher = (token: string) => {
 };
 
 export type BlendAllocationGraphProps = {
-  poolData: BlendPoolMarkers;
+  poolData: BlendPoolMarkers | null;
 };
 
 export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
@@ -89,8 +119,8 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   const [graphLoading, setGraphLoading] = useState(true);
   const [graphError, setGraphError] = useState(false);
 
-  const token0Address = poolData.token0Address.toLowerCase();
-  const token1Address = poolData.token1Address.toLowerCase();
+  const token0Address = poolData?.token0Address.toLowerCase() || '';
+  const token1Address = poolData?.token1Address.toLowerCase() || '';
   const token0Ticker = GetTokenData(token0Address).ticker;
   const token1Ticker = GetTokenData(token1Address).ticker;
   const token0Key = `${token0Ticker} Price`;
@@ -147,7 +177,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
     }
   };
 
-  const pool = poolMatcher(poolData.poolAddress);
+  const pool = poolMatcher(poolData?.poolAddress || '');
   const token0 = tokenMatcher(token0Address);
   const token1 = tokenMatcher(token1Address);
 
@@ -231,26 +261,23 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
           }
         });
     }
-    fetchData();
+    if (poolData) {
+      fetchData();
+    }
     return () => {
       mounted = false;
     };
-  }, [
-    activeButton,
-    toDate,
-    fromDate,
-    pool,
-    token0,
-    token1,
-    token0Key,
-    token1Key,
-  ]);
+  }, [activeButton, toDate, fromDate, pool, token0, token1, token0Key, token1Key, poolData]);
 
   return (
     <Wrapper>
       <Container>
         <GraphButtonsWrapper>
-          <GraphButtons activeButton={activeButton} handleClick={handleClick} />
+          {poolData ? (
+            <GraphButtons activeButton={activeButton} handleClick={handleClick} />
+          ) : (
+            <GraphButtonsPlaceholder />
+          )}
         </GraphButtonsWrapper>
         {graphLoading && (
           <BlendGraphPlaceholder />
