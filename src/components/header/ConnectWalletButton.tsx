@@ -8,6 +8,7 @@ import {
   OutlinedGradientRoundedButton
 } from '../common/Buttons';
 import { mapConnectorNameToIcon } from './ConnectorIconMap';
+import { Text } from '../common/Typography';
 
 
 export default function ConnectWalletButton() {
@@ -39,19 +40,19 @@ export default function ConnectWalletButton() {
         <div className='w-full'>
           {accountData ? (
             // We have an account connected
-            <div className='flex flex-row items-center justify-between p-2 rounded-md border-2 border-grey-200 bg-grey-100'>
+            <div className='flex flex-col gap-y-2 items-center justify-between p-2 rounded-md border-2 border-grey-200 bg-grey-100'>
               {/*<img src={accountData.ens?.avatar || undefined} alt="ENS Avatar" />*/}
-              <div className='flex flex-col items-start justify-start'>
-                <div className='text-md'>
+              <div className='flex flex-col items-start justify-start w-full oveflow-hidden'>
+                <Text size='M' className='w-full overflow-hidden text-ellipsis' title={accountData.address}>
                   {accountData.ens?.name
                     ? `${accountData.ens?.name} (${FormatAddress(
                         accountData.address
                       )})`
-                    : FormatAddress(accountData.address)}
-                </div>
-                <div className='text-sm text-grey-800'>
+                    : accountData.address}
+                </Text>
+                <Text size='S' color='rgb(194, 209, 221)' className='w-full overflow-hidden text-ellipsis'>
                   Connected to {accountData.connector?.name}
-                </div>
+                </Text>
               </div>
               <FilledStylizedButton
                 name='Disconnect'
@@ -115,9 +116,9 @@ export default function ConnectWalletButton() {
             </div>
           )}
           {connectError && (
-            <div className='text-warning'>
+            <Text size='S' color='rgb(236, 45, 91)'>
               {connectError?.message ?? 'Failed to connect'}
-            </div>
+            </Text>
           )}
         </div>
       </CloseableModal>
