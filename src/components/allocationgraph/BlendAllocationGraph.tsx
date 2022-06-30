@@ -22,6 +22,7 @@ import { ethers } from 'ethers';
 import { Text } from '../common/Typography';
 import { fixTimestamp } from '../../util/Dates';
 import { API_URL } from '../../data/constants/Values';
+import { BlendGraphPlaceholder } from '../graph/BlendGraphPlaceholder';
 
 const GraphButtonsWrapper = styled.div`
   ${tw`w-max`}
@@ -49,6 +50,7 @@ const Container = styled.div`
   width: 100%;
 `;
 
+// TODO: move this to a separate file
 function makeRequest(reqUrl: string) {
   return axios.get(reqUrl, {
     timeout: 10000,
@@ -251,9 +253,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
           <GraphButtons activeButton={activeButton} handleClick={handleClick} />
         </GraphButtonsWrapper>
         {graphLoading && (
-          <Text size='M' weight='medium'>
-            Loading...
-          </Text>
+          <BlendGraphPlaceholder />
         )}
         {!graphLoading && graphError && (
           <Text size='M' weight='medium'>

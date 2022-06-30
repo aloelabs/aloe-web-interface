@@ -27,6 +27,7 @@ import {
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
+import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -315,6 +316,10 @@ export default function BlendPoolSelectPage() {
           </a>
         </div>
         <BrowseCards>
+          {toDisplayLoading &&
+            [...Array(5)].map((_placeholder, index) => (
+              <BrowseCardPlaceholder key={index} />
+            ))}
           {!toDisplayLoading &&
             poolsToDisplay
               .slice(
