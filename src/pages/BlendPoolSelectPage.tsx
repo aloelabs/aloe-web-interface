@@ -95,9 +95,6 @@ export default function BlendPoolSelectPage() {
   const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
   const [poolsToDisplay, setPoolsToDisplay] = useState<BlendPoolMarkers[]>([]);
   const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
-  const [pendingTokenOptions, setPendingTokenOptions] = useState<
-    MultiDropdownOption[]
-  >([]);
   const [activeTokenOptions, setActiveTokenOptions] = useState<
     MultiDropdownOption[]
   >([]);
@@ -120,13 +117,10 @@ export default function BlendPoolSelectPage() {
       isDefault: false,
     },
   ] as DropdownWithPlaceholderOption[];
-  const [pendingSortByOption, setPendingSortByOption] =
-    useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
   const [selectedSortByOption, setSelectedSortByOption] =
     useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
-  const isDesktop = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
-  const isTablet = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
+  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
@@ -151,7 +145,6 @@ export default function BlendPoolSelectPage() {
     );
     setTokenOptions(tokenOptionData);
     setActiveTokenOptions(tokenOptionData);
-    setPendingTokenOptions(tokenOptionData);
   }, [poolDataMap]);
 
   useEffect(() => {
@@ -302,55 +295,19 @@ export default function BlendPoolSelectPage() {
                 <MultiDropdown
                   options={tokenOptions}
                   activeOptions={activeTokenOptions}
-                  handleChange={(selectedOptions) => {
-                    setPendingTokenOptions(selectedOptions);
-                    setActiveTokenOptions(selectedOptions);
-                  }}
+                  handleChange={setActiveTokenOptions}
                   placeholder='All Tokens'
                   selectedText='Tokens'
                 />
                 <DropdownWithPlaceholder
                   options={sortByOptions}
                   selectedOption={selectedSortByOption}
-                  onSelect={(option: DropdownWithPlaceholderOption) => {
-                    setPendingSortByOption(option);
-                    setSelectedSortByOption(option);
-                  }}
+                  onSelect={setSelectedSortByOption}
                   placeholder='Sort By'
                 />
               </DropdownContainer>
-            {/* {!isTablet && (
-              <FilterDropdownPopup
-                sortProps={{
-                  options: sortByOptions,
-                  selectedOption: pendingSortByOption,
-                  onSelect: (option: DropdownWithPlaceholderOption) => {
-                    console.log('onSelect', option);
-                    setPendingSortByOption(option);
-                  },
-                  placeholder: 'Sort By',
-                }}
-                filterProps={{
-                  options: tokenOptions,
-                  activeOptions: pendingTokenOptions,
-                  handleChange: (selectedOptions) => {
-                    setPendingTokenOptions(selectedOptions);
-                  },
-                  placeholder: 'All Tokens',
-                  selectedText: 'Tokens',
-                }}
-                onSave={() => {
-                  setSelectedSortByOption(pendingSortByOption);
-                  setActiveTokenOptions(pendingTokenOptions);
-                }}
-                onCancel={() => {
-                  setPendingSortByOption(selectedSortByOption);
-                  setPendingTokenOptions(activeTokenOptions);
-                }}
-              />
-            )} */}
           </InnerSearchBar>
-          {isDesktop && (
+          {isMediumScreen && (
             <a
               href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
               target='_blank'

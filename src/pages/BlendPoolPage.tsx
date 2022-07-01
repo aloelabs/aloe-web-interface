@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
 import { PreviousPageButton } from '../components/common/Buttons';
-import FeeTierContainer from '../components/common/FeeTierContainer';
 import RiskCard from '../components/common/RiskCard';
 import { Text } from '../components/common/Typography';
 import WidgetHeading from '../components/common/WidgetHeading';
@@ -131,7 +130,7 @@ export default function BlendPoolPage() {
             silo1={GetSiloData(poolData.silo1Address.toLowerCase())}
             feeTier={poolData.feeTier}
           />
-          <a href={`https://etherscan.io/address/${poolData.poolAddress}`}>
+          <a href={`https://etherscan.io/address/${poolData.poolAddress}`} title='Etherscan Link'>
             <OpenIcon width={24} height={24} />
           </a>
         </HeaderBarContainer>

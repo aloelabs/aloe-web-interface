@@ -6,7 +6,6 @@ import tw from 'twin.macro';
 import AloeLogo from '../../assets/svg/aloe_capital_nav_logo.svg';
 import { RESPONSIVE_BREAKPOINTS } from '../../data/constants/Breakpoints';
 import useMediaQuery from '../../data/hooks/UseMediaQuery';
-import { FilledGradientButton } from '../common/Buttons';
 import { Text } from '../common/Typography';
 import ConnectWalletButton from './ConnectWalletButton';
 
@@ -78,7 +77,7 @@ export default function Header() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const isTablet = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
+  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
   return (
     <Nav>
       <div className='flex'>
@@ -88,7 +87,7 @@ export default function Header() {
             {/* <span className='text-xl font-semibold'>Aloe</span> */}
           </a>
         </div>
-        {isTablet && (
+        {isMediumScreen && (
           <>
             <VerticalDivider />
             <div className='flex flex-row align-middle items-center h-full text-md'>
@@ -112,7 +111,7 @@ export default function Header() {
           </>
         )}
       </div>
-      {!isTablet && (
+      {!isMediumScreen && (
         <button
           type='button'
           title='navigation'
@@ -122,7 +121,7 @@ export default function Header() {
           <MenuIcon width={24} height={24} />
         </button>
       )}
-      {!isTablet && isMenuOpen && (
+      {!isMediumScreen && isMenuOpen && (
         <NavDropdown>
           {MenuItems.map((menuitem, index) => (
             <React.Fragment key={index}>
@@ -146,7 +145,7 @@ export default function Header() {
           </div>
         </NavDropdown>
       )}
-      {isTablet && (
+      {isMediumScreen && (
         <div className='mr-8'>
           <ConnectWalletButton />
         </div>

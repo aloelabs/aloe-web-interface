@@ -240,11 +240,3 @@ export function LoadingModal(props: LoadingModalProps) {
     </ModalBase>
   )
 }
-
-export function FullScreenModal(props: ModalProps) {
-  return (
-    <ModalBase open={props.open} setOpen={props.setOpen} fullWidth={true} fullHeight={true} backgroundColor='rgba(13, 23, 30, 0.7)' noPadding={true}>
-      {props.children}
-    </ModalBase>
-  );
-}

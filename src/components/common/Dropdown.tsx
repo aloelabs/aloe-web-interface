@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import DropdownArrowDown from '../../assets/svg/dropdown_arrow_down.svg';
