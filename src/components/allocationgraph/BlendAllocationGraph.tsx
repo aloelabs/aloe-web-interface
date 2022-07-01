@@ -89,7 +89,7 @@ export type BlendAllocationGraphProps = {
 export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   const { poolData } = props;
   const [activeButton, setActiveButton] = useState(0);
-  const now = new Date(subDays(Date.now(), 1));
+  const now = new Date(Date.now());
   const [fromDate, setFromDate] = useState(subDays(now, 1));
   const [toDate, setToDate] = useState(now);
   const [graphLoading, setGraphLoading] = useState(true);
@@ -122,7 +122,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   const handleClick = (key: number) => {
     setGraphLoading(true);
     setActiveButton(key);
-    let now = new Date(subDays(Date.now(), 1));
+    let now = new Date(Date.now());
     switch (key) {
       case 0:
         setFromDate(subDays(now, 1));
@@ -163,17 +163,17 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
       const getPoolReturns = makeRequest(
         `${API_URL}/pool_returns/${pool}/1/${buttonIdxToText(
           activeButton
-        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
+        ).toLowerCase()}/${(toDate.getTime() / 1000).toFixed(0)}`
       );
       const getToken0 = makeRequest(
         `${API_URL}/token_returns/${token0}/1/${buttonIdxToText(
           activeButton
-        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
+        ).toLowerCase()}/${(toDate.getTime() / 1000).toFixed(0)}`
       );
       const getToken1 = makeRequest(
         `${API_URL}/token_returns/${token1}/1/${buttonIdxToText(
           activeButton
-        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
+        ).toLowerCase()}/${(toDate.getTime() / 1000).toFixed(0)}`
       );
       axios
         .all([getPoolReturns, getToken0, getToken1])
