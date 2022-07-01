@@ -141,7 +141,7 @@ export default function Header() {
             </React.Fragment>
           ))}
           <div className='w-full'>
-            <ConnectWalletButton fillWidth={true} size='M' square={true} />
+            <ConnectWalletButton buttonStyle='tertiary' />
           </div>
         </NavDropdown>
       )}

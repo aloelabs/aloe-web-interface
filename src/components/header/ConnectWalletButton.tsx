@@ -4,18 +4,17 @@ import { CloseableModal } from '../common/Modal';
 import { useAccount, useConnect } from 'wagmi';
 import { FormatAddress } from '../../util/FormatAddress';
 import {
-  FilledGradientButton,
   FilledStylizedButton,
-  OutlinedGradientRoundedButton
+  OutlinedGradientRoundedButton,
 } from '../common/Buttons';
 import { mapConnectorNameToIcon } from './ConnectorIconMap';
+import { Text } from '../common/Typography';
 
+export type ConnectWalletButtonProps = {
+  buttonStyle?: 'secondary' | 'tertiary';
+};
 
-export default function ConnectWalletButton(props: {
-  size?: 'S' | 'M' | 'L';
-  fillWidth?: boolean;
-  square?: boolean;
-}) {
+export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const [{ data: connectData, error: connectError }, connect] = useConnect();
@@ -33,44 +32,67 @@ export default function ConnectWalletButton(props: {
 
   return (
     <div>
-      {props.square && (
-        <FilledGradientButton
-          name={buttonText}
-          size={props.size || 'S'}
-          onClick={() => setModalOpen(true)}
-          fillWidth={props.fillWidth}
-          className='!rounded-none !pt-5 !pb-5'
-        >
-          {buttonText}
-        </FilledGradientButton>
-      )}
-      {!props.square && (
+      {!props.buttonStyle && (
         <OutlinedGradientRoundedButton
           name={buttonText}
-          size={props.size || 'S'}
+          size='S'
           onClick={() => setModalOpen(true)}
-          fillWidth={props.fillWidth}
         >
           {buttonText}
         </OutlinedGradientRoundedButton>
       )}
-      <CloseableModal open={modalOpen} setOpen={setModalOpen} title={'Connect Wallet'}>
+      {props.buttonStyle === 'secondary' && (
+        <FilledStylizedButton
+          name={buttonText}
+          size='M'
+          onClick={() => setModalOpen(true)}
+          backgroundColor='rgba(26, 41, 52, 1)'
+          color='rgba(255, 255, 255, 1)'
+          fillWidth={true}
+        >
+          {buttonText}
+        </FilledStylizedButton>
+      )}
+      {props.buttonStyle === 'tertiary' && (
+        <FilledStylizedButton
+          name={buttonText}
+          size='M'
+          onClick={() => setModalOpen(true)}
+          fillWidth={true}
+          className='!rounded-none !pt-5 !pb-5'
+        >
+          {buttonText}
+        </FilledStylizedButton>
+      )}
+      <CloseableModal
+        open={modalOpen}
+        setOpen={setModalOpen}
+        title={'Connect Wallet'}
+      >
         <div className='w-full'>
           {accountData ? (
             // We have an account connected
-            <div className='flex flex-row items-center justify-between p-2 rounded-md border-2 border-grey-200 bg-grey-100'>
+            <div className='flex flex-col gap-y-2 items-center justify-between p-2 rounded-md border-2 border-grey-200 bg-grey-100'>
               {/*<img src={accountData.ens?.avatar || undefined} alt="ENS Avatar" />*/}
-              <div className='flex flex-col items-start justify-start'>
-                <div className='text-md'>
+              <div className='flex flex-col items-start justify-start w-full oveflow-hidden'>
+                <Text
+                  size='M'
+                  className='w-full overflow-hidden text-ellipsis'
+                  title={accountData.address}
+                >
                   {accountData.ens?.name
                     ? `${accountData.ens?.name} (${FormatAddress(
                         accountData.address
                       )})`
-                    : FormatAddress(accountData.address)}
-                </div>
-                <div className='text-sm text-grey-800'>
+                    : accountData.address}
+                </Text>
+                <Text
+                  size='S'
+                  color='rgb(194, 209, 221)'
+                  className='w-full overflow-hidden text-ellipsis'
+                >
                   Connected to {accountData.connector?.name}
-                </div>
+                </Text>
               </div>
               <FilledStylizedButton
                 name='Disconnect'
@@ -86,7 +108,7 @@ export default function ConnectWalletButton(props: {
           ) : (
             // No account connected, display connection options
             <div className='py-2'>
-              <div className='text-md'>
+              <Text size='M' weight='medium'>
                 By connecting a wallet, I agree to Aloe Labs, Inc's{' '}
                 <a
                   href={'/terms.pdf'}
@@ -106,7 +128,7 @@ export default function ConnectWalletButton(props: {
                   Privacy Policy
                 </a>
                 .
-              </div>
+              </Text>
               {connectData.connectors.map((connector) => (
                 <div
                   key={connector.id}
@@ -134,9 +156,9 @@ export default function ConnectWalletButton(props: {
             </div>
           )}
           {connectError && (
-            <div className='text-warning'>
+            <Text size='S' color='rgb(236, 45, 91)'>
               {connectError?.message ?? 'Failed to connect'}
-            </div>
+            </Text>
           )}
         </div>
       </CloseableModal>
