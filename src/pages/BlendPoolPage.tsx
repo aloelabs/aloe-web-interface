@@ -31,17 +31,6 @@ import useMediaQuery from '../data/hooks/UseMediaQuery';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
-const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
-  position: absolute;
-  top: 140px;
-  left: 67px;
-
-  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
-    top: 196px;
-    left: 50px;
-  }
-`;
-
 type PoolParams = {
   pooladdress: string;
 };
