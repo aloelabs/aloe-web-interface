@@ -21,7 +21,7 @@ import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
 import { useContractRead } from 'wagmi';
 import AloeBlendABI from '../../assets/abis/AloeBlend.json';
-import { formatUSD, formatUSDCompact, String1E, toBig } from '../../util/Numbers';
+import { formatUSD, formatUSDCompact, roundPercentage, String1E, toBig } from '../../util/Numbers';
 import { BigNumber } from 'ethers';
 import { Display, Text } from '../common/Typography';
 
@@ -259,7 +259,7 @@ export default function BrowseCard(props: BrowseCardProps) {
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>APR</Text>
-            <Text size='XL' weight='medium'>{poolStats?.annual_percentage_rate}%</Text>
+            <Text size='XL' weight='medium'>{roundPercentage(poolStats?.annual_percentage_rate || 0)}%</Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>TVL</Text>

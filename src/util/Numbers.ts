@@ -1,6 +1,8 @@
 import Big from 'big.js';
 import { ethers } from 'ethers';
 
+const DEFAULT_PRECISION = 2;
+
 const compactCurrencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -36,7 +38,8 @@ export function formatUSDCompact(amount: number): string {
  * @param precision the number of decimal places to round to
  * @returns the given percentage rounded to the given precision, without forcing a decimal point
  */
-export function roundPercentage(percentage: number, precision: number): number {
+export function roundPercentage(percentage: number, precision?: number): number {
+  precision = precision || DEFAULT_PRECISION;
   return (
     Math.round((percentage + Number.EPSILON) * Math.pow(10, precision)) /
     Math.pow(10, precision)
