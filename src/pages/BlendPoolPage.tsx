@@ -27,6 +27,7 @@ import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
 import tw from 'twin.macro';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
+import { IS_DEV } from '../util/Env';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -146,7 +147,9 @@ export default function BlendPoolPage() {
               <PoolInteractionTabs poolData={poolData} />
             </GridExpandingDiv>
           )}
-          <PoolPositionWidget poolData={poolData} />
+          {IS_DEV && (
+            <PoolPositionWidget poolData={poolData} />
+          )}
           <PoolStatsWidget poolStats={poolStats} />
           <PoolPieChartWidget poolData={poolData} />
           <div className='flex flex-col gap-y-6 mt-16'>
