@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
 import { PreviousPageButton } from '../components/common/Buttons';
-import FeeTierContainer from '../components/common/FeeTierContainer';
 import RiskCard from '../components/common/RiskCard';
 import { Text } from '../components/common/Typography';
 import WidgetHeading from '../components/common/WidgetHeading';
@@ -14,6 +13,7 @@ import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
 import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
 import {
+  RESPONSIVE_BREAKPOINTS,
   RESPONSIVE_BREAKPOINT_LG,
   RESPONSIVE_BREAKPOINT_MD,
   RESPONSIVE_BREAKPOINT_SM
@@ -25,14 +25,10 @@ import { PoolStats } from '../data/PoolStats';
 import { GetSiloData } from '../data/SiloData';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
+import tw from 'twin.macro';
+import useMediaQuery from '../data/hooks/UseMediaQuery';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
-
-const AbsoluteFeeTierContainer = styled(FeeTierContainer)`
-  position: absolute;
-  top: 140px;
-  left: 67px;
-`;
 
 type PoolParams = {
   pooladdress: string;
@@ -68,8 +64,22 @@ const GridExpandingDiv = styled.div`
   @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
     grid-row: 2 / span 1;
     grid-column: 1 / span 1;
-    margin-top: 96px;
-    margin-bottom: 32px;
+    margin-top: 64px;
+    margin-bottom: 64px;
+  }
+`;
+
+const HeaderBarContainer = styled.div`
+  ${tw`flex items-center relative pt-16`}
+  flex-direction: row;
+  gap: 32px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    display: grid;
+    grid-template-columns: fit-content(35px) fit-content(400px) fit-content(24px);
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 16px;
   }
 `;
 
@@ -77,6 +87,7 @@ export default function BlendPoolPage() {
   const [poolStats, setPoolStats] = React.useState<PoolStats>();
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
+  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const { poolDataMap, fetchPoolData } = useContext(BlendTableContext);
 
@@ -110,24 +121,31 @@ export default function BlendPoolPage() {
   return (
     <BlendPoolProvider poolData={poolData}>
       <PoolBodyWrapper>
-        <div className='flex items-center gap-8 relative pt-16'>
+        <HeaderBarContainer>
           <PreviousPageButton onClick={() => navigate('../pools')} />
           <TokenPairHeader
             token0={GetTokenData(poolData.token0Address.toLowerCase())}
             token1={GetTokenData(poolData.token1Address.toLowerCase())}
             silo0={GetSiloData(poolData.silo0Address.toLowerCase())}
             silo1={GetSiloData(poolData.silo1Address.toLowerCase())}
+            feeTier={poolData.feeTier}
           />
-          <a href={`https://etherscan.io/address/${poolData.poolAddress}`}>
+          <a href={`https://etherscan.io/address/${poolData.poolAddress}`} title='Etherscan Link'>
             <OpenIcon width={24} height={24} />
           </a>
-          <AbsoluteFeeTierContainer feeTier={poolData.feeTier} />
-        </div>
-        <GridExpandingDiv className='w-full min-w-[340px] md:mt-24 md:grid-flow-row-dense'>
-          <PoolInteractionTabs poolData={poolData} />
-        </GridExpandingDiv>
+        </HeaderBarContainer>
+        {isMediumScreen && (
+          <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
+            <PoolInteractionTabs poolData={poolData} />
+          </GridExpandingDiv>
+        )}
         <div className='w-full py-4'>
           <BlendAllocationGraph poolData={poolData} />
+          {!isMediumScreen && (
+            <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
+              <PoolInteractionTabs poolData={poolData} />
+            </GridExpandingDiv>
+          )}
           <PoolPositionWidget poolData={poolData} />
           <PoolStatsWidget poolStats={poolStats} />
           <PoolPieChartWidget poolData={poolData} />

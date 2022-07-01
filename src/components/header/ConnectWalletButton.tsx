@@ -11,7 +11,7 @@ import { mapConnectorNameToIcon } from './ConnectorIconMap';
 import { Text } from '../common/Typography';
 
 export type ConnectWalletButtonProps = {
-  secondaryStyle?: boolean;
+  buttonStyle?: 'secondary' | 'tertiary';
 };
 
 export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
@@ -32,7 +32,7 @@ export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
 
   return (
     <div>
-      {!props.secondaryStyle && (
+      {!props.buttonStyle && (
         <OutlinedGradientRoundedButton
           name={buttonText}
           size='S'
@@ -41,7 +41,7 @@ export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
           {buttonText}
         </OutlinedGradientRoundedButton>
       )}
-      {props.secondaryStyle && (
+      {props.buttonStyle === 'secondary' && (
         <FilledStylizedButton
           name={buttonText}
           size='M'
@@ -49,6 +49,17 @@ export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
           backgroundColor='rgba(26, 41, 52, 1)'
           color='rgba(255, 255, 255, 1)'
           fillWidth={true}
+        >
+          {buttonText}
+        </FilledStylizedButton>
+      )}
+      {props.buttonStyle === 'tertiary' && (
+        <FilledStylizedButton
+          name={buttonText}
+          size='M'
+          onClick={() => setModalOpen(true)}
+          fillWidth={true}
+          className='!rounded-none !pt-5 !pb-5'
         >
           {buttonText}
         </FilledStylizedButton>

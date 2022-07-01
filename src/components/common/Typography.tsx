@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
 
 const DEFAULT_COLOR = 'rgba(255, 255, 255, 1)';
 
@@ -8,6 +9,14 @@ const DISPLAY_FONT_SIZES = {
   M: '24px',
   S: '20px',
   XS: '16px',
+};
+
+const DISPLAY_FONT_SIZES_MOBILE = {
+  XL: '32px',
+  L: '24px',
+  M: '20px',
+  S: '16px',
+  XS: '14px',
 };
 
 const DISPLAY_FONT_WEIGHTS = {
@@ -30,6 +39,14 @@ const TEXT_FONT_SIZES = {
   M: '16px',
   S: '14px',
   XS: '12px',
+};
+
+const TEXT_FONT_SIZES_MOBILE = {
+  XL: '20px',
+  L: '16px',
+  M: '14px',
+  S: '12px',
+  XS: '10px',
 };
 
 const TEXT_FONT_WEIGHTS = {
@@ -58,6 +75,10 @@ export const Display = styled.div.attrs(
   font-weight: ${(props) => DISPLAY_FONT_WEIGHTS[props.weight]};
   line-height: ${(props) => DISPLAY_LINE_HEIGHTS[props.size]};
   color: ${(props) => props.color || DEFAULT_COLOR};
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    font-size: ${(props) => DISPLAY_FONT_SIZES_MOBILE[props.size]};
+  }
 `;
 
 export const Text = styled.div.attrs(
@@ -72,4 +93,8 @@ export const Text = styled.div.attrs(
   font-weight: ${(props) => TEXT_FONT_WEIGHTS[props.weight]};
   line-height: ${(props) => TEXT_LINE_HEIGHTS[props.size]};
   color: ${(props) => props.color || DEFAULT_COLOR};
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    font-size: ${(props) => TEXT_FONT_SIZES_MOBILE[props.size]};
+  }
 `;

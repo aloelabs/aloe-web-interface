@@ -1,8 +1,11 @@
-import React from 'react';
+import { MenuIcon } from '@heroicons/react/solid';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import AloeLogo from '../../assets/svg/aloe_capital_nav_logo.svg';
+import { RESPONSIVE_BREAKPOINTS } from '../../data/constants/Breakpoints';
+import useMediaQuery from '../../data/hooks/UseMediaQuery';
 import { Text } from '../common/Typography';
 import ConnectWalletButton from './ConnectWalletButton';
 
@@ -42,6 +45,10 @@ const StyledNavLink = styled(Text)`
   :hover:not(&.active) {
     ${tw`text-grey-900`};
   }
+
+  &.mobile {
+    border-bottom: 1px solid rgba(26, 41, 52, 1);
+  }
 `;
 
 const Nav = styled.nav`
@@ -57,39 +64,92 @@ const VerticalDivider = styled.div`
   background-color: rgba(26, 41, 52, 1);
 `;
 
+const NavDropdown = styled.div`
+  ${tw`absolute flex flex-col items-center justify-center`}
+  width: 100%;
+  top: 64px;
+  background-color: rgb(7, 14, 18);
+`;
+
 export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const toggleNavDropdown = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
   return (
     <Nav>
       <div className='flex'>
         <div className='flex flex-row align-middle items-center px-8'>
           <a href='..' className='flex flex-row items-center justify-center'>
-            <img src={AloeLogo} alt={'Aloe\'s Logo'} width={100} height={40} />
+            <img src={AloeLogo} alt={"Aloe's Logo"} width={100} height={40} />
             {/* <span className='text-xl font-semibold'>Aloe</span> */}
           </a>
         </div>
-        <VerticalDivider />
-        <div className='flex flex-row align-middle items-center h-full text-md'>
+        {isMediumScreen && (
+          <>
+            <VerticalDivider />
+            <div className='flex flex-row align-middle items-center h-full text-md'>
+              {MenuItems.map((menuitem, index) => (
+                <React.Fragment key={index}>
+                  <StyledNavLink
+                    size='M'
+                    weight='medium'
+                    color='rgba(75, 105, 128, 1)'
+                    as={NavLink}
+                    id={`${menuitem.name}-nav-link`}
+                    to={menuitem.url}
+                    key={menuitem.name}
+                  >
+                    {menuitem.title}
+                  </StyledNavLink>
+                  <VerticalDivider />
+                </React.Fragment>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+      {!isMediumScreen && (
+        <button
+          type='button'
+          title='navigation'
+          onClick={toggleNavDropdown}
+          className='flex justify-center items-center w-10 h-10 mr-6'
+        >
+          <MenuIcon width={24} height={24} />
+        </button>
+      )}
+      {!isMediumScreen && isMenuOpen && (
+        <NavDropdown>
           {MenuItems.map((menuitem, index) => (
             <React.Fragment key={index}>
               <StyledNavLink
                 size='M'
                 weight='medium'
                 color='rgba(75, 105, 128, 1)'
+                className='mobile w-full text-center'
                 as={NavLink}
                 id={`${menuitem.name}-nav-link`}
                 to={menuitem.url}
                 key={menuitem.name}
+                onClick={toggleNavDropdown}
               >
                 {menuitem.title}
               </StyledNavLink>
-              <VerticalDivider />
             </React.Fragment>
           ))}
+          <div className='w-full'>
+            <ConnectWalletButton buttonStyle='tertiary' />
+          </div>
+        </NavDropdown>
+      )}
+      {isMediumScreen && (
+        <div className='mr-8'>
+          <ConnectWalletButton />
         </div>
-      </div>
-      <div className='mr-8'>
-        <ConnectWalletButton />
-      </div>
+      )}
     </Nav>
   );
 }

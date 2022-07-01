@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
+import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
 import { API_URL } from '../../data/constants/Values';
 import { GlobalStats } from '../../data/GlobalStats';
 import { Display, Text } from '../common/Typography';
@@ -12,9 +13,14 @@ const METRIC_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
 
 const Wrapper = styled.div`
   ${tw`flex p-8 relative`}
+  flex-direction: row;
   background-color: rgba(10, 20, 27, 1);
   border-radius: 8px;
   margin-bottom: 48px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    flex-direction: column;
+  }
 
   &:before {
     content: '';
@@ -37,6 +43,11 @@ const VerticalDivider = styled.div`
   margin-left: 32px;
   margin-right: 32px;
   background-color: rgba(43, 64, 80, 1);
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    display: none;
+  }
+
 `;
 
 export type BrowsePoolsPerformanceProps = {

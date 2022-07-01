@@ -37,7 +37,7 @@ export default function ConnectWallet() {
           something
         </Text>
       </div>
-      <ConnectWalletButton secondaryStyle={true} />
+      <ConnectWalletButton buttonStyle='secondary' />
     </Wrapper>
   );
 }

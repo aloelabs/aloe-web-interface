@@ -39,6 +39,7 @@ const InfoContainer = styled.div.attrs((props: { blur?: boolean }) => props)`
 
   @media (max-width: 768px) {
     padding-left: 16px;
+    row-gap: 8px;
   }
 `;
 
@@ -52,6 +53,10 @@ const ResponsiveContainerStyled = styled.div`
   @media (max-width: 1024px) {
     left: -24px;
     width: calc(100% + 48px);
+  }
+
+  @media (max-width: 768px) {
+    height: 434px;
   }
 `;
 
@@ -68,7 +73,9 @@ const GraphButtonsWrapper = styled.div.attrs(
   }
 
   @media (max-width: 768px) {
-    right: 16px;
+    right: unset;
+    left: 8px;
+    top: 164px;
   }
 `;
 
