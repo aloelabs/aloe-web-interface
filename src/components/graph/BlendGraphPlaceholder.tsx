@@ -16,14 +16,14 @@ export const BlendGraphPlaceholder = styled.div`
   background-repeat: no-repeat;
   background-size: 900px 300px;
   display: inline-block;
-  animation: shimmer 1s forwards linear infinite;
+  animation: blendGraphShimmer 1s forwards linear infinite;
   overflow: hidden;
   position: relative;
   left: -32px;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
 
-  @keyframes shimmer {
+  @keyframes blendGraphShimmer {
     0% {
       background-position: -900px 0;
     }
