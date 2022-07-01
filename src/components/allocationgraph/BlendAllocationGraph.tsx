@@ -22,6 +22,7 @@ import { ethers } from 'ethers';
 import { Text } from '../common/Typography';
 import { fixTimestamp } from '../../util/Dates';
 import { API_URL } from '../../data/constants/Values';
+import { RESPONSIVE_BREAKPOINT_MD } from '../../data/constants/Breakpoints';
 
 const GraphButtonsWrapper = styled.div`
   ${tw`w-max`}
@@ -42,6 +43,11 @@ const Wrapper = styled.div`
   position: relative;
   height: 372px;
   margin-bottom: 64px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
+    margin-top: 96px;
+    margin-bottom: 0;
+  }
 `;
 
 const Container = styled.div`

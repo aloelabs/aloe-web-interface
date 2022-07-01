@@ -14,6 +14,7 @@ import PoolPieChartWidget from '../components/poolstats/PoolPieChartWidget';
 import PoolPositionWidget from '../components/poolstats/PoolPositionWidget';
 import PoolStatsWidget from '../components/poolstats/PoolStatsWidget';
 import {
+  RESPONSIVE_BREAKPOINTS,
   RESPONSIVE_BREAKPOINT_LG,
   RESPONSIVE_BREAKPOINT_MD,
   RESPONSIVE_BREAKPOINT_SM
@@ -26,6 +27,7 @@ import { GetSiloData } from '../data/SiloData';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
 import tw from 'twin.macro';
+import useMediaQuery from '../data/hooks/UseMediaQuery';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -74,8 +76,8 @@ const GridExpandingDiv = styled.div`
   @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
     grid-row: 2 / span 1;
     grid-column: 1 / span 1;
-    margin-top: 96px;
-    margin-bottom: 32px;
+    margin-top: 64px;
+    margin-bottom: 64px;
   }
 `;
 
@@ -97,6 +99,7 @@ export default function BlendPoolPage() {
   const [poolStats, setPoolStats] = React.useState<PoolStats>();
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
+  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const { poolDataMap, fetchPoolData } = useContext(BlendTableContext);
 
@@ -143,11 +146,18 @@ export default function BlendPoolPage() {
             <OpenIcon width={24} height={24} />
           </a>
         </HeaderBarContainer>
-        <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
-          <PoolInteractionTabs poolData={poolData} />
-        </GridExpandingDiv>
+        {isMediumScreen && (
+          <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
+            <PoolInteractionTabs poolData={poolData} />
+          </GridExpandingDiv>
+        )}
         <div className='w-full py-4'>
           <BlendAllocationGraph poolData={poolData} />
+          {!isMediumScreen && (
+            <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
+              <PoolInteractionTabs poolData={poolData} />
+            </GridExpandingDiv>
+          )}
           <PoolPositionWidget poolData={poolData} />
           <PoolStatsWidget poolStats={poolStats} />
           <PoolPieChartWidget poolData={poolData} />
