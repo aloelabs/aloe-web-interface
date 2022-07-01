@@ -13,6 +13,9 @@ import AppBody from './components/common/AppBody';
 import { RedirectPartialPath } from './util/RedirectPartialPath';
 import { BlendTableProvider } from './data/context/BlendTableContext';
 import ScrollToTop from './util/ScrollToTop';
+import { IS_DEV } from './util/Env';
+import ButtonExamplesPage from './pages/ButtonExamplesPage';
+import InputExamplesPage from './pages/InputExamplesPage';
 
 function App() {
   return (
@@ -48,8 +51,15 @@ function App() {
                       element={<Navigate replace to='/blend/pools' />}
                     />
                   </Route>
-                  <Route path='/portfolio' element={<PortfolioPage />} />
-                  <Route path='/governance' element={<GovernancePage />} />
+                  { // Devmode-only example page routing
+                    IS_DEV && (
+                      <>
+                        <Route path='/buttons' element={<ButtonExamplesPage />} />
+                        <Route path='/inputs' element={<InputExamplesPage />} />
+                        <Route path='/portfolio' element={<PortfolioPage />} />
+                        <Route path='/governance' element={<GovernancePage />} />
+                      </>
+                  )}
                   <Route path='/' element={<Navigate replace to='/blend' />} />
                   <Route path='*' element={<Navigate to='/' />} />
                 </Routes>

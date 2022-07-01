@@ -8,6 +8,7 @@ import { RESPONSIVE_BREAKPOINTS } from '../../data/constants/Breakpoints';
 import useMediaQuery from '../../data/hooks/UseMediaQuery';
 import { Text } from '../common/Typography';
 import ConnectWalletButton from './ConnectWalletButton';
+import { IS_DEV } from '../../util/Env';
 
 type MenuItem = {
   title: string;
@@ -15,23 +16,28 @@ type MenuItem = {
   url: string;
 };
 
-const MenuItems: MenuItem[] = [
+const menuItems: MenuItem[] = [
   {
     title: 'Blend',
     name: 'blend',
     url: '/blend',
   },
-  {
-    title: 'Portfolio',
-    name: 'portfolio',
-    url: '/portfolio',
-  },
-  // {
-  //   title: 'Vote',
-  //   name: 'governance',
-  //   url: '/governance',
-  // },
 ];
+
+if (IS_DEV) {
+  menuItems.push(
+    {
+      title: 'Portfolio',
+      name: 'portfolio',
+      url: '/portfolio',
+    },
+    {
+      title: 'Vote',
+      name: 'governance',
+      url: '/governance',
+    },
+  )
+}
 
 const StyledNavLink = styled(Text)`
   ${tw`px-8 py-5`}
@@ -91,7 +97,7 @@ export default function Header() {
           <>
             <VerticalDivider />
             <div className='flex flex-row align-middle items-center h-full text-md'>
-              {MenuItems.map((menuitem, index) => (
+              {menuItems.map((menuitem, index) => (
                 <React.Fragment key={index}>
                   <StyledNavLink
                     size='M'
@@ -123,7 +129,7 @@ export default function Header() {
       )}
       {!isMediumScreen && isMenuOpen && (
         <NavDropdown>
-          {MenuItems.map((menuitem, index) => (
+          {menuItems.map((menuitem, index) => (
             <React.Fragment key={index}>
               <StyledNavLink
                 size='M'
