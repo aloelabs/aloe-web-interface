@@ -64,6 +64,9 @@ const SearchInputWrapper = styled.div`
 `;
 
 export default function BlendPoolSelectPage() {
+  const [poolsLoading, setPoolsLoading] = useState(true);
+  const [activeLoading, setActiveLoading] = useState(true);
+  const [toDisplayLoading, settoDisplayLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
   const [activeSearchText, setActiveSearchText] = useState<string>('');
   const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
@@ -100,6 +103,9 @@ export default function BlendPoolSelectPage() {
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
     setPools(poolData);
+    if (poolData.length > 0) {
+      setPoolsLoading(false);
+    }
     let tokenAddresses = Array.from(
       new Set(
         poolData.flatMap((pool) => [
@@ -188,10 +194,12 @@ export default function BlendPoolSelectPage() {
           );
         })
       );
+      setActiveLoading(false);
     } else if (pools.length > 0) {
       setActivePools(pools);
+      setActiveLoading(poolsLoading);
     }
-  }, [pools, activeTokenOptions]);
+  }, [pools, activeTokenOptions, poolsLoading]);
 
   useEffect(() => {
     if (activePools.length > 0 && filteredPools.length > 0) {
@@ -201,6 +209,7 @@ export default function BlendPoolSelectPage() {
             return activePools.includes(pool);
           })
         );
+        settoDisplayLoading(false);
       } else {
         setPoolsToDisplay(
           activePools.filter((pool) => {
@@ -208,10 +217,14 @@ export default function BlendPoolSelectPage() {
           })
         );
       }
+      settoDisplayLoading(false);
     } else {
       setPoolsToDisplay([]);
+      if (!poolsLoading) {
+        settoDisplayLoading(activeLoading);
+      }
     }
-  }, [filteredPools, activePools]);
+  }, [filteredPools, activePools, poolsLoading, activeLoading]);
 
   /* Calculating the number of applied filters */
   let numberOfFiltersApplied = 0;
@@ -303,21 +316,27 @@ export default function BlendPoolSelectPage() {
           </a>
         </div>
         <BrowseCards>
-          {poolsToDisplay.length === 0 &&
+          {toDisplayLoading &&
             [...Array(5)].map((_placeholder, index) => (
               <BrowseCardPlaceholder key={index} />
             ))}
-          {poolsToDisplay.length > 0 &&
-            poolsToDisplay.map((pool, index) => (
-              <BrowseCard blendPoolMarkers={pool} key={index} />
-            ))}
+          {!toDisplayLoading &&
+            poolsToDisplay
+              .slice(
+                (page - 1) * itemsPerPage,
+                (page - 1) * itemsPerPage + itemsPerPage
+              )
+              .map((pool, index) => {
+                return <BrowseCard blendPoolMarkers={pool} key={index} />;
+              })}
         </BrowseCards>
         <Pagination
           currentPage={page}
           itemsPerPage={itemsPerPage}
-          totalItems={100}
+          totalItems={poolsToDisplay.length}
           onPageChange={handlePageChange}
           onItemsPerPageChange={handleItemsPerPageChange}
+          loading={toDisplayLoading}
         />
       </PageWrapper>
     </WideAppPage>
