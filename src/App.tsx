@@ -1,5 +1,5 @@
-import React, { Suspense, useEffect } from 'react';
-import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
 
 import WagmiProvider from './connector/WagmiProvider';
 import Header from './components/header/Header';
@@ -13,6 +13,19 @@ import AppBody from './components/common/AppBody';
 import { RedirectPartialPath } from './util/RedirectPartialPath';
 import { BlendTableProvider } from './data/context/BlendTableContext';
 import ScrollToTop from './util/ScrollToTop';
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/react-hooks';
+export const uniswapClient = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
+  }),
+  cache: new InMemoryCache(),
+});
+export const etherenumBlocksClient = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
+  }),
+  cache: new InMemoryCache(),
+});
 
 function App() {
   return (

@@ -32,6 +32,9 @@ import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
 import tw from 'twin.macro';
 import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
+import gql from 'graphql-tag';
+import { subHours } from 'date-fns/esm';
+import { etherenumBlocksClient } from '../App';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -104,6 +107,7 @@ export default function BlendPoolSelectPage() {
   >([]);
   const [page, setPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<10 | 20 | 50 | 100>(10);
+  const [blockNumber, setBlockNumber] = useState<string | null>(null);
   const sortByOptions = [
     {
       label: 'Default',
@@ -125,6 +129,19 @@ export default function BlendPoolSelectPage() {
     useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
   const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
+
+  const twentyFourHoursAgo = (
+    subHours(new Date(Date.now()), 24).getTime() / 1000
+  ).toFixed(0);
+  const BLOCK_QUERY = gql`
+  {
+    blocks(first: 1, orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: "${twentyFourHoursAgo}"}) {
+      id
+      number
+      timestamp
+    }
+  }
+  `;
 
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
@@ -253,6 +270,22 @@ export default function BlendPoolSelectPage() {
     }
   }, [filteredPools, activePools, poolsLoading, activeLoading]);
 
+  useEffect(() => {
+    let mounted = true;
+    const queryBlocks = async () => {
+      const response = await etherenumBlocksClient.query({
+        query: BLOCK_QUERY,
+      });
+      if (mounted) {
+        setBlockNumber(response.data.blocks[0].number);
+      }
+    };
+    queryBlocks();
+    return () => {
+      mounted = false;
+    };
+  });
+
   /* Calculating the number of applied filters */
   let numberOfFiltersApplied = 0;
   if (activeTokenOptions.length < tokenOptions.length) {
@@ -292,34 +325,34 @@ export default function BlendPoolSelectPage() {
         </div>
         <div className='py-4 flex items-center justify-between'>
           <InnerSearchBar>
-              <SearchInputWrapper>
-                <RoundedInputWithIcon
-                  value={searchText}
-                  size='L'
-                  onChange={(e) => setSearchText(e.target.value)}
-                  Icon={<SearchIcon />}
-                  svgColorType='fill'
-                  placeholder='Search by name, symbol or address'
-                  fullWidth={true}
-                  onIconClick={() => setActiveSearchText(searchText)}
-                  onEnter={() => setActiveSearchText(searchText)}
-                />
-              </SearchInputWrapper>
-              <DropdownContainer>
-                <MultiDropdown
-                  options={tokenOptions}
-                  activeOptions={activeTokenOptions}
-                  handleChange={setActiveTokenOptions}
-                  placeholder='All Tokens'
-                  selectedText='Tokens'
-                />
-                <DropdownWithPlaceholder
-                  options={sortByOptions}
-                  selectedOption={selectedSortByOption}
-                  onSelect={setSelectedSortByOption}
-                  placeholder='Sort By'
-                />
-              </DropdownContainer>
+            <SearchInputWrapper>
+              <RoundedInputWithIcon
+                value={searchText}
+                size='L'
+                onChange={(e) => setSearchText(e.target.value)}
+                Icon={<SearchIcon />}
+                svgColorType='fill'
+                placeholder='Search by name, symbol or address'
+                fullWidth={true}
+                onIconClick={() => setActiveSearchText(searchText)}
+                onEnter={() => setActiveSearchText(searchText)}
+              />
+            </SearchInputWrapper>
+            <DropdownContainer>
+              <MultiDropdown
+                options={tokenOptions}
+                activeOptions={activeTokenOptions}
+                handleChange={setActiveTokenOptions}
+                placeholder='All Tokens'
+                selectedText='Tokens'
+              />
+              <DropdownWithPlaceholder
+                options={sortByOptions}
+                selectedOption={selectedSortByOption}
+                onSelect={setSelectedSortByOption}
+                placeholder='Sort By'
+              />
+            </DropdownContainer>
           </InnerSearchBar>
           {isMediumScreen && (
             <a
@@ -353,7 +386,13 @@ export default function BlendPoolSelectPage() {
                 (page - 1) * itemsPerPage + itemsPerPage
               )
               .map((pool, index) => {
-                return <BrowseCard blendPoolMarkers={pool} key={index} />;
+                return (
+                  <BrowseCard
+                    blendPoolMarkers={pool}
+                    blockNumber={blockNumber}
+                    key={index}
+                  />
+                );
               })}
         </BrowseCards>
         <Pagination

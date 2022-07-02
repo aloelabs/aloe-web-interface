@@ -3,7 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { BlendPoolMarkers, PrintFeeTier } from '../../data/BlendPoolMarkers';
+import {
+  BlendPoolMarkers,
+  GetFeeTierForQuery,
+  PrintFeeTier,
+} from '../../data/BlendPoolMarkers';
 import {
   BROWSE_CARD_WIDTH_LG,
   BROWSE_CARD_WIDTH_MD,
@@ -16,14 +20,22 @@ import { API_URL } from '../../data/constants/Values';
 import { PoolStats } from '../../data/PoolStats';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
-import { getBrighterColor, getProminentColor, rgb, rgba } from '../../util/Colors';
+import {
+  getBrighterColor,
+  getProminentColor,
+  rgb,
+  rgba,
+} from '../../util/Colors';
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
-import { useContractRead } from 'wagmi';
-import AloeBlendABI from '../../assets/abis/AloeBlend.json';
-import { formatUSD, formatUSDCompact, roundPercentage, String1E, toBig } from '../../util/Numbers';
-import { BigNumber } from 'ethers';
+import {
+  formatUSD,
+  formatUSDCompact,
+  roundPercentage,
+} from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
+import gql from 'graphql-tag';
+import { uniswapClient } from '../../App';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -135,10 +147,16 @@ const InfoCategoryContainer = styled.div`
 
 export type BrowseCardProps = {
   blendPoolMarkers: BlendPoolMarkers;
+  blockNumber: string | null;
 };
 
 export default function BrowseCard(props: BrowseCardProps) {
-  const { blendPoolMarkers } = props;
+  const { blendPoolMarkers, blockNumber } = props;
+  const [uniswapVolume, setUniswapVolume] = useState<number | null>(null);
+  const [poolStats, setPoolStats] = useState<PoolStats>();
+  const [token0Color, setToken0Color] = useState<string>('');
+  const [token1Color, setToken1Color] = useState<string>('');
+
   const link = `/blend/pool/${blendPoolMarkers.poolAddress}`;
   const token0 = GetTokenData(
     blendPoolMarkers.token0Address.toLocaleLowerCase()
@@ -150,15 +168,53 @@ export default function BrowseCard(props: BrowseCardProps) {
   const silo1 = GetSiloData(blendPoolMarkers.silo1Address.toLocaleLowerCase());
   const feeTier = PrintFeeTier(blendPoolMarkers.feeTier);
 
-  const totalSupplyContract = useContractRead(
-    {
-      addressOrName: props.blendPoolMarkers.poolAddress,
-      contractInterface: AloeBlendABI,
-    },
-    'totalSupply'
-  );
-
-  const [poolStats, setPoolStats] = useState<PoolStats>();
+  useEffect(() => {
+    let mounted = true;
+    const fetchData = async () => {
+      const uniswapVolumeQueryFrom = gql`
+        query uniswapVolumeQueryFrom {
+          pools(where: {token0: "${token0.address}", token1: "${
+        token1.address
+      }", feeTier: ${GetFeeTierForQuery(
+        blendPoolMarkers.feeTier
+      )}}, block: {number: ${blockNumber}}) {
+            volumeUSD
+          }
+        }
+      `;
+      const uniswapVolumeQueryTo = gql`
+        query uniswapVolumeQueryTo {
+          pools(where: {token0: "${token0.address}", token1: "${
+        token1.address
+      }", feeTier: ${GetFeeTierForQuery(blendPoolMarkers.feeTier)}}) {
+            volumeUSD
+          }
+        }
+      `;
+      const getUniswapVolumeFrom = uniswapClient.query({
+        query: uniswapVolumeQueryFrom,
+      });
+      const getUniswapVolumeTo = uniswapClient.query({
+        query: uniswapVolumeQueryTo,
+      });
+      const [uniswapVolumeFrom, uniswapVolumeTo] = await Promise.all([
+        getUniswapVolumeFrom,
+        getUniswapVolumeTo,
+      ]);
+      if (mounted) {
+        setUniswapVolume(
+          uniswapVolumeTo.data.pools[0].volumeUSD -
+            uniswapVolumeFrom.data.pools[0].volumeUSD
+        );
+      }
+    };
+    if (blockNumber) {
+      fetchData();
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [blendPoolMarkers.feeTier, blockNumber, token0.address, token1.address]);
 
   useEffect(() => {
     let mounted = true;
@@ -176,9 +232,6 @@ export default function BrowseCard(props: BrowseCardProps) {
       mounted = false;
     };
   }, [blendPoolMarkers.poolAddress]);
-
-  const [token0Color, setToken0Color] = useState<string>('');
-  const [token1Color, setToken1Color] = useState<string>('');
 
   // TODO: Move this to a utility function
   useEffect(() => {
@@ -210,14 +263,6 @@ export default function BrowseCard(props: BrowseCardProps) {
     0.16
   );
 
-  let pricePerShare = 0;
-  if (poolStats && totalSupplyContract[0].data) {
-    const totalSupply = toBig(BigNumber.from(totalSupplyContract[0].data))
-      .div(String1E(18))
-      .toNumber();
-    pricePerShare = poolStats.total_value_locked / totalSupply;
-  }
-
   return (
     <CardWrapper to={link} border={cardBorderGradient} shadow={cardShadowColor}>
       <CardTitleWrapper gradient={cardTitleBackgroundGradient}>
@@ -231,12 +276,18 @@ export default function BrowseCard(props: BrowseCardProps) {
             token0AltText={`${token0.name}'s Icon`}
             token1AltText={`${token1.name}'s Icon`}
           />
-          <FeeTierContainer><Text size='S' weight='medium'>Uniswap Fee Tier - {feeTier}</Text></FeeTierContainer>
+          <FeeTierContainer>
+            <Text size='S' weight='medium'>
+              Uniswap Fee Tier - {feeTier}
+            </Text>
+          </FeeTierContainer>
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>
         <BodySubContainer>
-          <Text size='M' weight='medium'>Invest your</Text>
+          <Text size='M' weight='medium'>
+            Invest your
+          </Text>
           <InvestedTypes
             token0={token0}
             token1={token1}
@@ -249,21 +300,28 @@ export default function BrowseCard(props: BrowseCardProps) {
         <BodyDivider />
         <ResponsiveBodySubContainer>
           <InfoCategoryContainer>
-            <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>Price per Share</Text>
+            <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
+              24H Uniswap Volume
+            </Text>
             <Text size='XL' weight='medium'>
-              {
-                formatUSD(pricePerShare)
-              }{' '}
-              USD
+              {formatUSD(uniswapVolume)} USD
             </Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
-            <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>APR</Text>
-            <Text size='XL' weight='medium'>{roundPercentage(poolStats?.annual_percentage_rate || 0)}%</Text>
+            <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
+              APR
+            </Text>
+            <Text size='XL' weight='medium'>
+              {roundPercentage(poolStats?.annual_percentage_rate || 0)}%
+            </Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
-            <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>TVL</Text>
-            <Text size='XL' weight='medium'>{formatUSDCompact(poolStats?.total_value_locked || 0)}</Text>
+            <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
+              TVL
+            </Text>
+            <Text size='XL' weight='medium'>
+              {formatUSDCompact(poolStats?.total_value_locked || 0)}
+            </Text>
           </InfoCategoryContainer>
         </ResponsiveBodySubContainer>
       </CardBodyWrapper>
