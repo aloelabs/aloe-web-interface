@@ -33,3 +33,20 @@ export function PrintFeeTier(ft: FeeTier): string {
       return 'UNK';
   }
 }
+
+export function GetNumericFeeTier(ft: FeeTier): number {
+  switch (ft) {
+    case FeeTier.ONE:
+      return 10000;
+    case FeeTier.ZERO_THREE:
+      return 3000;
+    case FeeTier.ZERO_ZERO_FIVE:
+      return 500;
+    case FeeTier.ZERO_ZERO_ONE:
+      return 100;
+    case FeeTier.INVALID:
+    case FeeTier.UNKNOWN:
+    default:
+      return 0;
+  }
+}
