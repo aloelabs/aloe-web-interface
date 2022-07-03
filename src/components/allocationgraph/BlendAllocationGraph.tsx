@@ -63,25 +63,6 @@ function makeRequest(reqUrl: string) {
   });
 }
 
-const poolMatcher = (pool: string) => {
-  // API expects the checksum address (one with proper capitalization).
-  // ethers can compute that for us:
-  return ethers.utils.getAddress(pool);
-  // TODO in the future the API may be ok with all lowercase / arbitrary capitalization,
-  // in which case this isn't needed
-};
-
-const tokenMatcher = (token: string) => {
-  // TODO once API is fixed, we probably won't need this. But could use checksummed addresses
-  // here too, if we feel like it
-  switch (token) {
-    case '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2':
-      return '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-    default:
-      return token;
-  }
-};
-
 export type BlendAllocationGraphProps = {
   poolData: BlendPoolMarkers;
 };
@@ -153,9 +134,9 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
     }
   };
 
-  const pool = poolMatcher(poolData.poolAddress);
-  const token0 = tokenMatcher(token0Address);
-  const token1 = tokenMatcher(token1Address);
+  const pool = poolData.poolAddress.toLowerCase();
+  const token0 = token0Address.toLowerCase();
+  const token1 = token1Address.toLowerCase();
 
   useEffect(() => {
     let mounted = true;
@@ -182,19 +163,6 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
             const poolReturnsData = poolReturns.data as PoolReturns;
             let token0Data = token0.data as TokenReturns;
             const token1Data = token1.data as TokenReturns;
-            if (token0Data.length === token1Data.length * 2) {
-              //TODO: This is a temporary fix since the API is currently returning duplicate data
-              token0Data = token0Data.filter((_, i) => i % 2 === 0);
-            }
-            // TODO: This is a temporary hack for USDC since API isn't returning prices for it rn.
-            if (token0Data.length === 0) {
-              token0Data = token1Data.map((entry) => {
-                return {
-                  ...entry,
-                  price: 1.0,
-                };
-              });
-            }
             try {
               const calculatedReturns = calculateReturns(
                 poolReturnsData,

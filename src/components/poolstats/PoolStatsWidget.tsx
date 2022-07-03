@@ -54,7 +54,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
             {roundPercentage(
-              poolStats?.annual_percentage_rate || 0,
+               100 * (poolStats?.annual_percentage_rate ?? 0),
               ROUNDING_PRECISION
             )}
             %

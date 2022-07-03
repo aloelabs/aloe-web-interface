@@ -14,13 +14,13 @@ import { RedirectPartialPath } from './util/RedirectPartialPath';
 import { BlendTableProvider } from './data/context/BlendTableContext';
 import ScrollToTop from './util/ScrollToTop';
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/react-hooks';
-export const uniswapClient = new ApolloClient({
+export const theGraphUniswapV3Client = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
   }),
   cache: new InMemoryCache(),
 });
-export const etherenumBlocksClient = new ApolloClient({
+export const theGraphEthereumBlocksClient = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
   }),

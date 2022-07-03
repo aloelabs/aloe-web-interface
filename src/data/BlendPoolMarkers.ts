@@ -34,7 +34,7 @@ export function PrintFeeTier(ft: FeeTier): string {
   }
 }
 
-export function GetFeeTierForQuery(ft: FeeTier): number {
+export function GetNumericFeeTier(ft: FeeTier): number {
   switch (ft) {
     case FeeTier.ONE:
       return 10000;

@@ -33,8 +33,7 @@ import useMediaQuery from '../data/hooks/UseMediaQuery';
 import tw from 'twin.macro';
 import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
 import gql from 'graphql-tag';
-import { subHours } from 'date-fns/esm';
-import { etherenumBlocksClient } from '../App';
+import { theGraphEthereumBlocksClient } from '../App';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -130,12 +129,10 @@ export default function BlendPoolSelectPage() {
 
   const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
-  const twentyFourHoursAgo = (
-    subHours(new Date(Date.now()), 24).getTime() / 1000
-  ).toFixed(0);
+  const twentyFourHoursAgo = Date.now() / 1000 - (24 * 60 * 60);
   const BLOCK_QUERY = gql`
   {
-    blocks(first: 1, orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: "${twentyFourHoursAgo}"}) {
+    blocks(first: 1, orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: "${twentyFourHoursAgo.toFixed(0)}"}) {
       id
       number
       timestamp
@@ -272,15 +269,15 @@ export default function BlendPoolSelectPage() {
 
   useEffect(() => {
     let mounted = true;
+
     const queryBlocks = async () => {
-      const response = await etherenumBlocksClient.query({
-        query: BLOCK_QUERY,
-      });
+      const response = await theGraphEthereumBlocksClient.query({ query: BLOCK_QUERY });
       if (mounted) {
         setBlockNumber(response.data.blocks[0].number);
       }
     };
     queryBlocks();
+
     return () => {
       mounted = false;
     };

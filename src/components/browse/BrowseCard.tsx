@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import {
   BlendPoolMarkers,
-  GetFeeTierForQuery,
+  GetNumericFeeTier,
   PrintFeeTier,
 } from '../../data/BlendPoolMarkers';
 import {
@@ -35,7 +35,7 @@ import {
 } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
 import gql from 'graphql-tag';
-import { uniswapClient } from '../../App';
+import { theGraphUniswapV3Client } from '../../App';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -171,40 +171,37 @@ export default function BrowseCard(props: BrowseCardProps) {
   useEffect(() => {
     let mounted = true;
     const fetchData = async () => {
-      const uniswapVolumeQueryFrom = gql`
-        query uniswapVolumeQueryFrom {
-          pools(where: {token0: "${token0.address}", token1: "${
-        token1.address
-      }", feeTier: ${GetFeeTierForQuery(
-        blendPoolMarkers.feeTier
-      )}}, block: {number: ${blockNumber}}) {
-            volumeUSD
+      const uniswapVolumeQuery = gql`
+      {
+        prev:pools(
+          block: {number: ${blockNumber}},
+          where: {
+            token0: "${token0.address}",
+            token1: "${token1.address}",
+            feeTier: "${GetNumericFeeTier(blendPoolMarkers.feeTier)}"
           }
-        }
-      `;
-      const uniswapVolumeQueryTo = gql`
-        query uniswapVolumeQueryTo {
-          pools(where: {token0: "${token0.address}", token1: "${
-        token1.address
-      }", feeTier: ${GetFeeTierForQuery(blendPoolMarkers.feeTier)}}) {
-            volumeUSD
+        ) {
+          volumeUSD
+        },
+        curr:pools(
+          where: {
+            token0: "${token0.address}",
+            token1: "${token1.address}",
+            feeTier: "${GetNumericFeeTier(blendPoolMarkers.feeTier)}"
           }
+        ) {
+          volumeUSD
         }
-      `;
-      const getUniswapVolumeFrom = uniswapClient.query({
-        query: uniswapVolumeQueryFrom,
-      });
-      const getUniswapVolumeTo = uniswapClient.query({
-        query: uniswapVolumeQueryTo,
-      });
-      const [uniswapVolumeFrom, uniswapVolumeTo] = await Promise.all([
-        getUniswapVolumeFrom,
-        getUniswapVolumeTo,
-      ]);
+      }
+      `
+
+      const uniswapVolumeData = await theGraphUniswapV3Client.query({ query: uniswapVolumeQuery});
+
       if (mounted) {
         setUniswapVolume(
-          uniswapVolumeTo.data.pools[0].volumeUSD -
-            uniswapVolumeFrom.data.pools[0].volumeUSD
+          uniswapVolumeData['data'] ?
+            uniswapVolumeData['data']['curr'][0]['volumeUSD'] - uniswapVolumeData['data']['prev'][0]['volumeUSD'] :
+            null
         );
       }
     };
@@ -301,10 +298,10 @@ export default function BrowseCard(props: BrowseCardProps) {
         <ResponsiveBodySubContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
-              24H Uniswap Volume
+              24H Volume (Uniswap V3)
             </Text>
             <Text size='XL' weight='medium'>
-              {formatUSD(uniswapVolume)} USD
+              {formatUSDCompact(uniswapVolume)}
             </Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
@@ -312,7 +309,7 @@ export default function BrowseCard(props: BrowseCardProps) {
               APR
             </Text>
             <Text size='XL' weight='medium'>
-              {roundPercentage(poolStats?.annual_percentage_rate || 0)}%
+              {roundPercentage(100 * (poolStats?.annual_percentage_rate ?? 0))}%
             </Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
