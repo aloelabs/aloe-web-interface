@@ -80,8 +80,8 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   const token1Address = poolData.token1Address.toLowerCase();
   const token0Ticker = GetTokenData(token0Address).ticker;
   const token1Ticker = GetTokenData(token1Address).ticker;
-  const token0Key = `${token0Ticker} Price`;
-  const token1Key = `${token1Ticker} Price`;
+  const token0Key = `${token0Ticker}`;
+  const token1Key = `${token1Ticker}`;
   const initialData = [
     {
       'Pool Returns': 0,
@@ -172,9 +172,9 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
               let updatedData = [];
               for (let i = 0; i < calculatedReturns.length; i++) {
                 let updatedObj = {} as any;
-                updatedObj['Pool Returns'] =
+                updatedObj['Blend Pool'] =
                   (calculatedReturns[i]['pool'] - 1.0) * 100;
-                // updatedObj['Uniswap V2'] = (calculatedReturns[i]['sqrt'] - 1.0) * 100;
+                updatedObj['Uniswap Baseline'] = (calculatedReturns[i]['sqrt'] - 1.0) * 100;
                 // updatedObj['50/50 HODL'] = (calculatedReturns[i]['fifty_fifty'] - 1.0) * 100;
                 updatedObj[token0Key] =
                   (calculatedReturns[i]['token0'] - 1.0) * 100;

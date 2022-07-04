@@ -51,6 +51,14 @@ const LegendItemBox = styled.div`
   border-radius: 8px;
 `;
 
+const LegendItemBoxDashed = styled.div`
+  width: 16px;
+  height: 1px;
+  background-color: clear;
+  border-bottom: 3px dotted;
+  border-color: ${(props) => props.color}
+`;
+
 type BlendGraphLegendProps = {
   token0Label: string;
   token1Label: string;
@@ -62,14 +70,18 @@ function BlendGraphLegend(props: BlendGraphLegendProps) {
     <LegendWrapper>
       <LegendItem>
         <LegendItemBox color={GRAY_STROKE_COLOR} />
-        <Text size='M' weight='medium' color={TEXT_COLOR}>Pool Returns</Text>
+        <Text size='M' weight='medium' color={TEXT_COLOR}>Blend Pool</Text>
       </LegendItem>
       <LegendItem>
-        <LegendItemBox color={GREEN_STROKE_COLOR} />
+        <LegendItemBoxDashed color={GRAY_STROKE_COLOR} />
+        <Text size='M' weight='medium' color={TEXT_COLOR}>Uniswap Baseline</Text>
+      </LegendItem>
+      <LegendItem>
+        <LegendItemBoxDashed color={GREEN_STROKE_COLOR} />
         <Text size='M' weight='medium' color={TEXT_COLOR}>{token0Label}</Text>
       </LegendItem>
       <LegendItem>
-        <LegendItemBox color={PURPLE_STROKE_COLOR} />
+        <LegendItemBoxDashed color={PURPLE_STROKE_COLOR} />
         <Text size='M' weight='medium' color={TEXT_COLOR}>{token1Label}</Text>
       </LegendItem>
     </LegendWrapper>
@@ -110,10 +122,17 @@ export default function BlendGraph(props: BlendGraphProps) {
         charts={[
           {
             type: 'monotone',
-            dataKey: 'Pool Returns',
+            dataKey: 'Blend Pool',
             stroke: GRAY_STROKE_COLOR,
             fill: 'url(#totalReturnsGradient)',
             fillOpacity: 1,
+          },
+          {
+            type: 'monotone',
+            dataKey: 'Uniswap Baseline',
+            stroke: GRAY_STROKE_COLOR,
+            fillOpacity: 0,
+            strokeDasharray: '2 2',
           },
           {
             type: 'monotone',

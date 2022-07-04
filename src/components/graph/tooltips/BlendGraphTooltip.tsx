@@ -35,7 +35,7 @@ export default function BlendGraphTooltip(data: any, active = false) {
       return (
         <div className='flex flex-col' key={index}>
           <Text size='XS' weight='medium' color={item.color}>{item.name}</Text>
-          <Text size='M' weight='medium' color={item.color}>{prettify(item.value)}</Text>
+          <Text size='S' weight='medium' color={item.color}>{prettify(item.value)}</Text>
         </div>
       );
     });
