@@ -53,7 +53,7 @@ function getCoordinatesForPercent(percent: number) {
 }
 
 const TokenAllocationWrapper = styled.div`
-  ${tw`w-full h-full mt-4 flex flex-nowrap`}
+  ${tw`w-full h-full mt-4 pt-2 flex flex-nowrap`}
   flex-direction: row;
 
   @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {

@@ -17,7 +17,7 @@ import {
   RESPONSIVE_BREAKPOINT_SM,
 } from '../../data/constants/Breakpoints';
 import { API_URL } from '../../data/constants/Values';
-import { PoolStats } from '../../data/PoolStats';
+import { OffChainPoolStats } from '../../data/PoolStats';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
 import {
@@ -153,7 +153,7 @@ export type BrowseCardProps = {
 export default function BrowseCard(props: BrowseCardProps) {
   const { blendPoolMarkers, blockNumber } = props;
   const [uniswapVolume, setUniswapVolume] = useState<number | null>(null);
-  const [poolStats, setPoolStats] = useState<PoolStats>();
+  const [poolStats, setPoolStats] = useState<OffChainPoolStats>();
   const [token0Color, setToken0Color] = useState<string>('');
   const [token1Color, setToken1Color] = useState<string>('');
 
@@ -219,7 +219,7 @@ export default function BrowseCard(props: BrowseCardProps) {
       const poolStatsResponse = await axios.get(
         `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
       );
-      const poolStatsData = poolStatsResponse.data[0] as PoolStats;
+      const poolStatsData = poolStatsResponse.data[0] as OffChainPoolStats;
       if (mounted && poolStatsData) {
         setPoolStats(poolStatsData);
       }
@@ -298,7 +298,7 @@ export default function BrowseCard(props: BrowseCardProps) {
         <ResponsiveBodySubContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
-              24H Volume (Uniswap V3)
+              24H Uniswap Volume
             </Text>
             <Text size='XL' weight='medium'>
               {formatUSDCompact(uniswapVolume)}
@@ -306,7 +306,7 @@ export default function BrowseCard(props: BrowseCardProps) {
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
-              APR
+              APR (30d avg)
             </Text>
             <Text size='XL' weight='medium'>
               {roundPercentage(100 * (poolStats?.annual_percentage_rate ?? 0))}%

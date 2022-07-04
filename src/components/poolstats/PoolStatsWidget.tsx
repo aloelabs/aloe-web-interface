@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { PoolStats } from '../../data/PoolStats';
+import { formatDistance, subDays } from 'date-fns'
+import { BlendPoolContext } from '../../data/context/BlendPoolContext';
+import { OffChainPoolStats } from '../../data/PoolStats';
 import {
   formatUSDCompact,
   roundPercentage
@@ -12,6 +14,8 @@ import WidgetHeading from '../common/WidgetHeading';
 const ROUNDING_PRECISION = 2;
 const POOL_STAT_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 const POOL_STAT_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
+const IN_RANGE_COLOR = '#00C143';
+const OUT_OF_RANGE_COLOR = '#EB5757';
 
 const Wrapper = styled.div`
   ${tw`flex flex-col`}
@@ -34,11 +38,13 @@ const PoolStat = styled.div`
 `;
 
 export type PoolStatsWidgetProps = {
-  poolStats: PoolStats | undefined;
+  offChainPoolStats: OffChainPoolStats | undefined;
 };
 
 export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
-  const { poolStats } = props;
+  const { offChainPoolStats } = props;
+
+  const { poolStats } = useContext(BlendPoolContext);
 
   return (
     <Wrapper>
@@ -46,54 +52,53 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
       <PoolStatsWidgetGrid>
         <PoolStat>
           <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
-            APR
+            APR (30d avg)
           </Text>
           <Display
             size='S'
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {roundPercentage(
-               100 * (poolStats?.annual_percentage_rate ?? 0),
-              ROUNDING_PRECISION
-            )}
-            %
+            {offChainPoolStats ?
+              roundPercentage(100 * offChainPoolStats.annual_percentage_rate, ROUNDING_PRECISION).toFixed(ROUNDING_PRECISION).concat('%') :
+              '--'
+            }
           </Display>
         </PoolStat>
         <PoolStat>
           <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
-            CAPR
+            Uniswap Position
           </Text>
           <Display
             size='S'
             weight='semibold'
-            color={POOL_STAT_VALUE_TEXT_COLOR}
+            color={poolStats ? (poolStats.isInRange ? IN_RANGE_COLOR : OUT_OF_RANGE_COLOR) : POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {roundPercentage(23, ROUNDING_PRECISION)}%
+            {poolStats ? (poolStats.isInRange ? 'In-Range' : 'Out-of-Range') : '--'}
           </Display>
         </PoolStat>
         <PoolStat>
           <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
-            Volume 24H
+            24H Uniswap Volume
           </Text>
           <Display
             size='S'
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            $125.30 M
+            TODO
           </Display>
         </PoolStat>
         <PoolStat>
           <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
-            Liquidity
+            Implied Volatility
           </Text>
           <Display
             size='S'
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            $125.30 M
+            {poolStats ? roundPercentage(100 * poolStats.IV, ROUNDING_PRECISION).toFixed(ROUNDING_PRECISION).concat('%') : '--'}
           </Display>
         </PoolStat>
         <PoolStat>
@@ -105,19 +110,19 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {formatUSDCompact(poolStats?.total_value_locked || 0)}
+            {offChainPoolStats ? formatUSDCompact(offChainPoolStats.total_value_locked) : '--'}
           </Display>
         </PoolStat>
         <PoolStat>
           <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
-            Lorem Ipsum
+            Last Rebalance
           </Text>
           <Display
             size='S'
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            $125.30 M
+            {poolStats ? formatDistance(poolStats.recenterTimestamp * 1000, Date.now(), { addSuffix: true }) : '--'}
           </Display>
         </PoolStat>
       </PoolStatsWidgetGrid>
