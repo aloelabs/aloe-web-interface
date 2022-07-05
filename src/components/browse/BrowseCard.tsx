@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import {
   BlendPoolMarkers,
-  GetNumericFeeTier,
   PrintFeeTier,
 } from '../../data/BlendPoolMarkers';
 import {
@@ -17,7 +16,7 @@ import {
   RESPONSIVE_BREAKPOINT_SM,
 } from '../../data/constants/Breakpoints';
 import { API_URL } from '../../data/constants/Values';
-import { PoolStats } from '../../data/PoolStats';
+import { OffChainPoolStats } from '../../data/PoolStats';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
 import {
@@ -29,13 +28,12 @@ import {
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
 import {
-  formatUSD,
   formatUSDCompact,
   roundPercentage,
 } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
-import gql from 'graphql-tag';
 import { theGraphUniswapV3Client } from '../../App';
+import { getUniswapVolumeQuery } from '../../util/GraphQL';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -153,7 +151,7 @@ export type BrowseCardProps = {
 export default function BrowseCard(props: BrowseCardProps) {
   const { blendPoolMarkers, blockNumber } = props;
   const [uniswapVolume, setUniswapVolume] = useState<number | null>(null);
-  const [poolStats, setPoolStats] = useState<PoolStats>();
+  const [poolStats, setPoolStats] = useState<OffChainPoolStats>();
   const [token0Color, setToken0Color] = useState<string>('');
   const [token1Color, setToken1Color] = useState<string>('');
 
@@ -171,30 +169,7 @@ export default function BrowseCard(props: BrowseCardProps) {
   useEffect(() => {
     let mounted = true;
     const fetchData = async () => {
-      const uniswapVolumeQuery = gql`
-      {
-        prev:pools(
-          block: {number: ${blockNumber}},
-          where: {
-            token0: "${token0.address}",
-            token1: "${token1.address}",
-            feeTier: "${GetNumericFeeTier(blendPoolMarkers.feeTier)}"
-          }
-        ) {
-          volumeUSD
-        },
-        curr:pools(
-          where: {
-            token0: "${token0.address}",
-            token1: "${token1.address}",
-            feeTier: "${GetNumericFeeTier(blendPoolMarkers.feeTier)}"
-          }
-        ) {
-          volumeUSD
-        }
-      }
-      `
-
+      const uniswapVolumeQuery = getUniswapVolumeQuery(blockNumber, token0.address, token1.address, blendPoolMarkers.feeTier);
       const uniswapVolumeData = await theGraphUniswapV3Client.query({ query: uniswapVolumeQuery});
 
       if (mounted) {
@@ -205,7 +180,7 @@ export default function BrowseCard(props: BrowseCardProps) {
         );
       }
     };
-    if (blockNumber) {
+    if (blockNumber && token0.address && token1.address && blendPoolMarkers.feeTier) {
       fetchData();
     }
     return () => {
@@ -219,7 +194,7 @@ export default function BrowseCard(props: BrowseCardProps) {
       const poolStatsResponse = await axios.get(
         `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
       );
-      const poolStatsData = poolStatsResponse.data[0] as PoolStats;
+      const poolStatsData = poolStatsResponse.data[0] as OffChainPoolStats;
       if (mounted && poolStatsData) {
         setPoolStats(poolStatsData);
       }
@@ -298,7 +273,7 @@ export default function BrowseCard(props: BrowseCardProps) {
         <ResponsiveBodySubContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
-              24H Volume (Uniswap V3)
+              24H Uniswap Volume
             </Text>
             <Text size='XL' weight='medium'>
               {formatUSDCompact(uniswapVolume)}
@@ -306,7 +281,7 @@ export default function BrowseCard(props: BrowseCardProps) {
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
-              APR
+              APR (30d avg)
             </Text>
             <Text size='XL' weight='medium'>
               {roundPercentage(100 * (poolStats?.annual_percentage_rate ?? 0))}%

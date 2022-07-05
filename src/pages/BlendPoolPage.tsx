@@ -16,17 +16,21 @@ import {
   RESPONSIVE_BREAKPOINTS,
   RESPONSIVE_BREAKPOINT_LG,
   RESPONSIVE_BREAKPOINT_MD,
-  RESPONSIVE_BREAKPOINT_SM
+  RESPONSIVE_BREAKPOINT_SM,
 } from '../data/constants/Breakpoints';
 import { API_URL } from '../data/constants/Values';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
 import { BlendTableContext } from '../data/context/BlendTableContext';
-import { PoolStats } from '../data/PoolStats';
+import { OffChainPoolStats } from '../data/PoolStats';
 import { GetSiloData } from '../data/SiloData';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
 import tw from 'twin.macro';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
+import { useAccount } from 'wagmi';
+import { FeeTier } from '../data/BlendPoolMarkers';
+import { theGraphUniswapV3Client } from '../App';
+import { getUniswapVolumeQuery } from '../util/GraphQL';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -76,15 +80,24 @@ const HeaderBarContainer = styled.div`
 
   @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     display: grid;
-    grid-template-columns: fit-content(35px) fit-content(400px) fit-content(24px);
+    grid-template-columns: fit-content(35px) fit-content(400px) fit-content(
+        24px
+      );
     align-items: flex-start;
     justify-content: flex-start;
     gap: 16px;
   }
 `;
 
-export default function BlendPoolPage() {
-  const [poolStats, setPoolStats] = React.useState<PoolStats>();
+export type BlendPoolPageProps = {
+  blockNumber: string | null;
+};
+
+export default function BlendPoolPage(props: BlendPoolPageProps) {
+  const { blockNumber } = props;
+  const [offChainPoolStats, setOffChainPoolStats] =
+    React.useState<OffChainPoolStats>();
+  const [uniswapVolume, setUniswapVolume] = React.useState<number | null>(null);
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
   const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
@@ -92,15 +105,16 @@ export default function BlendPoolPage() {
   const { poolDataMap, fetchPoolData } = useContext(BlendTableContext);
 
   const poolData = poolDataMap.get(params.pooladdress || '');
+
   useEffect(() => {
     let mounted = true;
     const fetchPoolStats = async () => {
       const response = await axios.get(
         `${API_URL}/pool_stats/${poolData?.poolAddress}/1/`
       );
-      const poolStatsData = response.data[0] as PoolStats;
+      const poolStatsData = response.data[0] as OffChainPoolStats;
       if (mounted && poolStatsData) {
-        setPoolStats(poolStatsData);
+        setOffChainPoolStats(poolStatsData);
       }
     };
     if (poolData) {
@@ -110,6 +124,47 @@ export default function BlendPoolPage() {
       mounted = false;
     };
   }, [poolData]);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchData = async (
+      token0Address: string,
+      token1Address: string,
+      feeTier: FeeTier
+    ) => {
+      const uniswapVolumeQuery = getUniswapVolumeQuery(
+        blockNumber,
+        token0Address,
+        token1Address,
+        feeTier
+      );
+      const uniswapVolumeData = await theGraphUniswapV3Client.query({
+        query: uniswapVolumeQuery,
+      });
+
+      if (mounted) {
+        setUniswapVolume(
+          uniswapVolumeData['data']
+            ? uniswapVolumeData['data']['curr'][0]['volumeUSD'] -
+                uniswapVolumeData['data']['prev'][0]['volumeUSD']
+            : null
+        );
+      }
+    };
+    if (blockNumber && poolData) {
+      fetchData(
+        poolData.token0Address,
+        poolData.token1Address,
+        poolData.feeTier
+      );
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [blockNumber, poolData]);
+
+  const [{ data: accountData }] = useAccount({ fetchEns: true });
+  const walletIsConnected = accountData?.address !== undefined;
 
   if (!poolData) {
     if (params.pooladdress) {
@@ -130,45 +185,75 @@ export default function BlendPoolPage() {
             silo1={GetSiloData(poolData.silo1Address.toLowerCase())}
             feeTier={poolData.feeTier}
           />
-          <a href={`https://etherscan.io/address/${poolData.poolAddress}`} title='Etherscan Link'>
+          <a
+            href={`https://etherscan.io/address/${poolData.poolAddress}`}
+            target='_blank'
+            title='Etherscan Link'
+            rel='noreferrer'
+          >
             <OpenIcon width={24} height={24} />
           </a>
         </HeaderBarContainer>
         {isMediumScreen && (
           <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
-            <PoolInteractionTabs poolData={poolData} />
+            <PoolInteractionTabs
+              poolData={poolData}
+              walletIsConnected={walletIsConnected}
+            />
           </GridExpandingDiv>
         )}
         <div className='w-full py-4'>
           <BlendAllocationGraph poolData={poolData} />
           {!isMediumScreen && (
             <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
-              <PoolInteractionTabs poolData={poolData} />
+              <PoolInteractionTabs
+                poolData={poolData}
+                walletIsConnected={walletIsConnected}
+              />
             </GridExpandingDiv>
           )}
-          <PoolPositionWidget poolData={poolData} />
-          <PoolStatsWidget poolStats={poolStats} />
+          {walletIsConnected && <PoolPositionWidget poolData={poolData} />}
+          <PoolStatsWidget
+            offChainPoolStats={offChainPoolStats}
+            uniswapVolume={uniswapVolume}
+          />
           <PoolPieChartWidget poolData={poolData} />
           <div className='flex flex-col gap-y-6 mt-16'>
-            <WidgetHeading>About Aloe Blend Pool</WidgetHeading>
-            <Text size='M' weight='medium' color={ABOUT_MESSAGE_TEXT_COLOR} className='flex flex-col gap-y-6'>
+            <WidgetHeading>About The Pool</WidgetHeading>
+            <Text
+              size='M'
+              weight='medium'
+              color={ABOUT_MESSAGE_TEXT_COLOR}
+              className='flex flex-col gap-y-6'
+            >
               <p>
-                Placing funds into a Blend Vault will allow Aloe to use Uniswap
-                V3 and yield-earning silos on your behalf.
+                Placing funds into a Blend Pool will allow Aloe smart contracts
+                to use Uniswap V3 and yield-earning silos on your behalf.
               </p>
               <p>
-                When you deposit to the vault, your tokens are pooled together
-                with all other users. Once conditions are right, the vault can
-                be "rebalanced". some tokens get placed in Uniswap, and some in
-                the token's silo. Blend is designed to allocate tokens such that
-                overall value will be split 50/50 between the two tokens, just
-                like Uniswap V2. In Aloe Blend, you earn yield from both Uniswap
-                V3 and the silos, unlike Uniswap V2.
+                When you deposit, your tokens are pooled together with other
+                users'. Once conditions are right, the pool can be rebalanced.
+                During a rebalance, the pool's algorithm redistributes funds
+                between Uniswap and silos to earn the best mix of swap fees and
+                yield. It also tries to keep itself balanced — 50%{' '}
+                {GetTokenData(poolData.token0Address.toLowerCase()).ticker} and
+                50% {GetTokenData(poolData.token1Address.toLowerCase()).ticker},
+                just like Uniswap V2. In the right market conditions, this can
+                massively{' '}
+                <a
+                  href='https://research.paradigm.xyz/uniswaps-alchemy'
+                  target='_blank'
+                  className='underline'
+                  rel='noreferrer noopener'
+                >
+                  outperform plain HODLing
+                </a>
+                .
               </p>
             </Text>
           </div>
           <div className='flex flex-col gap-y-6 mt-16'>
-            <WidgetHeading>Investing Risk</WidgetHeading>
+            <WidgetHeading>Investing Risks</WidgetHeading>
             <RiskCard />
           </div>
         </div>
