@@ -49,18 +49,10 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
       <WidgetHeading>Your Position</WidgetHeading>
       <PerformanceCardGrid>
         <PerformanceCard>
-          <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Total Value</Text>
-          <Display size='L' weight='semibold' color={PERFORMANCE_VALUE_TEXT_COLOR}>{formatUSD(0)}</Display>
-        </PerformanceCard>
-        <PerformanceCard>
-          <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Average Price Per Share</Text>
-          <Display size='L' weight='semibold' color={PERFORMANCE_VALUE_TEXT_COLOR}>{formatUSD(0)}</Display>
-        </PerformanceCard>
-        <PerformanceCard>
           <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Today's Return</Text>
           <div className='flex items-center gap-4'>
             <Display size='L' weight='semibold' color={PERFORMANCE_VALUE_TEXT_COLOR}>
-              {formatUSD(0)}
+              TODO
             </Display>
             <PercentChange percent={0} />
           </div>
@@ -69,10 +61,14 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
           <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Total Returns</Text>
           <div className='flex items-center gap-4'>
             <Display size='L' weight='semibold' color={PERFORMANCE_VALUE_TEXT_COLOR}>
-              {formatUSD(0)}
+              TODO
             </Display>
             <PercentChange percent={0} />
           </div>
+        </PerformanceCard>
+        <PerformanceCard>
+          <Text size='M' weight='medium' color={PERFORMANCE_LABEL_TEXT_COLOR}>Total Value</Text>
+          <Display size='L' weight='semibold' color={PERFORMANCE_VALUE_TEXT_COLOR}>TODO</Display>
         </PerformanceCard>
       </PerformanceCardGrid>
     </Wrapper>

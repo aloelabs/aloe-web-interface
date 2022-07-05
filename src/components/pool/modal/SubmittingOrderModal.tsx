@@ -17,7 +17,7 @@ export default function SubmittingOrderModal(props: SubmittingOrderModalProps) {
       title='Submitting Order'
     >
       <Text size='M' weight='medium' color={MESSAGE_TEXT_COLOR}>
-        After wallet approval, your transaction will be finished in about 3s.
+        This might take a while. Feel free to leave the page and come back later.
       </Text>
     </LoadingModal>
   );

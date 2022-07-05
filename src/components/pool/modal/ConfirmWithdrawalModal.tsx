@@ -54,7 +54,7 @@ export default function ConfirmWithdrawalModal(props: ConfirmWithdrawalModalProp
         token1Estimate={token1Estimate}
       />
       <HorizontalDivider />
-      <div className='flex flex-col gap-y-4'>
+      <div className='flex flex-col gap-y-4 mb-8'>
         <div className='flex justify-between items-center'>
           <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Pool Selected</Text>
           <DashedDivider />
@@ -66,12 +66,12 @@ export default function ConfirmWithdrawalModal(props: ConfirmWithdrawalModalProp
           <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{maxSlippage}%</Text>
         </div>
       </div>
-      <HorizontalDivider />
+      {/* <HorizontalDivider />
       <div className='flex justify-between items-center mb-8'>
         <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Network Fees</Text>
         <DashedDivider />
         <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{networkFee} WETH</Text>
-      </div>
+      </div> */}
       <FilledStylizedButton size='M' fillWidth={true} color={MODAL_BLACK_TEXT_COLOR} onClick={onConfirm}>Confirm Withdrawal</FilledStylizedButton>
     </CloseableModal>
   );

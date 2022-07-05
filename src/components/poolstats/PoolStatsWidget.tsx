@@ -74,19 +74,9 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
           <Display
             size='S'
             weight='semibold'
-            color={
-              poolStats
-                ? poolStats.isInRange
-                  ? IN_RANGE_COLOR
-                  : OUT_OF_RANGE_COLOR
-                : POOL_STAT_VALUE_TEXT_COLOR
-            }
+            color={poolStats ? (poolStats.isInRange ? IN_RANGE_COLOR : OUT_OF_RANGE_COLOR) : POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {poolStats
-              ? poolStats.isInRange
-                ? 'In-Range'
-                : 'Out-of-Range'
-              : '--'}
+            {poolStats ? (poolStats.isInRange ? 'In-Range' : 'Out-of-Range') : '--'}
           </Display>
         </PoolStat>
         <PoolStat>
