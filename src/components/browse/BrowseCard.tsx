@@ -33,7 +33,7 @@ import {
 } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
 import { theGraphUniswapV3Client } from '../../App';
-import { getUniswapVolumeQuery } from '../../util/Graph';
+import { getUniswapVolumeQuery } from '../../util/GraphQL';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';

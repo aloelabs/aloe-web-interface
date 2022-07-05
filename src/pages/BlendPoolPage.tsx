@@ -30,7 +30,7 @@ import useMediaQuery from '../data/hooks/UseMediaQuery';
 import { useAccount } from 'wagmi';
 import { FeeTier } from '../data/BlendPoolMarkers';
 import { theGraphUniswapV3Client } from '../App';
-import { getUniswapVolumeQuery } from '../util/Graph';
+import { getUniswapVolumeQuery } from '../util/GraphQL';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
