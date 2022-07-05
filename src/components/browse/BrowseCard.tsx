@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import {
   BlendPoolMarkers,
-  GetNumericFeeTier,
   PrintFeeTier,
 } from '../../data/BlendPoolMarkers';
 import {
@@ -29,13 +28,12 @@ import {
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
 import {
-  formatUSD,
   formatUSDCompact,
   roundPercentage,
 } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
-import gql from 'graphql-tag';
 import { theGraphUniswapV3Client } from '../../App';
+import { getUniswapVolumeQuery } from '../../util/GraphQL';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -171,30 +169,7 @@ export default function BrowseCard(props: BrowseCardProps) {
   useEffect(() => {
     let mounted = true;
     const fetchData = async () => {
-      const uniswapVolumeQuery = gql`
-      {
-        prev:pools(
-          block: {number: ${blockNumber}},
-          where: {
-            token0: "${token0.address}",
-            token1: "${token1.address}",
-            feeTier: "${GetNumericFeeTier(blendPoolMarkers.feeTier)}"
-          }
-        ) {
-          volumeUSD
-        },
-        curr:pools(
-          where: {
-            token0: "${token0.address}",
-            token1: "${token1.address}",
-            feeTier: "${GetNumericFeeTier(blendPoolMarkers.feeTier)}"
-          }
-        ) {
-          volumeUSD
-        }
-      }
-      `
-
+      const uniswapVolumeQuery = getUniswapVolumeQuery(blockNumber, token0.address, token1.address, blendPoolMarkers.feeTier);
       const uniswapVolumeData = await theGraphUniswapV3Client.query({ query: uniswapVolumeQuery});
 
       if (mounted) {
@@ -205,7 +180,7 @@ export default function BrowseCard(props: BrowseCardProps) {
         );
       }
     };
-    if (blockNumber) {
+    if (blockNumber && token0.address && token1.address && blendPoolMarkers.feeTier) {
       fetchData();
     }
     return () => {
