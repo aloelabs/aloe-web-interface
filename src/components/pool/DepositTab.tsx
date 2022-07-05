@@ -83,6 +83,8 @@ export const SectionLabel = styled.div`
   color: rgba(130, 160, 182, 1);
 `;
 
+const TOOLTIP_CONTENT_DEPOSIT = 'Deposit amounts are based on current prices. If prices shift while your transaction is pending, some funds may be returned to you instead of being deposited to Blend. Slippage is the threshold between returning funds and canceling the transaction altogether (to save gas).';
+
 export default function DepositTab(props: DepositTabProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -265,9 +267,7 @@ export default function DepositTab(props: DepositTabProps) {
           value={token0Amount}
           tokenLabel={drawData.token0Label}
           max={maxToken0String}
-          maxed={
-            token0Amount === maxToken0String || token1Amount === maxToken1String
-          }
+          maxed={token0Amount === maxToken0String}
           onChange={(newValue) => {
             if (newValue === '') {
               setToken1Amount('');
@@ -307,9 +307,7 @@ export default function DepositTab(props: DepositTabProps) {
           value={token1Amount}
           tokenLabel={drawData.token1Label}
           max={maxToken1String}
-          maxed={
-            token0Amount === maxToken0String || token1Amount === maxToken1String
-          }
+          maxed={token1Amount === maxToken1String}
           onChange={(newValue) => {
             if (newValue === '') {
               setToken0Amount('');
@@ -346,7 +344,7 @@ export default function DepositTab(props: DepositTabProps) {
           errorMessage='Error message'
         />
       </div>
-      <MaxSlippageInput updateMaxSlippage={(updatedMaxSlippage) => setMaxSlippage(updatedMaxSlippage)} />
+      <MaxSlippageInput tooltipContent={TOOLTIP_CONTENT_DEPOSIT} updateMaxSlippage={(updatedMaxSlippage) => setMaxSlippage(updatedMaxSlippage)} />
       <div className='w-full mt-8'>
         <FilledStylizedButton
           className='w-full py-2'
