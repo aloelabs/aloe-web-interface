@@ -54,6 +54,8 @@ const LegendItemBox = styled.div`
 const LegendItemBoxDashed = styled.div`
   width: 16px;
   height: 1px;
+  margin-top: 3.5px;
+  margin-bottom: 3.5px;
   background-color: clear;
   border-bottom: 3px dotted;
   border-color: ${(props) => props.color}

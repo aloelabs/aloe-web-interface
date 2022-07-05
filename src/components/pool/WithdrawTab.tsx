@@ -71,7 +71,7 @@ const EstimatedReturnValue = styled.div`
   line-height: 40px;
 `;
 
-const TOOLTIP_CONTENT_WITHDRAW = 'Withdrawal amounts are based on current prices. If prices shift while your transaction is pending, you may receive a different combination of tokens. If the token amounts differ by more than your selected slippage, the transaction will be cancelled instead';
+const TOOLTIP_CONTENT_WITHDRAW = 'Withdrawal amounts are based on current prices. If prices shift while your transaction is pending, you may receive a different combination of tokens. If the token amounts differ by more than your selected slippage, the transaction will be cancelled instead.';
 
 export default function WithdrawTab(props: WithdrawTabProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
