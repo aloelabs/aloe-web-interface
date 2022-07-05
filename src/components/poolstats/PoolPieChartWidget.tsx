@@ -339,7 +339,7 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
   return (
     <div className='w-full flex flex-col items-start justify-start mb-8'>
       {/* TODO: Update styling of widget header to spec, add info icon, and ensure spacing around the component is to spec */}
-      <WidgetHeading>Token Allocation <Tooltip buttonSize='S' buttonClassName='ml-1 mr-1' content={tooltipContent} position='top-center' filled={true} /></WidgetHeading>
+      <WidgetHeading>Token Allocation <Tooltip buttonSize='S' content={tooltipContent} position='top-center' filled={true} /></WidgetHeading>
       <TokenAllocationWrapper>
         <div className='w-[227px] h-[227px] relative'>
           <PieChartContainer>

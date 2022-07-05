@@ -87,7 +87,7 @@ export default function BlendPoolPage() {
   const [poolStats, setPoolStats] = React.useState<PoolStats>();
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
-  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
+  const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const { poolDataMap, fetchPoolData } = useContext(BlendTableContext);
 
@@ -134,14 +134,14 @@ export default function BlendPoolPage() {
             <OpenIcon width={24} height={24} />
           </a>
         </HeaderBarContainer>
-        {isMediumScreen && (
+        {isGTMediumScreen && (
           <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
             <PoolInteractionTabs poolData={poolData} />
           </GridExpandingDiv>
         )}
         <div className='w-full py-4'>
           <BlendAllocationGraph poolData={poolData} />
-          {!isMediumScreen && (
+          {!isGTMediumScreen && (
             <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
               <PoolInteractionTabs poolData={poolData} />
             </GridExpandingDiv>

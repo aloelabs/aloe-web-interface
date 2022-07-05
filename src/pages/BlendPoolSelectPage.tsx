@@ -127,7 +127,7 @@ export default function BlendPoolSelectPage() {
   const [selectedSortByOption, setSelectedSortByOption] =
     useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
-  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
+  const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const twentyFourHoursAgo = Date.now() / 1000 - (24 * 60 * 60);
   const BLOCK_QUERY = gql`
@@ -351,7 +351,7 @@ export default function BlendPoolSelectPage() {
               />
             </DropdownContainer>
           </InnerSearchBar>
-          {isMediumScreen && (
+          {isGTMediumScreen && (
             <a
               href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
               target='_blank'
