@@ -10,7 +10,7 @@ const MESSAGE_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
 
 const PREDEFINED_MAX_SLIPPAGE_OPTIONS = [
   {label: 'Low (5%)', value: '5.0'},
-  {label: 'Mid (10%)', value: '10.0'},
+  {label: 'Med (10%)', value: '10.0'},
 ]
 
 const SlippageTabsWrapper = styled.div`
