@@ -21,11 +21,11 @@ const MenuItems: MenuItem[] = [
     name: 'blend',
     url: '/blend',
   },
-  {
-    title: 'Portfolio',
-    name: 'portfolio',
-    url: '/portfolio',
-  },
+  // {
+  //   title: 'Portfolio',
+  //   name: 'portfolio',
+  //   url: '/portfolio',
+  // },
   // {
   //   title: 'Vote',
   //   name: 'governance',
