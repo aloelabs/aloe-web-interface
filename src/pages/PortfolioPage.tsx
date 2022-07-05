@@ -12,6 +12,8 @@ import { GetSiloData } from '../data/SiloData';
 import { Text } from '../components/common/Typography';
 import PortfolioGraph from '../components/graph/PortfolioGraph';
 import Tooltip from '../components/common/Tooltip';
+import useMediaQuery from '../data/hooks/UseMediaQuery';
+import { RESPONSIVE_BREAKPOINTS } from '../data/constants/Breakpoints';
 
 const PORTFOLIO_TITLE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -27,6 +29,7 @@ const PortfolioCards = styled.div`
 `;
 
 export default function PortfolioPage() {
+  const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
   return (
     <AppPage>
       <Container>
@@ -103,7 +106,7 @@ export default function PortfolioPage() {
             <Tooltip
               content='Est nisl feugiat turpis amet, in sit bibendum tincidunt et. Vitae aliquam quam tempor, facilisi.'
               buttonText='What is this?'
-              buttonSize='L'
+              buttonSize={isGTMediumScreen ? 'L' : 'M'}
               position='top-right'
               filled={true}
             />

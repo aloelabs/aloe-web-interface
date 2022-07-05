@@ -129,7 +129,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const [selectedSortByOption, setSelectedSortByOption] =
     useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
-  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
+  const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
@@ -326,7 +326,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
               />
             </DropdownContainer>
           </InnerSearchBar>
-          {isMediumScreen && (
+          {isGTMediumScreen && (
             <a
               href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
               target='_blank'
