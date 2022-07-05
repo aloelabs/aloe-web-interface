@@ -126,9 +126,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {offChainPoolStats
-              ? formatUSDCompact(offChainPoolStats.total_value_locked)
-              : '--'}
+            {offChainPoolStats ? formatUSDCompact(offChainPoolStats.total_value_locked) : '--'}
           </Display>
         </PoolStat>
         <PoolStat>
