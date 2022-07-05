@@ -32,8 +32,6 @@ import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
 import tw from 'twin.macro';
 import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
-import gql from 'graphql-tag';
-import { theGraphEthereumBlocksClient } from '../App';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -90,7 +88,12 @@ const DropdownContainer = styled.div`
   ${tw`flex flex-row gap-x-4`}
 `;
 
-export default function BlendPoolSelectPage() {
+export type BlendPoolSelectPageProps = {
+  blockNumber: string | null;
+};
+
+export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
+  const { blockNumber } = props;
   const [poolsLoading, setPoolsLoading] = useState(true);
   const [activeLoading, setActiveLoading] = useState(true);
   const [toDisplayLoading, settoDisplayLoading] = useState(true);
@@ -106,7 +109,6 @@ export default function BlendPoolSelectPage() {
   >([]);
   const [page, setPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<10 | 20 | 50 | 100>(10);
-  const [blockNumber, setBlockNumber] = useState<string | null>(null);
   const sortByOptions = [
     {
       label: 'Default',
@@ -128,17 +130,6 @@ export default function BlendPoolSelectPage() {
     useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
   const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
-
-  const twentyFourHoursAgo = Date.now() / 1000 - (24 * 60 * 60);
-  const BLOCK_QUERY = gql`
-  {
-    blocks(first: 1, orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: "${twentyFourHoursAgo.toFixed(0)}"}) {
-      id
-      number
-      timestamp
-    }
-  }
-  `;
 
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
@@ -266,22 +257,6 @@ export default function BlendPoolSelectPage() {
       }
     }
   }, [filteredPools, activePools, poolsLoading, activeLoading]);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const queryBlocks = async () => {
-      const response = await theGraphEthereumBlocksClient.query({ query: BLOCK_QUERY });
-      if (mounted) {
-        setBlockNumber(response.data.blocks[0].number);
-      }
-    };
-    queryBlocks();
-
-    return () => {
-      mounted = false;
-    };
-  });
 
   /* Calculating the number of applied filters */
   let numberOfFiltersApplied = 0;
