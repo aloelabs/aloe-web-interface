@@ -33,7 +33,8 @@ export default function ConnectWallet() {
       <div className='flex flex-col gap-y-2 mb-8'>
         <Display size='M' weight='semibold'>Connect your wallet to start investing with Aloe</Display>
         <Text size='S' weight='medium' color='rgba(204, 223, 237, 1)'>
-          By investing with Aloe, you will be able to earn trading fees on Uniswap and collect interest from other protocols simultaneously.
+          By investing with Aloe, you will be able to lorem ipsum something
+          something
         </Text>
       </div>
       <ConnectWalletButton buttonStyle='secondary' />
