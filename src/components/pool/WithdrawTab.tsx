@@ -222,7 +222,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
                 Your estimated return
               </Text>
               <EstimatedReturnValue>
-                {prettyFormatBalance()}
+                TODO
               </EstimatedReturnValue>
             </div>
             <TokenBreakdown
@@ -296,19 +296,19 @@ export default function WithdrawTab(props: WithdrawTabProps) {
         onCancel={() => {
           setIsTransactionPending(false);
         }}
-        estimatedReturn='$204.94'
+        estimatedReturn='TODO'
         token0Ticker={drawData.token0Label}
         token1Ticker={drawData.token1Label}
         token0Estimate={token0Estimate}
         token1Estimate={token1Estimate}
         numberOfShares={sharesAmount}
         maxSlippage={maxSlippage}
-        networkFee='0.01'
+        networkFee='TODO'
       />
       <SharesWithdrawnModal
         open={showSuccessModal}
         setOpen={setShowSuccessModal}
-        estimatedValue='$204.94'
+        estimatedValue='TODO'
         token0Ticker={drawData.token0Label}
         token1Ticker={drawData.token1Label}
         token0Estimate={token0Estimate}
