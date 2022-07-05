@@ -98,7 +98,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {formatUSDCompact(uniswapVolume)}
+            {uniswapVolume !== null ? formatUSDCompact(uniswapVolume) : '--'}
           </Display>
         </PoolStat>
         <PoolStat>
