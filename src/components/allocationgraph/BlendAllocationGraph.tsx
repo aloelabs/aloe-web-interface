@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import BlendGraph from '../graph/BlendGraph';
 import {
   subDays,
-  subMinutes,
   subMonths,
   subWeeks,
   subYears,
@@ -18,7 +17,6 @@ import {
 } from '../../util/ReturnsCalculations';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { GetTokenData } from '../../data/TokenData';
-import { ethers } from 'ethers';
 import { Text } from '../common/Typography';
 import { fixTimestamp } from '../../util/Dates';
 import { API_URL } from '../../data/constants/Values';

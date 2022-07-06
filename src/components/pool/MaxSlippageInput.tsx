@@ -30,6 +30,7 @@ const SlippageButton = styled.button`
   overflow: hidden;
 
   & span {
+    font-family: 'Satoshi-Variable';
     font-size: 14px;
     font-weight: 700;
     line-height: 19px;
@@ -57,6 +58,7 @@ const CustomSlippageInput = styled.input`
   left: 0;
   background-color: rgba(13, 23, 30, 1);
   flex: 1;
+  font-family: 'Satoshi-Variable';
   font-size: 14px;
   font-weight: 700;
   line-height: 19px;
@@ -83,6 +85,7 @@ const CustomSlippagePercent = styled.span`
   position: absolute;
   right: 12px;
   top: calc(50% - 9.5px);
+  font-family: 'Satoshi-Variable';
   font-size: 14px;
   font-weight: 700;
   line-height: 19px;
