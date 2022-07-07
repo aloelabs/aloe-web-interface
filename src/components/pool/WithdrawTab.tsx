@@ -309,24 +309,24 @@ export default function WithdrawTab(props: WithdrawTabProps) {
         onCancel={() => {
           setIsTransactionPending(false);
         }}
-        estimatedReturn='TODO'
+        estimatedReturn={usdEstimate}
         token0Ticker={drawData.token0Label}
         token1Ticker={drawData.token1Label}
         token0Estimate={token0Estimate}
         token1Estimate={token1Estimate}
-        numberOfShares={sharesAmount}
+        numberOfShares={sharesBig.div(String1E(18)).toExponential(2)}
         maxSlippage={maxSlippage}
         networkFee='TODO'
       />
       <SharesWithdrawnModal
         open={showSuccessModal}
         setOpen={setShowSuccessModal}
-        estimatedValue='TODO'
+        estimatedValue={usdEstimate}
         token0Ticker={drawData.token0Label}
         token1Ticker={drawData.token1Label}
         token0Estimate={token0Estimate}
         token1Estimate={token1Estimate}
-        numberOfShares={sharesAmount}
+        numberOfShares={sharesBig.toExponential(2)}
       />
       <TransactionFailedModal
         open={showFailedModal}
