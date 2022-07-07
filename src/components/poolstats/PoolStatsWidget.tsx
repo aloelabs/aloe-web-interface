@@ -12,7 +12,7 @@ const ROUNDING_PRECISION = 2;
 const POOL_STAT_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 const POOL_STAT_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
 const IN_RANGE_COLOR = '#00C143';
-const OUT_OF_RANGE_COLOR = '#EB5757';
+const OUT_OF_RANGE_COLOR = POOL_STAT_VALUE_TEXT_COLOR; //'#EB5757';
 
 const Wrapper = styled.div`
   ${tw`flex flex-col`}

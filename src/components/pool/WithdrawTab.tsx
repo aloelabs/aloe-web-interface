@@ -15,7 +15,7 @@ import {
 } from '../../data/constants/Values';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { GetTokenData } from '../../data/TokenData';
-import { prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
+import { formatUSDCompact, prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
 import { FilledStylizedButton } from '../common/Buttons';
 import Pending from '../common/Pending';
 import TokenAmountInput from '../common/TokenAmountInput';
@@ -27,11 +27,13 @@ import SubmittingOrderModal from './modal/SubmittingOrderModal';
 import TransactionFailedModal from './modal/TransactionFailedModal';
 import TokenBreakdown from '../common/TokenBreakdown';
 import { Text } from '../common/Typography';
+import { OffChainPoolStats } from '../../data/PoolStats';
 
 const LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 export type WithdrawTabProps = {
   poolData: BlendPoolMarkers;
+  offChainPoolStats: OffChainPoolStats | undefined;
 };
 
 enum ButtonState {
@@ -79,12 +81,14 @@ export default function WithdrawTab(props: WithdrawTabProps) {
   const [showFailedModal, setShowFailedModal] = useState(false);
   const [showSubmittingModal, setShowSubmittingModal] = useState(false);
   const drawData = ResolveBlendPoolDrawData(props.poolData);
+  const { offChainPoolStats } = props;
   const [sharesAmount, setSharesAmount] = useState('');
 
   const [maxSlippage, setMaxSlippage] = useState(DEFAULT_RATIO_CHANGE);
 
   const [token0Estimate, setToken0Estimate] = useState('-');
   const [token1Estimate, setToken1Estimate] = useState('-');
+  const [usdEstimate, setUsdEstimate] = useState('-')
 
   const { poolStats } = useContext(BlendPoolContext);
   const [{ data: accountData }] = useAccount();
@@ -120,6 +124,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
     if (sharesBig.eq(0) || !poolStats || poolStats.outstandingShares.eq(0)) {
       setToken0Estimate('-');
       setToken1Estimate('-');
+      setUsdEstimate('-');
       return;
     }
     const estimated0 = poolStats.inventory0.total
@@ -150,9 +155,17 @@ export default function WithdrawTab(props: WithdrawTabProps) {
         .toExponential(2);
     }
 
+    // Generate USD estimate
+    if (offChainPoolStats) {
+      setUsdEstimate(formatUSDCompact(
+        sharesBig.mul(offChainPoolStats.total_value_locked)
+          .div(poolStats.outstandingShares).toNumber())
+      );
+    }
+
     setToken0Estimate(estimated0Label);
     setToken1Estimate(estimated1Label);
-  }, [poolStats, sharesBig]);
+  }, [poolStats, sharesBig, offChainPoolStats]);
 
   // Determine button state
   useEffect(() => {
@@ -222,7 +235,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
                 Your estimated return
               </Text>
               <EstimatedReturnValue>
-                TODO
+                {usdEstimate}
               </EstimatedReturnValue>
             </div>
             <TokenBreakdown

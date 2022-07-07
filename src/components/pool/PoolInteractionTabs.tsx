@@ -7,6 +7,7 @@ import tw from 'twin.macro';
 import styled from 'styled-components';
 import ConnectWallet from './ConnectWallet';
 import { useAccount } from 'wagmi';
+import { OffChainPoolStats } from '../../data/PoolStats';
 
 export const MODAL_BLACK_TEXT_COLOR = 'rgba(7, 14, 18, 1)';
 
@@ -99,9 +100,11 @@ const PanelsWrapper = styled.div`
 export type PoolInteractionTabsProps = {
   poolData: BlendPoolMarkers;
   walletIsConnected: boolean;
+  offChainPoolStats: OffChainPoolStats | undefined;
 };
 
 export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
+  const { offChainPoolStats } = props;
   return (
     <Wrapper>
       {!props.walletIsConnected && <ConnectWallet />}
@@ -124,7 +127,7 @@ export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
                 <DepositTab poolData={props.poolData} />
               </Tab.Panel>
               <Tab.Panel>
-                <WithdrawTab poolData={props.poolData} />
+                <WithdrawTab poolData={props.poolData} offChainPoolStats={offChainPoolStats} />
               </Tab.Panel>
             </PanelsWrapper>
           </Tab.Panels>
