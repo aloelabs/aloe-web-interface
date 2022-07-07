@@ -83,7 +83,7 @@ export default function Header() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
+  const isGTSmallScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
   return (
     <Nav>
       <div className='flex'>
@@ -93,7 +93,7 @@ export default function Header() {
             {/* <span className='text-xl font-semibold'>Aloe</span> */}
           </a>
         </div>
-        {isMediumScreen && (
+        {isGTSmallScreen && (
           <>
             <VerticalDivider />
             <div className='flex flex-row align-middle items-center h-full text-md'>
@@ -117,7 +117,7 @@ export default function Header() {
           </>
         )}
       </div>
-      {!isMediumScreen && (
+      {!isGTSmallScreen && (
         <button
           type='button'
           title='navigation'
@@ -127,7 +127,7 @@ export default function Header() {
           <MenuIcon width={24} height={24} />
         </button>
       )}
-      {!isMediumScreen && isMenuOpen && (
+      {!isGTSmallScreen && isMenuOpen && (
         <NavDropdown>
           {menuItems.map((menuitem, index) => (
             <React.Fragment key={index}>
@@ -151,7 +151,7 @@ export default function Header() {
           </div>
         </NavDropdown>
       )}
-      {isMediumScreen && (
+      {isGTSmallScreen && (
         <div className='mr-8'>
           <ConnectWalletButton />
         </div>
