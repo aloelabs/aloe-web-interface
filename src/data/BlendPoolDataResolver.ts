@@ -99,6 +99,9 @@ export interface BlendPoolStats {
   outstandingShares: Big;
   token0Decimals: number;
   token1Decimals: number;
+  recenterTimestamp: number;
+  isInRange: boolean;
+  IV: number;
 }
 
 export function logBig(value: Big) {
@@ -132,6 +135,7 @@ export async function ResolveBlendStats(
     blend.maintenanceBudget1(),
     blend.UNI_POOL(),
     blend.totalSupply(),
+    blend.packedSlot(),
   ]);
 
   // ------------------------------------------ in-kind inventory measurement ------------------------------------------
@@ -188,6 +192,11 @@ export async function ResolveBlendStats(
       .toNumber();
   }
 
+  // ------------------------------------------------- ticks -------------------------------------------------
+  const lower = results[11].primaryLower;
+  const upper = results[11].primaryUpper;
+  const IV = (1.0 - Math.pow(1.0001, - (upper - lower) / 2.0)) / 2.0
+
   return {
     inventory0: {
       float: inventory0_Float,
@@ -220,5 +229,8 @@ export async function ResolveBlendStats(
     outstandingShares: toBig(results[10]),
     token0Decimals: results[3],
     token1Decimals: results[4],
+    recenterTimestamp: results[11]['recenterTimestamp'],
+    isInRange: lower < slot0.tick && slot0.tick < upper,
+    IV: IV * Math.sqrt(365),
   };
 }

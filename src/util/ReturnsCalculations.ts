@@ -48,7 +48,7 @@ export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenR
         const index = i + initialIndex;
         const p0 = token0Returns[index].price;
         const p1 = token1Returns[index].price;
-        
+
         const pricePerShare = ((snapshot.inventory0 * p0) + (snapshot.inventory1 * p1)) / snapshot.total_supply;
         const pricePerShare5050 = ((matching5050Portfolio.amount0 * p0) + (matching5050Portfolio.amount1 * p1)) / initialSupply;
         return {
@@ -61,15 +61,3 @@ export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenR
         };
     });
 }
-
-// export function testCalculatePortfolioReturns() {
-//     let poolReturnsExample: PoolReturns = POOL_RETURNS_EXAMPLE.map((snapshot) => {
-//         return {
-//             ...snapshot,
-//             // inventory0: new Big(snapshot.inventory0),
-//             // inventory1: new Big(snapshot.inventory1),
-//             // total_supply: new Big(snapshot.total_supply),
-//         };
-//     })
-//     console.log(calculateReturns(poolReturnsExample, TOKEN0_RETURNS_EXAMPLE, TOKEN1_RETURNS_EXAMPLE));
-// }

@@ -88,7 +88,12 @@ const DropdownContainer = styled.div`
   ${tw`flex flex-row gap-x-4`}
 `;
 
-export default function BlendPoolSelectPage() {
+export type BlendPoolSelectPageProps = {
+  blockNumber: string | null;
+};
+
+export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
+  const { blockNumber } = props;
   const [poolsLoading, setPoolsLoading] = useState(true);
   const [activeLoading, setActiveLoading] = useState(true);
   const [toDisplayLoading, settoDisplayLoading] = useState(true);
@@ -124,7 +129,7 @@ export default function BlendPoolSelectPage() {
   const [selectedSortByOption, setSelectedSortByOption] =
     useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
-  const isMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
+  const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
@@ -292,36 +297,36 @@ export default function BlendPoolSelectPage() {
         </div>
         <div className='py-4 flex items-center justify-between'>
           <InnerSearchBar>
-              <SearchInputWrapper>
-                <RoundedInputWithIcon
-                  value={searchText}
-                  size='L'
-                  onChange={(e) => setSearchText(e.target.value)}
-                  Icon={<SearchIcon />}
-                  svgColorType='fill'
-                  placeholder='Search by name, symbol or address'
-                  fullWidth={true}
-                  onIconClick={() => setActiveSearchText(searchText)}
-                  onEnter={() => setActiveSearchText(searchText)}
-                />
-              </SearchInputWrapper>
-              <DropdownContainer>
-                <MultiDropdown
-                  options={tokenOptions}
-                  activeOptions={activeTokenOptions}
-                  handleChange={setActiveTokenOptions}
-                  placeholder='All Tokens'
-                  selectedText='Tokens'
-                />
-                <DropdownWithPlaceholder
-                  options={sortByOptions}
-                  selectedOption={selectedSortByOption}
-                  onSelect={setSelectedSortByOption}
-                  placeholder='Sort By'
-                />
-              </DropdownContainer>
+            <SearchInputWrapper>
+              <RoundedInputWithIcon
+                value={searchText}
+                size='L'
+                onChange={(e) => setSearchText(e.target.value)}
+                Icon={<SearchIcon />}
+                svgColorType='fill'
+                placeholder='Search by name, symbol or address'
+                fullWidth={true}
+                onIconClick={() => setActiveSearchText(searchText)}
+                onEnter={() => setActiveSearchText(searchText)}
+              />
+            </SearchInputWrapper>
+            <DropdownContainer>
+              <MultiDropdown
+                options={tokenOptions}
+                activeOptions={activeTokenOptions}
+                handleChange={setActiveTokenOptions}
+                placeholder='All Tokens'
+                selectedText='Tokens'
+              />
+              <DropdownWithPlaceholder
+                options={sortByOptions}
+                selectedOption={selectedSortByOption}
+                onSelect={setSelectedSortByOption}
+                placeholder='Sort By'
+              />
+            </DropdownContainer>
           </InnerSearchBar>
-          {isMediumScreen && (
+          {isGTMediumScreen && (
             <a
               href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
               target='_blank'
@@ -353,7 +358,13 @@ export default function BlendPoolSelectPage() {
                 (page - 1) * itemsPerPage + itemsPerPage
               )
               .map((pool, index) => {
-                return <BrowseCard blendPoolMarkers={pool} key={index} />;
+                return (
+                  <BrowseCard
+                    blendPoolMarkers={pool}
+                    blockNumber={blockNumber}
+                    key={index}
+                  />
+                );
               })}
         </BrowseCards>
         <Pagination

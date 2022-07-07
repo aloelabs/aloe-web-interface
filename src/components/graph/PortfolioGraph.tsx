@@ -154,8 +154,8 @@ function makeRequest(reqUrl: string) {
 export default function PortfolioGraph() {
   const [activeButton, setActiveButton] = useState(0);
   const now = new Date(Date.now());
-  const [fromDate, setFromDate] = useState(subWeeks(now, 2));
-  const [toDate, setToDate] = useState(subWeeks(now, 1));
+  const [fromDate, setFromDate] = useState(subDays(now, 1));
+  const [toDate, setToDate] = useState(now);
   const [isTooltipActive, setIsTooltipActive] = useState(false);
   const [data, setData] = useState([
     { 'Portfolio Value': 0, 'Net Deposits': 0, x: fromDate.toISOString() },
@@ -168,7 +168,6 @@ export default function PortfolioGraph() {
     setGraphLoading(true);
     setActiveButton(key);
     let now = new Date(Date.now());
-    now = subWeeks(now, 1);
     switch (key) {
       case 0:
         setFromDate(subDays(now, 1));
@@ -213,17 +212,17 @@ export default function PortfolioGraph() {
       const getPool = makeRequest(
         `${API_URL}/pool_returns/0xE801c4175A0341e65dFef8F3B79e1889047AfEbb/1/${buttonIdxToText(
           activeButton
-        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
+        ).toLowerCase()}/${(toDate.getTime() / 1000).toFixed(0)}`
       );
       const getWbtc = makeRequest(
         `${API_URL}/token_returns/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/1/${buttonIdxToText(
           activeButton
-        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
+        ).toLowerCase()}/${(toDate.getTime() / 1000).toFixed(0)}`
       );
       const getWeth = makeRequest(
         `${API_URL}/token_returns/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/1/${buttonIdxToText(
           activeButton
-        ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
+        ).toLowerCase()}/${(toDate.getTime() / 1000).toFixed(0)}`
       );
       axios
         .all([getShareBalances, getPool, getWbtc, getWeth])

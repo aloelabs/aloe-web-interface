@@ -98,18 +98,14 @@ const PanelsWrapper = styled.div`
 
 export type PoolInteractionTabsProps = {
   poolData: BlendPoolMarkers;
+  walletIsConnected: boolean;
 };
 
 export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
-  const [{ data: accountData }] = useAccount({
-    fetchEns: true,
-  });
-  const walletNotConnected = !accountData || !accountData.address;
-
   return (
     <Wrapper>
-      {walletNotConnected && <ConnectWallet />}
-      {!walletNotConnected && (
+      {!props.walletIsConnected && <ConnectWallet />}
+      {props.walletIsConnected && (
         <Tab.Group>
           <Tab.List className='flex rounded-md'>
             {['Deposit', 'Withdraw'].map((tabName) => (
