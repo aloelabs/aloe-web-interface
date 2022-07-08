@@ -28,7 +28,7 @@ import {
 import InvestedTypes from '../common/InvestedTypes';
 import TokenPairIcons from '../common/TokenPairIcons';
 import {
-  formatUSDCompact,
+  formatUSDAuto,
   roundPercentage,
 } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
@@ -276,7 +276,7 @@ export default function BrowseCard(props: BrowseCardProps) {
               24H Uniswap Volume
             </Text>
             <Text size='XL' weight='medium'>
-              {formatUSDCompact(uniswapVolume)}
+              {formatUSDAuto(uniswapVolume)}
             </Text>
           </InfoCategoryContainer>
           <InfoCategoryContainer>
@@ -292,7 +292,7 @@ export default function BrowseCard(props: BrowseCardProps) {
               TVL
             </Text>
             <Text size='XL' weight='medium'>
-              {formatUSDCompact(poolStats?.total_value_locked || 0)}
+              {formatUSDAuto(poolStats?.total_value_locked || 0)}
             </Text>
           </InfoCategoryContainer>
         </ResponsiveBodySubContainer>

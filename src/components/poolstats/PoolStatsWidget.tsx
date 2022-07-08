@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 import { formatDistance } from 'date-fns';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { OffChainPoolStats } from '../../data/PoolStats';
-import { formatUSDCompact, roundPercentage } from '../../util/Numbers';
+import { formatUSDAuto, roundPercentage } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
 import WidgetHeading from '../common/WidgetHeading';
 
@@ -88,7 +88,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {uniswapVolume !== null ? formatUSDCompact(uniswapVolume) : '--'}
+            {formatUSDAuto(uniswapVolume, '--')}
           </Display>
         </PoolStat>
         <PoolStat>
@@ -116,7 +116,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {offChainPoolStats ? formatUSDCompact(offChainPoolStats.total_value_locked) : '--'}
+            {formatUSDAuto(offChainPoolStats?.total_value_locked || null, '--')}
           </Display>
         </PoolStat>
         <PoolStat>
