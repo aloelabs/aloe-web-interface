@@ -176,8 +176,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
   const [{ data: accountData }] = useAccount({ fetchEns: true });
   const walletIsConnected = accountData?.address !== undefined;
 
-  let a = true;
-  if (!poolData || a) {
+  if (!poolData) {
     if (params.pooladdress) {
       fetchPoolData(params.pooladdress);
     }
