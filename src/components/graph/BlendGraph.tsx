@@ -58,7 +58,7 @@ const LegendItemBoxDashed = styled.div`
   margin-bottom: 3.5px;
   background-color: clear;
   border-bottom: 3px dotted;
-  border-color: ${(props) => props.color}
+  border-color: ${(props) => props.color};
 `;
 
 type BlendGraphLegendProps = {
