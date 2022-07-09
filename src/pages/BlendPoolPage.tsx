@@ -31,12 +31,21 @@ import { useAccount } from 'wagmi';
 import { FeeTier } from '../data/BlendPoolMarkers';
 import { theGraphUniswapV3Client } from '../App';
 import { getUniswapVolumeQuery } from '../util/GraphQL';
+import { IOSStyleSpinner } from '../components/common/Spinner';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 type PoolParams = {
   pooladdress: string;
 };
+
+const LoaderWrapper = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+`;
 
 const PoolBodyWrapper = styled.div`
   display: grid;
@@ -101,6 +110,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
   const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
+  const isGTSmallScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
 
   const { poolDataMap, fetchPoolData } = useContext(BlendTableContext);
 
@@ -166,11 +176,16 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
   const [{ data: accountData }] = useAccount({ fetchEns: true });
   const walletIsConnected = accountData?.address !== undefined;
 
-  if (!poolData) {
+  let a = true;
+  if (!poolData || a) {
     if (params.pooladdress) {
       fetchPoolData(params.pooladdress);
     }
-    return <div>Finding pool...</div>;
+    return (
+      <LoaderWrapper>
+        <IOSStyleSpinner size={isGTMediumScreen ? 'L' : isGTSmallScreen ? 'M' : 'S'} />
+      </LoaderWrapper>
+    );
   }
 
   return (
