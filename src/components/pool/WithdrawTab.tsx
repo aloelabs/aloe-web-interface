@@ -1,7 +1,6 @@
 import Big from 'big.js';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import tw from 'twin.macro';
 import { useAccount, useBalance, useSigner } from 'wagmi';
 import { withdraw } from '../../connector/BlendWithdrawActions';
 import {
@@ -19,7 +18,7 @@ import { formatUSDCompact, prettyFormatBalance, String1E, toBig } from '../../ut
 import { FilledStylizedButton } from '../common/Buttons';
 import Pending from '../common/Pending';
 import TokenAmountInput from '../common/TokenAmountInput';
-import { SectionLabel, TabWrapper } from './DepositTab';
+import { TabWrapper } from './DepositTab';
 import MaxSlippageInput from './MaxSlippageInput';
 import ConfirmWithdrawalModal from './modal/ConfirmWithdrawalModal';
 import SharesWithdrawnModal from './modal/SharesWithdrawnModal';

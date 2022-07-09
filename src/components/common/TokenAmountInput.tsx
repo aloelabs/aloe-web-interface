@@ -60,7 +60,6 @@ export default function TokenAmountInput(props: TokenAmountInputProps) {
           Balance: {props?.max || '-'}
         </Text>
       </div>
-      {/* <InputWrapper> */}
       <SquareInputWithMax
         size='L'
         inputClassName={props.value !== '' ? 'active' : ''}
