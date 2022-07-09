@@ -229,7 +229,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
               className='flex flex-col gap-y-6'
             >
               <p>
-                Placing assets into a Blend Pool will allow the Aloe protocol
+                Placing assets into a Blend Pool will allow the Aloe Protocol
                 to use Uniswap V3 and yield-earning silos on your behalf.
               </p>
               <p>
@@ -237,10 +237,9 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
                 users'. Once conditions are right, the pool can be rebalanced.
                 During a rebalance, the pool's algorithm redistributes funds
                 between Uniswap and silos to earn the best mix of swap fees and
-                yield. It is also designed to keep itself balanced, with a
-                target of 50%{' '}
+                yield. It also tries to keep itself balanced — 50%{' '}
                 {GetTokenData(poolData.token0Address.toLowerCase()).ticker} and
-                50% {GetTokenData(poolData.token1Address.toLowerCase()).ticker}{' '}
+                50% {GetTokenData(poolData.token1Address.toLowerCase()).ticker},
                 just like Uniswap V2. In the right market conditions, this can
                 massively{' '}
                 <a
@@ -249,7 +248,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
                   className='underline'
                   rel='noreferrer noopener'
                 >
-                  outperform simple HODLing
+                  outperform plain HODLing
                 </a>
                 .
               </p>

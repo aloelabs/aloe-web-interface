@@ -14,7 +14,7 @@ export const MODAL_BLACK_TEXT_COLOR = 'rgba(7, 14, 18, 1)';
 const Wrapper = styled.div`
   ${tw`rounded-md`}
   width: 100%;
-  max-width: 500px;
+  // max-width: 500px;
   background-color: rgba(13, 23, 30, 1);
 `;
 
