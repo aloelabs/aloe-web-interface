@@ -54,7 +54,7 @@ export default function ConfirmDepositModal(props: ConfirmDepositModalProps) {
           <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{token0Ticker} - {token1Ticker}</Text>
         </div>
         <div className='flex justify-between items-center'>
-          <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Total Shares</Text>
+          <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Estimated Shares</Text>
           <DashedDivider />
           <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{numberOfShares} Shares</Text>
         </div>

@@ -4,7 +4,7 @@ import tw from 'twin.macro';
 import { formatDistance } from 'date-fns';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { OffChainPoolStats } from '../../data/PoolStats';
-import { formatUSDCompact, roundPercentage } from '../../util/Numbers';
+import { formatUSDAuto, roundPercentage } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
 import WidgetHeading from '../common/WidgetHeading';
 
@@ -12,7 +12,7 @@ const ROUNDING_PRECISION = 2;
 const POOL_STAT_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 const POOL_STAT_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
 const IN_RANGE_COLOR = '#00C143';
-const OUT_OF_RANGE_COLOR = '#EB5757';
+const OUT_OF_RANGE_COLOR = POOL_STAT_VALUE_TEXT_COLOR; //'#EB5757';
 
 const Wrapper = styled.div`
   ${tw`flex flex-col`}
@@ -88,7 +88,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {uniswapVolume !== null ? formatUSDCompact(uniswapVolume) : '--'}
+            {formatUSDAuto(uniswapVolume, '--')}
           </Display>
         </PoolStat>
         <PoolStat>
@@ -116,7 +116,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
             weight='semibold'
             color={POOL_STAT_VALUE_TEXT_COLOR}
           >
-            {offChainPoolStats ? formatUSDCompact(offChainPoolStats.total_value_locked) : '--'}
+            {formatUSDAuto(offChainPoolStats?.total_value_locked || null, '--')}
           </Display>
         </PoolStat>
         <PoolStat>

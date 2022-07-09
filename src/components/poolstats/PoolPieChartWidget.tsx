@@ -247,28 +247,28 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
         percent: silo0_1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN0_COLOR_SILO,
         category: drawData.silo0Label,
-        metric: '2% APY',
+        // metric: '2% APY',
       };
       slices[2] = {
         index: 2,
         percent: uni0_1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN0_COLOR_UNISWAP,
         category: 'Uniswap',
-        metric: '1% APR',
+        // metric: '1% APR',
       };
       slices[3] = {
         index: 3,
         percent: uni1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN1_COLOR_UNISWAP,
         category: 'Uniswap',
-        metric: '1% APR',
+        // metric: '1% APR',
       };
       slices[4] = {
         index: 4,
         percent: silo1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN1_COLOR_SILO,
         category: drawData.silo1Label,
-        metric: '2% APY',
+        // metric: '2% APY',
       };
       slices[5] = {
         index: 5,
