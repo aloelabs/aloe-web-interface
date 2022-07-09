@@ -185,8 +185,11 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
               }
               if (mounted) {
                 if (buttonIdxToText(activeButton).toLowerCase() === '1m') {
+                  // since the endDate isn't necessarily the current date
+                  const endDate = new Date(updatedData[updatedData.length - 1]['x']);
+                  const oneMonthBeforeEnd = subMonths(endDate, 1);
                   updatedData = updatedData.filter(
-                    (d) => new Date(d['x']) >= fromDate
+                    (d) => new Date(d['x']) >= oneMonthBeforeEnd
                   );
                 }
                 setData(updatedData);
