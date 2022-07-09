@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BlendGraph from '../graph/BlendGraph';
-import {
-  subDays,
-  subMonths,
-  subWeeks,
-  subYears,
-} from 'date-fns/esm';
+import { subDays, subMonths, subWeeks, subYears } from 'date-fns/esm';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import GraphButtons, { buttonIdxToText } from '../graph/GraphButtons';
@@ -139,20 +134,24 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
   useEffect(() => {
     let mounted = true;
     async function fetchData() {
+      let range = buttonIdxToText(activeButton).toLowerCase();
+      if (range === '1m') {
+        range = '3m';
+      }
       const getPoolReturns = makeRequest(
-        `${API_URL}/pool_returns/${pool}/1/${buttonIdxToText(
-          activeButton
-        ).toLowerCase()}/${(toDate.getTime() / 1000).toFixed(0)}`
+        `${API_URL}/pool_returns/${pool}/1/${range}/${(
+          toDate.getTime() / 1000
+        ).toFixed(0)}`
       );
       const getToken0 = makeRequest(
-        `${API_URL}/token_returns/${token0}/1/${buttonIdxToText(
-          activeButton
-        ).toLowerCase()}/${(toDate.getTime() / 1000).toFixed(0)}`
+        `${API_URL}/token_returns/${token0}/1/${range}/${(
+          toDate.getTime() / 1000
+        ).toFixed(0)}`
       );
       const getToken1 = makeRequest(
-        `${API_URL}/token_returns/${token1}/1/${buttonIdxToText(
-          activeButton
-        ).toLowerCase()}/${(toDate.getTime() / 1000).toFixed(0)}`
+        `${API_URL}/token_returns/${token1}/1/${range}/${(
+          toDate.getTime() / 1000
+        ).toFixed(0)}`
       );
       axios
         .all([getPoolReturns, getToken0, getToken1])
@@ -165,23 +164,31 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
               const calculatedReturns = calculateReturns(
                 poolReturnsData,
                 token0Data,
-                token1Data,
+                token1Data
               );
               let updatedData = [];
               for (let i = 0; i < calculatedReturns.length; i++) {
                 let updatedObj = {} as any;
                 updatedObj['Blend Pool'] =
                   (calculatedReturns[i]['pool'] - 1.0) * 100;
-                updatedObj['Uniswap Baseline'] = (calculatedReturns[i]['sqrt'] - 1.0) * 100;
+                updatedObj['Uniswap Baseline'] =
+                  (calculatedReturns[i]['sqrt'] - 1.0) * 100;
                 // updatedObj['50/50 HODL'] = (calculatedReturns[i]['fifty_fifty'] - 1.0) * 100;
                 updatedObj[token0Key] =
                   (calculatedReturns[i]['token0'] - 1.0) * 100;
                 updatedObj[token1Key] =
                   (calculatedReturns[i]['token1'] - 1.0) * 100;
-                updatedObj['x'] = new Date(fixTimestamp(calculatedReturns[i]['timestamp'].toString())).toISOString();
+                updatedObj['x'] = new Date(
+                  fixTimestamp(calculatedReturns[i]['timestamp'].toString())
+                ).toISOString();
                 updatedData.push(updatedObj);
               }
               if (mounted) {
+                if (buttonIdxToText(activeButton).toLowerCase() === '1m') {
+                  updatedData = updatedData.filter(
+                    (d) => new Date(d['x']) >= fromDate
+                  );
+                }
                 setData(updatedData);
                 setGraphError(false);
                 setGraphLoading(false);
@@ -224,9 +231,7 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
         <GraphButtonsWrapper>
           <GraphButtons activeButton={activeButton} handleClick={handleClick} />
         </GraphButtonsWrapper>
-        {graphLoading && (
-          <BlendGraphPlaceholder />
-        )}
+        {graphLoading && <BlendGraphPlaceholder />}
         {!graphLoading && graphError && (
           <Text size='M' weight='medium'>
             There was an error loading the graph. Please try again later.
