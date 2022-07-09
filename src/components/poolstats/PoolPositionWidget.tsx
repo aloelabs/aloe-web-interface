@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { RESPONSIVE_BREAKPOINT_MD } from '../../data/constants/Breakpoints';
-import { formatUSD } from '../../util/Numbers';
 import { PercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
 import WidgetHeading from '../common/WidgetHeading';
