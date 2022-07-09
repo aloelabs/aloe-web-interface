@@ -110,7 +110,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
     let mounted = true;
     const fetchPoolStats = async () => {
       const response = await axios.get(
-        `${API_URL}/pool_stats/${poolData?.poolAddress}/1/`
+        `${API_URL}/pool_stats/${poolData?.poolAddress}/1`
       );
       const poolStatsData = response.data[0] as OffChainPoolStats;
       if (mounted && poolStatsData) {
