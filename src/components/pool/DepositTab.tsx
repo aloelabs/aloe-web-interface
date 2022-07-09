@@ -10,7 +10,6 @@ import {
 } from '../../connector/BlendDepositActions';
 import {
   BlendPoolDrawData,
-  logBig,
   ResolveBlendPoolDrawData
 } from '../../data/BlendPoolDataResolver';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
@@ -21,7 +20,7 @@ import {
 } from '../../data/constants/Values';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { useDeposit } from '../../data/hooks/UseDeposit';
-import { String1E } from '../../util/Numbers';
+import { formatUSDCompact, String1E } from '../../util/Numbers';
 import { FilledStylizedButton } from '../common/Buttons';
 import Pending from '../common/Pending';
 import TokenAmountInput from '../common/TokenAmountInput';
@@ -30,9 +29,11 @@ import ConfirmDepositModal from './modal/ConfirmDepositModal';
 import SubmittingOrderModal from './modal/SubmittingOrderModal';
 import TokensDepositedModal from './modal/TokensDepositedModal';
 import TransactionFailedModal from './modal/TransactionFailedModal';
+import { OffChainPoolStats } from '../../data/PoolStats';
 
 export type DepositTabProps = {
   poolData: BlendPoolMarkers;
+  offChainPoolStats: OffChainPoolStats | undefined;
 };
 
 enum ButtonState {
@@ -99,6 +100,10 @@ export default function DepositTab(props: DepositTabProps) {
   const [token0Amount, setToken0Amount] = useState('');
   const [token1Amount, setToken1Amount] = useState('');
 
+  const { offChainPoolStats } = props;
+  const [usdEstimate, setUsdEstimate] = useState('-');
+  const [sharesEstimate, setSharesEstimate] = useState('-');
+
   const [maxSlippage, setMaxSlippage] = useState(DEFAULT_RATIO_CHANGE);
 
   const [buttonState, setButtonState] = useState<ButtonState>(
@@ -136,6 +141,29 @@ export default function DepositTab(props: DepositTabProps) {
       token1Amount === '' || !depositData
         ? new Big(0)
         : new Big(token1Amount).mul(String1E(depositData.token1Decimals));
+
+    if (offChainPoolStats && poolStats && depositData) {
+
+      // Compute shares estimate
+      // Assumes amount0/1 have beeen balanced to current pool ratio
+      const depositProportionToPool = amount0.div(poolStats.inventory0.total);
+      setSharesEstimate(depositProportionToPool
+        .mul(poolStats.outstandingShares).div(String1E(18))
+        .toExponential(2));
+
+      // Compute USD estimate
+      setUsdEstimate(formatUSDCompact(
+          depositProportionToPool.mul(offChainPoolStats.total_value_locked).toNumber()
+        )
+      );
+
+    } else {
+      setUsdEstimate('-');
+      setSharesEstimate('-');
+    }
+
+
+
     if (isTransactionPending) {
       setButtonState(ButtonState.PENDING_TRANSACTION);
     } else if (!depositData || amount0.eq(0) || amount1.eq(0)) {
@@ -170,7 +198,9 @@ export default function DepositTab(props: DepositTabProps) {
     token0Amount,
     token1Amount,
     signer,
-  ]);
+    offChainPoolStats,
+    poolStats]
+  );
 
   const buttonLabel = printButtonState(buttonState, drawData);
 
@@ -202,9 +232,9 @@ export default function DepositTab(props: DepositTabProps) {
             token0IsWeth ? depositData.token0Balance : depositData.token1Balance
           );
 
-          logBig(wethDesired);
-          logBig(wethToMint);
-          logBig(wethToMint.div(String1E(18)));
+          // logBig(wethDesired);
+          // logBig(wethToMint);
+          // logBig(wethToMint.div(String1E(18)));
 
           mintWeth(signer, wethToMint, (receipt) => {
             setIsTransactionPending(false);
@@ -407,19 +437,19 @@ export default function DepositTab(props: DepositTabProps) {
         onCancel={() => {
           setIsTransactionPending(false);
         }}
-        estimatedTotal='$5,038'
+        estimatedTotal={usdEstimate}
         token0Ticker={drawData.token0Label}
         token1Ticker={drawData.token1Label}
         token0Estimate={token0Amount}
         token1Estimate={token1Amount}
-        numberOfShares='2'
+        numberOfShares={sharesEstimate}
         maxSlippage={maxSlippage}
-        networkFee='0.01'
+        networkFee='TODO'
       />
       <TokensDepositedModal
         open={showSuccessModal}
         setOpen={setShowSuccessModal}
-        totalEstimatedValue='$5,038'
+        totalEstimatedValue={usdEstimate}
         token0Ticker={drawData.token0Label}
         token1Ticker={drawData.token1Label}
         token0Estimate={token0Amount}

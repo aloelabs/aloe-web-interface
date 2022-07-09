@@ -120,7 +120,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
     let mounted = true;
     const fetchPoolStats = async () => {
       const response = await axios.get(
-        `${API_URL}/pool_stats/${poolData?.poolAddress}/1/`
+        `${API_URL}/pool_stats/${poolData?.poolAddress}/1`
       );
       const poolStatsData = response.data[0] as OffChainPoolStats;
       if (mounted && poolStatsData) {
@@ -213,6 +213,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
             <PoolInteractionTabs
               poolData={poolData}
               walletIsConnected={walletIsConnected}
+              offChainPoolStats={offChainPoolStats}
             />
           </GridExpandingDiv>
         )}
@@ -223,6 +224,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
               <PoolInteractionTabs
                 poolData={poolData}
                 walletIsConnected={walletIsConnected}
+                offChainPoolStats={offChainPoolStats}
               />
             </GridExpandingDiv>
           )}
@@ -241,7 +243,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
               className='flex flex-col gap-y-6'
             >
               <p>
-                Placing funds into a Blend Pool will allow Aloe smart contracts
+                Placing assets into a Blend Pool will allow the Aloe Protocol
                 to use Uniswap V3 and yield-earning silos on your behalf.
               </p>
               <p>

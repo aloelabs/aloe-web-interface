@@ -8,6 +8,7 @@ import { ResolveBlendPoolDrawData } from '../../data/BlendPoolDataResolver';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import Tooltip from '../common/Tooltip';
 import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
+import { Text } from '../common/Typography';
 
 export type PoolStatsWidgetProps = {
   poolData: BlendPoolMarkers;
@@ -38,7 +39,7 @@ type PieChartSlice = {
 type AllocationPieChartSlice = PieChartSlice & {
   category: string;
   metric?: string;
-}
+};
 
 type PieChartSlicePath = {
   data: string;
@@ -108,6 +109,13 @@ const TokenAllocationBreakdown = styled.div`
   @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     margin-left: 0;
     margin-top: 32px;
+  }
+`;
+
+const LabelWrapper = styled.div`
+  ${tw`flex flex-col justify-center items-center`};
+  & div {
+    transition: color 0.15s linear;
   }
 `;
 
@@ -184,29 +192,6 @@ const AllocationSection = styled.div<{ color: string }>`
   }
 `;
 
-const CategoryLabel = styled.div`
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 30px;
-  transition: color 0.15s linear;
-
-  &.inactive {
-    color: rgba(255, 255, 255, 0.5);
-  }
-`;
-
-const MetricLabel = styled.div`
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  color: rgba(236, 247, 255, 1);
-  transition: color 0.15s linear;
-
-  &.inactive {
-    color: rgba(236, 247, 255, 0.5);
-  }
-`;
-
 const DashedDivider = styled.div`
   margin-left: 8px;
   margin-right: 8px;
@@ -262,28 +247,28 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
         percent: silo0_1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN0_COLOR_SILO,
         category: drawData.silo0Label,
-        metric: '2% APY',
+        // metric: '2% APY',
       };
       slices[2] = {
         index: 2,
         percent: uni0_1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN0_COLOR_UNISWAP,
         category: 'Uniswap',
-        metric: '1% APR',
+        // metric: '1% APR',
       };
       slices[3] = {
         index: 3,
         percent: uni1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN1_COLOR_UNISWAP,
         category: 'Uniswap',
-        metric: '1% APR',
+        // metric: '1% APR',
       };
       slices[4] = {
         index: 4,
         percent: silo1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN1_COLOR_SILO,
         category: drawData.silo1Label,
-        metric: '2% APY',
+        // metric: '2% APY',
       };
       slices[5] = {
         index: 5,
@@ -330,16 +315,27 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
   const firstHalfOfSlices = slices.slice(0, slices.length / 2).reverse();
   const secondHalfOfSlices = slices.slice(slices.length / 2);
 
-  const tooltipContent = <>As prices shift, tokens are moved between Uniswap{combinedSiloLabelA} to
-  keep liquidity in range. Blend replicates Uniswap V2 payoffs with
-  extreme capital efficiency, so most tokens can earn yield in{' '}
-  {combinedSiloLabelB}. Value marked as {<em>"Float"</em>} helps facilitate
-  gas-efficient withdrawals.</>;
+  const tooltipContent = (
+    <>
+      As prices shift, tokens are moved between Uniswap{combinedSiloLabelA} to
+      keep liquidity in range. Blend replicates Uniswap V2 payoffs with extreme
+      capital efficiency, so most tokens can earn yield in {combinedSiloLabelB}.
+      Value marked as {<em>"Float"</em>} helps facilitate gas-efficient
+      withdrawals.
+    </>
+  );
 
   return (
     <div className='w-full flex flex-col items-start justify-start mb-8'>
-      {/* TODO: Update styling of widget header to spec, add info icon, and ensure spacing around the component is to spec */}
-      <WidgetHeading>Token Allocation <Tooltip buttonSize='S' content={tooltipContent} position='top-center' filled={true} /></WidgetHeading>
+      <WidgetHeading>
+        Token Allocation{' '}
+        <Tooltip
+          buttonSize='S'
+          content={tooltipContent}
+          position='top-center'
+          filled={true}
+        />
+      </WidgetHeading>
       <TokenAllocationWrapper>
         <div className='w-[227px] h-[227px] relative'>
           <PieChartContainer>
@@ -376,27 +372,35 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
               {firstHalfOfSlices.map((slice, index) => {
                 return (
                   <AllocationSection color={slice.color} key={index}>
-                    <CategoryLabel
-                      className={
-                        activeIndex !== -1 && activeIndex !== slice.index
-                          ? 'inactive'
-                          : ''
-                      }
-                    >
-                      {slice.category}
-                    </CategoryLabel>
+                    <LabelWrapper>
+                      <Text
+                        size='L'
+                        weight='medium'
+                        color={
+                          activeIndex !== -1 && activeIndex !== slice.index
+                            ? 'rgba(255, 255, 255, 0.5)'
+                            : 'rgba(255, 255, 255, 1)'
+                        }
+                      >
+                        {slice.category}
+                      </Text>
+                    </LabelWrapper>
                     {slice.metric && (
                       <>
                         <DashedDivider />
-                        <MetricLabel
-                          className={
-                            activeIndex !== -1 && activeIndex !== slice.index
-                              ? 'inactive'
-                              : ''
-                          }
-                        >
-                          {slice.metric}
-                        </MetricLabel>
+                        <LabelWrapper>
+                          <Text
+                            size='M'
+                            weight='medium'
+                            color={
+                              activeIndex !== -1 && activeIndex !== slice.index
+                                ? 'rgba(255, 255, 255, 0.5)'
+                                : 'rgba(236, 247, 255, 1)'
+                            }
+                          >
+                            {slice.metric}
+                          </Text>
+                        </LabelWrapper>
                       </>
                     )}
                   </AllocationSection>
@@ -418,27 +422,35 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
               {secondHalfOfSlices.map((slice, index) => {
                 return (
                   <AllocationSection color={slice.color} key={index}>
-                    <CategoryLabel
-                      className={
-                        activeIndex !== -1 && activeIndex !== slice.index
-                          ? 'inactive'
-                          : ''
-                      }
-                    >
-                      {slice.category}
-                    </CategoryLabel>
+                    <LabelWrapper>
+                      <Text
+                        size='L'
+                        weight='medium'
+                        color={
+                          activeIndex !== -1 && activeIndex !== slice.index
+                            ? 'rgba(255, 255, 255, 0.5)'
+                            : 'rgba(255, 255, 255, 1)'
+                        }
+                      >
+                        {slice.category}
+                      </Text>
+                    </LabelWrapper>
                     {slice.metric && (
                       <>
                         <DashedDivider />
-                        <MetricLabel
-                          className={
-                            activeIndex !== -1 && activeIndex !== slice.index
-                              ? 'inactive'
-                              : ''
-                          }
-                        >
-                          {slice.metric}
-                        </MetricLabel>
+                        <LabelWrapper>
+                          <Text
+                            size='M'
+                            weight='medium'
+                            color={
+                              activeIndex !== -1 && activeIndex !== slice.index
+                                ? 'rgba(255, 255, 255, 0.5)'
+                                : 'rgba(236, 247, 255, 1)'
+                            }
+                          >
+                            {slice.metric}
+                          </Text>
+                        </LabelWrapper>
                       </>
                     )}
                   </AllocationSection>

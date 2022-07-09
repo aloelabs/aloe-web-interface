@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Display } from './Typography';
 
 export default function Pending() {
   const [periodCount, setPeriodCount] = useState(0);
@@ -16,5 +17,5 @@ export default function Pending() {
     return () => clearInterval(timer);
   }, []);
 
-  return <span>Pending{'.'.repeat(periodCount)}</span>;
+  return <Display>Pending{'.'.repeat(periodCount)}</Display>;
 }
