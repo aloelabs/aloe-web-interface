@@ -135,31 +135,41 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
     let mounted = true;
     async function fetchData() {
       let range = buttonIdxToText(activeButton).toLowerCase();
+      // TODO: remove this once 1m endpoint is working
       if (range === '1m') {
         range = '3m';
       }
+
+      const toDateParam = (toDate.getTime() / 1000).toFixed(0);
       const getPoolReturns = makeRequest(
-        `${API_URL}/pool_returns/${pool}/1/${range}/${(
-          toDate.getTime() / 1000
-        ).toFixed(0)}`
+        `${API_URL}/pool_returns/${pool}/1/${range}/${toDateParam}`
       );
       const getToken0 = makeRequest(
-        `${API_URL}/token_returns/${token0}/1/${range}/${(
-          toDate.getTime() / 1000
-        ).toFixed(0)}`
+        `${API_URL}/token_returns/${token0}/1/${range}/${toDateParam}`
       );
       const getToken1 = makeRequest(
-        `${API_URL}/token_returns/${token1}/1/${range}/${(
-          toDate.getTime() / 1000
-        ).toFixed(0)}`
+        `${API_URL}/token_returns/${token1}/1/${range}/${toDateParam}`
       );
+
       axios
         .all([getPoolReturns, getToken0, getToken1])
         .then(
           axios.spread((poolReturns, token0, token1) => {
+            // TODO: remove this once 1m endpoint is working
+            if (buttonIdxToText(activeButton).toLowerCase() === '1m') {
+              poolReturns.data = poolReturns.data.map((el: any) => {
+                if (toDate.getTime() / 1000 - Number(el.timestamp) > 30 * 24 * 60 * 60) {
+                  // setting this to null tricks the returns calculator into starting from a later date
+                  el.total_supply = null;
+                }
+                return el;
+              });
+            }
+            
             const poolReturnsData = poolReturns.data as PoolReturns;
-            let token0Data = token0.data as TokenReturns;
+            const token0Data = token0.data as TokenReturns;
             const token1Data = token1.data as TokenReturns;
+
             try {
               const calculatedReturns = calculateReturns(
                 poolReturnsData,
@@ -169,29 +179,17 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
               let updatedData = [];
               for (let i = 0; i < calculatedReturns.length; i++) {
                 let updatedObj = {} as any;
-                updatedObj['Blend Pool'] =
-                  (calculatedReturns[i]['pool'] - 1.0) * 100;
-                updatedObj['Uniswap Baseline'] =
-                  (calculatedReturns[i]['sqrt'] - 1.0) * 100;
+                updatedObj['Blend Pool'] = (calculatedReturns[i]['pool'] - 1.0) * 100;
+                updatedObj['Uniswap Baseline'] = (calculatedReturns[i]['sqrt'] - 1.0) * 100;
                 // updatedObj['50/50 HODL'] = (calculatedReturns[i]['fifty_fifty'] - 1.0) * 100;
-                updatedObj[token0Key] =
-                  (calculatedReturns[i]['token0'] - 1.0) * 100;
-                updatedObj[token1Key] =
-                  (calculatedReturns[i]['token1'] - 1.0) * 100;
+                updatedObj[token0Key] = (calculatedReturns[i]['token0'] - 1.0) * 100;
+                updatedObj[token1Key] = (calculatedReturns[i]['token1'] - 1.0) * 100;
                 updatedObj['x'] = new Date(
                   fixTimestamp(calculatedReturns[i]['timestamp'].toString())
                 ).toISOString();
                 updatedData.push(updatedObj);
               }
               if (mounted) {
-                if (buttonIdxToText(activeButton).toLowerCase() === '1m') {
-                  // since the endDate isn't necessarily the current date
-                  const endDate = new Date(updatedData[updatedData.length - 1]['x']);
-                  const oneMonthBeforeEnd = subMonths(endDate, 1);
-                  updatedData = updatedData.filter(
-                    (d) => new Date(d['x']) >= oneMonthBeforeEnd
-                  );
-                }
                 setData(updatedData);
                 setGraphError(false);
                 setGraphLoading(false);

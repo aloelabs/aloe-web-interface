@@ -281,7 +281,7 @@ export default function BrowseCard(props: BrowseCardProps) {
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
-              APR (30d avg)
+              APR (14d avg)
             </Text>
             <Text size='XL' weight='medium'>
               {roundPercentage(100 * (poolStats?.annual_percentage_rate ?? 0))}%
