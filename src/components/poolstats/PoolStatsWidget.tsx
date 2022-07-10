@@ -50,7 +50,7 @@ export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
       <PoolStatsWidgetGrid>
         <PoolStat>
           <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
-            APR (30d avg)
+            APR (14d avg)
           </Text>
           <Display
             size='S'

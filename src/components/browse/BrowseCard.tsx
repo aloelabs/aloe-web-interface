@@ -106,7 +106,7 @@ const FeeTierContainer = styled.div`
   padding: 8px 16px;
   background: ${FEE_TIER_BG_COLOR};
   color: ${FEE_TIER_TEXT_COLOR};
-  outline: 2px solid ${FEE_TIER_OUTLINE_COLOR};
+  box-shadow: 0px 0px 0px 2px ${FEE_TIER_OUTLINE_COLOR};
   border-radius: 100px;
 `;
 
@@ -281,7 +281,7 @@ export default function BrowseCard(props: BrowseCardProps) {
           </InfoCategoryContainer>
           <InfoCategoryContainer>
             <Text size='S' weight='medium' color={INFO_CATEGORY_TEXT_COLOR}>
-              APR (30d avg)
+              APR (14d avg)
             </Text>
             <Text size='XL' weight='medium'>
               {roundPercentage(100 * (poolStats?.annual_percentage_rate ?? 0))}%
