@@ -82,7 +82,7 @@ export default function BrowsePoolsPerformance(
     <Wrapper>
       <div className='flex flex-col gap-3 flex-grow p-4'>
         <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>
-          Total Value Invested
+          Total Value Managed
         </Text>
         <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>
           {formatUSD(globalStats?.totalValueLocked || null)}
