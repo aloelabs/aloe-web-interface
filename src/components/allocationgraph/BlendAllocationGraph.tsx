@@ -157,11 +157,25 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
         .all([getPoolReturns, getToken0, getToken1])
         .then(
           axios.spread((poolReturns, token0, token1) => {
-            const poolReturnsData = poolReturns.data as PoolReturns;
+            let poolReturnsData = poolReturns.data as PoolReturns;
             let token0Data = token0.data as TokenReturns;
-            const token1Data = token1.data as TokenReturns;
+            let token1Data = token1.data as TokenReturns;
+            if (buttonIdxToText(activeButton).toLowerCase() === '1m') {
+              // since the endDate isn't necessarily the current date
+              const endDate = new Date(fixTimestamp(poolReturnsData[poolReturnsData.length - 1].timestamp));
+              const oneMonthBeforeEnd = subMonths(endDate, 1);
+              poolReturnsData = poolReturnsData.filter(
+                (d) => new Date(fixTimestamp(d.timestamp)) >= oneMonthBeforeEnd
+              );
+              token0Data = token0Data.filter(
+                (d) => new Date(fixTimestamp(d.timestamp)) >= oneMonthBeforeEnd
+              );
+              token1Data = token1Data.filter(
+                (d) => new Date(fixTimestamp(d.timestamp)) >= oneMonthBeforeEnd
+              );
+            }
             try {
-              const calculatedReturns = calculateReturns(
+              let calculatedReturns = calculateReturns(
                 poolReturnsData,
                 token0Data,
                 token1Data
@@ -184,14 +198,6 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
                 updatedData.push(updatedObj);
               }
               if (mounted) {
-                if (buttonIdxToText(activeButton).toLowerCase() === '1m') {
-                  // since the endDate isn't necessarily the current date
-                  const endDate = new Date(updatedData[updatedData.length - 1]['x']);
-                  const oneMonthBeforeEnd = subMonths(endDate, 1);
-                  updatedData = updatedData.filter(
-                    (d) => new Date(d['x']) >= oneMonthBeforeEnd
-                  );
-                }
                 setData(updatedData);
                 setGraphError(false);
                 setGraphLoading(false);
