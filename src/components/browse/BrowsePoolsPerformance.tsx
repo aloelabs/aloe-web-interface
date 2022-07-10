@@ -6,6 +6,7 @@ import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
 import { API_URL } from '../../data/constants/Values';
 import { GlobalStats } from '../../data/GlobalStats';
+import { formatUSD } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
 
 const METRIC_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
@@ -47,7 +48,6 @@ const VerticalDivider = styled.div`
   @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     display: none;
   }
-
 `;
 
 export type BrowsePoolsPerformanceProps = {
@@ -71,28 +71,40 @@ export default function BrowsePoolsPerformance(
           totalValueLocked: data['total_value_locked'],
         });
       }
-    }
+    };
     fetchGlobalStats();
     return () => {
       mounted = false;
-    }
+    };
   }, []);
 
   return (
     <Wrapper>
       <div className='flex flex-col gap-3 flex-grow p-4'>
-        <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>Total Value Invested</Text>
-        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>{globalStats?.totalValueLocked.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</Display>
+        <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>
+          Total Value Managed
+        </Text>
+        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>
+          {formatUSD(globalStats?.totalValueLocked || null)}
+        </Display>
       </div>
       <VerticalDivider />
       <div className='flex flex-col gap-3 flex-grow p-4'>
-        <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>Pools Deployed</Text>
-        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>{globalStats?.poolCount} Pools</Display>
+        <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>
+          Pools Deployed
+        </Text>
+        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>
+          {globalStats?.poolCount || '-'} Pools
+        </Display>
       </div>
       <VerticalDivider />
       <div className='flex flex-col gap-3 flex-grow p-4'>
-        <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>Total Aloe Users</Text>
-        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>{globalStats?.users}</Display>
+        <Text size='L' weight='medium' color={METRIC_LABEL_TEXT_COLOR}>
+          Total Aloe Users
+        </Text>
+        <Display size='L' weight='medium' color={METRIC_VALUE_TEXT_COLOR}>
+          {globalStats?.users || '-'}
+        </Display>
       </div>
     </Wrapper>
   );
