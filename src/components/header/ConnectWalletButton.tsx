@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { PrimaryButton, SecondaryButton } from '../common/Buttons';
-import Modal from '../common/Modal';
+import { CloseableModal } from '../common/Modal';
 
 import { useAccount, useConnect } from 'wagmi';
 import { FormatAddress } from '../../util/FormatAddress';
+import {
+  FilledStylizedButton,
+  OutlinedGradientRoundedButton,
+} from '../common/Buttons';
 import { mapConnectorNameToIcon } from './ConnectorIconMap';
+import { Text } from '../common/Typography';
 
-export default function ConnectWalletButton() {
+export type ConnectWalletButtonProps = {
+  buttonStyle?: 'secondary' | 'tertiary';
+};
+
+export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const [{ data: connectData, error: connectError }, connect] = useConnect();
@@ -24,43 +32,83 @@ export default function ConnectWalletButton() {
 
   return (
     <div>
-      <PrimaryButton
-        name={buttonText}
-        className='py-2 px-8 whitespace-pre'
-        onClick={() => setModalOpen(true)}
+      {!props.buttonStyle && (
+        <OutlinedGradientRoundedButton
+          name={buttonText}
+          size='S'
+          onClick={() => setModalOpen(true)}
+        >
+          {buttonText}
+        </OutlinedGradientRoundedButton>
+      )}
+      {props.buttonStyle === 'secondary' && (
+        <FilledStylizedButton
+          name={buttonText}
+          size='M'
+          onClick={() => setModalOpen(true)}
+          backgroundColor='rgba(26, 41, 52, 1)'
+          color='rgba(255, 255, 255, 1)'
+          fillWidth={true}
+        >
+          {buttonText}
+        </FilledStylizedButton>
+      )}
+      {props.buttonStyle === 'tertiary' && (
+        <FilledStylizedButton
+          name={buttonText}
+          size='M'
+          onClick={() => setModalOpen(true)}
+          fillWidth={true}
+          className='!rounded-none !pt-5 !pb-5'
+        >
+          {buttonText}
+        </FilledStylizedButton>
+      )}
+      <CloseableModal
+        open={modalOpen}
+        setOpen={setModalOpen}
+        title={'Connect Wallet'}
       >
-        {buttonText}
-      </PrimaryButton>
-      <Modal open={modalOpen} setOpen={setModalOpen} title={'Connect Wallet'}>
         <div className='w-full'>
           {accountData ? (
             // We have an account connected
-            <div className='flex flex-row items-center justify-between p-2 rounded-md border-2 border-grey-200 bg-grey-100'>
+            <div className='flex flex-col gap-y-2 items-center justify-between p-2 rounded-md border-2 border-grey-200 bg-grey-100'>
               {/*<img src={accountData.ens?.avatar || undefined} alt="ENS Avatar" />*/}
-              <div className='flex flex-col items-start justify-start'>
-                <div className='text-md'>
+              <div className='flex flex-col items-start justify-start w-full oveflow-hidden'>
+                <Text
+                  size='M'
+                  className='w-full overflow-hidden text-ellipsis'
+                  title={accountData.address}
+                >
                   {accountData.ens?.name
                     ? `${accountData.ens?.name} (${FormatAddress(
                         accountData.address
                       )})`
-                    : FormatAddress(accountData.address)}
-                </div>
-                <div className='text-sm text-grey-800'>
+                    : accountData.address}
+                </Text>
+                <Text
+                  size='S'
+                  color='rgb(194, 209, 221)'
+                  className='w-full overflow-hidden text-ellipsis'
+                >
                   Connected to {accountData.connector?.name}
-                </div>
+                </Text>
               </div>
-              <SecondaryButton
-                className='px-4 py-1'
+              <FilledStylizedButton
                 name='Disconnect'
+                size='M'
+                backgroundColor='rgba(26, 41, 52, 1)'
+                color={'rgba(255, 255, 255, 1)'}
+                fillWidth={true}
                 onClick={disconnect}
               >
                 Disconnect
-              </SecondaryButton>
+              </FilledStylizedButton>
             </div>
           ) : (
             // No account connected, display connection options
             <div className='py-2'>
-              <div className='text-md'>
+              <Text size='M' weight='medium'>
                 By connecting a wallet, I agree to Aloe Labs, Inc's{' '}
                 <a
                   href={'/terms.pdf'}
@@ -80,7 +128,7 @@ export default function ConnectWalletButton() {
                   Privacy Policy
                 </a>
                 .
-              </div>
+              </Text>
               {connectData.connectors.map((connector) => (
                 <div
                   key={connector.id}
@@ -91,25 +139,29 @@ export default function ConnectWalletButton() {
                     alt=''
                     className='w-10 h-10 mr-4'
                   />
-                  <SecondaryButton
-                    className='px-8 py-2 w-full grow '
+                  <FilledStylizedButton
+                    name='Disconnect'
+                    size='M'
+                    backgroundColor='rgba(26, 41, 52, 1)'
+                    color={'rgba(255, 255, 255, 1)'}
+                    fillWidth={true}
                     disabled={!connector.ready}
                     onClick={() => connect(connector)}
                   >
                     {connector.name}
                     {!connector.ready && ' (unsupported)'}
-                  </SecondaryButton>
+                  </FilledStylizedButton>
                 </div>
               ))}
             </div>
           )}
           {connectError && (
-            <div className='text-warning'>
+            <Text size='S' color='rgb(236, 45, 91)'>
               {connectError?.message ?? 'Failed to connect'}
-            </div>
+            </Text>
           )}
         </div>
-      </Modal>
+      </CloseableModal>
     </div>
   );
 }

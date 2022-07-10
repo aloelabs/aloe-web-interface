@@ -1,179 +1,145 @@
-import React, { MouseEventHandler, useState } from 'react';
+import React from 'react';
 import AppPage from '../components/common/AppPage';
-import PageHeading from '../components/common/PageHeading';
-import PortfolioScreenshot from '../assets/png/PorfolioPagePreview.png';
 import styled from 'styled-components';
 import tw from 'twin.macro';
+import PortfolioCard from '../components/portfolio/PortfolioCard';
+import EmptyPortfolio from '../components/portfolio/EmptyPortfolio';
+import ExternalPortfolioCard from '../components/portfolio/ExternalPortfolioCard';
+import EmptyExternalPortfolio from '../components/portfolio/EmptyExternalPortfolio';
+import { GetTokenData } from '../data/TokenData';
+import { FeeTier } from '../data/BlendPoolMarkers';
+import { GetSiloData } from '../data/SiloData';
+import { Text } from '../components/common/Typography';
+import PortfolioGraph from '../components/graph/PortfolioGraph';
+import Tooltip from '../components/common/Tooltip';
+import useMediaQuery from '../data/hooks/UseMediaQuery';
+import { RESPONSIVE_BREAKPOINTS } from '../data/constants/Breakpoints';
 
-const StyledImgWrapper = styled.div`
-  position: relative;
-  display: inline-block;
+const PORTFOLIO_TITLE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
-  border-radius: 8px;
-  overflow: hidden;
-
-  ::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    display: inline-block;
-    background: linear-gradient(
-      100.12deg,
-      #c08fff5a -34.33%,
-      #6ccfe41a 60.51%,
-      #88e2a11a 117.32%
-    );
-    box-shadow: 0 30px 40px 10px #3e5a6f;
-  }
+const Container = styled.div`
+  ${tw`flex flex-col items-center justify-evenly`}
+  gap: 64px;
 `;
 
-interface MouseMoveData {
-  x: number;
-  y: number;
-  elX: number;
-  elY: number;
-  elW: number;
-  elH: number;
-  isActive: boolean;
-}
-
-const CardContainer = styled.div`
-  perspective: 800px;
-  perspective-origin: center;
+const PortfolioCards = styled.div`
+  ${tw`flex flex-wrap justify-center items-center`}
+  gap: 24px;
+  margin-top: 24px;
 `;
-
-const Card = styled.div.attrs<MouseMoveData>((props) => {
-  const offsetX = props.x - (props.elX + props.elW / 2);
-  const offsetY = props.y - (props.elY + props.elH / 2);
-
-  const scale = 2;
-
-  const rotateX = (scale * offsetY * 2) / props.elH;
-  const rotateY = (-scale * offsetX * 2) / props.elW;
-
-  let transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-  let transition = 'all 0.1s linear';
-  if (!props.isActive) {
-    transform = 'rotateX(0deg) rotateY(0deg) skewX(0deg) skewY(0deg)';
-    transition = 'all 1s ease-in-out';
-  }
-
-  return {
-    style: {
-      transform,
-      transition,
-    },
-  };
-})<MouseMoveData>`
-  ${tw`h-full w-full`}
-
-  border-radius: 8px;
-
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
-
-  user-select: none;
-  overflow: hidden;
-
-  transform-origin: center;
-`;
-
-const useMove = () => {
-  const [state, setState] = useState({
-    x: 0,
-    y: 0,
-    elX: 0,
-    elY: 0,
-    elW: 0,
-    elH: 0,
-    isActive: false,
-  });
-
-  const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
-    const currentTarget = e.currentTarget;
-    const boundingRect = currentTarget.getBoundingClientRect();
-
-    setState((state) => {
-      const data: MouseMoveData = {
-        ...state,
-        isActive: true,
-        x: e.clientX,
-        y: e.clientY,
-        elX: boundingRect.x,
-        elY: boundingRect.y,
-        elW: currentTarget.offsetWidth,
-        elH: currentTarget.offsetHeight,
-      };
-
-      return data;
-    });
-  };
-
-  const handleMouseLeave: MouseEventHandler<HTMLDivElement> = (e) => {
-    setState((state) => ({ ...state, isActive: false }));
-  };
-
-  return {
-    x: state.x,
-    y: state.y,
-    elX: state.elX, // X coord of element's top left corner
-    elY: state.elY, // Y coord of element's top left corner
-    elW: state.elW, // element's width
-    elH: state.elH, // element's height
-    isActive: state.isActive,
-    handleMouseMove,
-    handleMouseLeave,
-  };
-};
 
 export default function PortfolioPage() {
-  const {
-    x,
-    y,
-    elX,
-    elY,
-    elW,
-    elH,
-    isActive,
-    handleMouseMove,
-    handleMouseLeave,
-  } = useMove();
-
+  const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
   return (
     <AppPage>
-      <PageHeading>Coming&nbsp;Soon...</PageHeading>
-      <ul className='list-disc pl-4 font-normal text-grey-600 text-md'>
-        <li>View all your LP positions in one place</li>
-        <li>One-click migration from other services</li>
-        <li>Portfolio performance tracking</li>
-      </ul>
-
-      <div className='flex flex-col items-center justify-center mt-12'>
-        <CardContainer>
-          <Card
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            x={x}
-            y={y}
-            elX={elX}
-            elY={elY}
-            elW={elW}
-            elH={elH}
-            isActive={isActive}
-          >
-            <StyledImgWrapper className=''>
-              <img
-                src={PortfolioScreenshot}
-                alt='Portfolio page preview'
-                className='h-auto w-auto object-contain'
-              />
-            </StyledImgWrapper>
-          </Card>
-        </CardContainer>
-      </div>
+      <Container>
+        <div className='w-full'>
+          <PortfolioGraph />
+        </div>
+        <div className='w-full'>
+          <EmptyPortfolio />
+        </div>
+        <div className='w-full'>
+          <Text size='XL' weight='medium' color={PORTFOLIO_TITLE_TEXT_COLOR}>
+            Your Portfolio
+          </Text>
+          <PortfolioCards>
+            <PortfolioCard
+              token0={GetTokenData(
+                '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+              )}
+              token1={GetTokenData(
+                '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+              )}
+              silo0={GetSiloData('0x723bfe564661536fdffa3e9e060135928d3bf18f')}
+              silo1={GetSiloData('0x8f43969d04ba8aaec7c69813a07a276189c574d2')}
+              uniswapFeeTier={FeeTier.ZERO_THREE}
+              estimatedValue={1930.48}
+              percentageChange={2}
+            />
+            <PortfolioCard
+              token0={GetTokenData(
+                '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919'
+              )}
+              token1={GetTokenData(
+                '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+              )}
+              silo0={GetSiloData('0xf70fc6b694d911b1f665b754f77ec5e83d340594')}
+              silo1={GetSiloData('0x8f43969d04ba8aaec7c69813a07a276189c574d2')}
+              uniswapFeeTier={FeeTier.ZERO_THREE}
+              estimatedValue={1930.48}
+              percentageChange={-1}
+            />
+            <PortfolioCard
+              token0={GetTokenData(
+                '0x956f47f50a910163d8bf957cf5846d573e7f87ca'
+              )}
+              token1={GetTokenData(
+                '0xc7283b66eb1eb5fb86327f08e1b5816b0720212b'
+              )}
+              silo0={GetSiloData('0x0770d239e56d96bc1e049b94949b0a0199b77cf6')}
+              silo1={GetSiloData('0x2a9855dc8afa59e6067287b8aa15cd009938d137')}
+              uniswapFeeTier={FeeTier.ZERO_THREE}
+              estimatedValue={1930.48}
+              percentageChange={-1}
+            />
+            <PortfolioCard
+              token0={GetTokenData(
+                '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+              )}
+              token1={GetTokenData(
+                '0xf4d2888d29d722226fafa5d9b24f9164c092421e'
+              )}
+              silo0={GetSiloData('0x0a230cca01f7107933d5355913e9a65082f37c52')}
+              silo1={GetSiloData('0x7a17db19e5bfe3e96d6a8da9c100ac86a4650d54')}
+              uniswapFeeTier={FeeTier.ZERO_THREE}
+              estimatedValue={1930.48}
+              percentageChange={-1}
+            />
+          </PortfolioCards>
+        </div>
+        <div className='w-full'>
+          <div className='flex justify-between items-center'>
+            <Text size='XL' weight='medium' color={PORTFOLIO_TITLE_TEXT_COLOR}>
+              Your External Positions
+            </Text>
+            <Tooltip
+              content='Est nisl feugiat turpis amet, in sit bibendum tincidunt et. Vitae aliquam quam tempor, facilisi.'
+              buttonText='What is this?'
+              buttonSize={isGTMediumScreen ? 'L' : 'M'}
+              position='top-right'
+              filled={true}
+            />
+          </div>
+          <PortfolioCards>
+            <ExternalPortfolioCard
+              token0={GetTokenData(
+                '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+              )}
+              token1={GetTokenData(
+                '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+              )}
+              uniswapFeeTier={FeeTier.ZERO_THREE}
+              estimatedValue={1930.48}
+              percentageChange={2}
+            />
+            <ExternalPortfolioCard
+              token0={GetTokenData(
+                '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919'
+              )}
+              token1={GetTokenData(
+                '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+              )}
+              uniswapFeeTier={FeeTier.ZERO_THREE}
+              estimatedValue={1930.48}
+              percentageChange={-1}
+            />
+          </PortfolioCards>
+        </div>
+        <div className='w-full'>
+          <EmptyExternalPortfolio />
+        </div>
+      </Container>
     </AppPage>
   );
 }

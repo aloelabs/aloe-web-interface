@@ -1,0 +1,10 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+    <linearGradient id="plus-icon-gradient">
+        <stop offset="0%" stop-color="rgba(155, 170, 243, 1)"/>
+        <stop offset="100%" stop-color="rgba(123, 216, 192, 1)"/>
+    </linearGradient>
+</defs>
+path: ''
+<path d="M12 5V19M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

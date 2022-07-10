@@ -1,6 +1,57 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
+/**
+ * @license
+ *
+ * Font Family: Satoshi
+ * Designed by: Deni Anggara
+ * URL: https://www.fontshare.com/fonts/satoshi
+ * © 2022 Indian Type Foundry
+ *
+ */
+
+@font-face {
+  font-family: 'Satoshi-Variable';
+  src: url('./assets/fonts/Satoshi/Satoshi-Variable.woff2') format('woff2'),
+    url('./assets/fonts/Satoshi/Satoshi-Variable.woff') format('woff'),
+    url('./assets/fonts/Satoshi/Satoshi-Variable.ttf') format('truetype');
+  font-weight: 300 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi-VariableItalic';
+  src: url('./assets/fonts/Satoshi/Satoshi-VariableItalic.woff2')
+      format('woff2'),
+    url('./assets/fonts/Satoshi/Satoshi-VariableItalic.woff') format('woff'),
+    url('./assets/fonts/Satoshi/Satoshi-VariableItalic.ttf') format('truetype');
+  font-weight: 300 900;
+  font-display: swap;
+  font-style: italic;
+}
+
+/**
+ * @license
+ *
+ * Font Family: Clash Display
+ * Designed by: Indian Type Foundry
+ * URL: https://www.fontshare.com/fonts/clash-display
+ * © 2022 Indian Type Foundry
+ *
+ */
+
+@font-face {
+  font-family: 'ClashDisplay-Variable';
+  src: url('./assets/fonts/ClashDisplay/ClashDisplay-Variable.woff2') format('woff2'),
+    url('./assets/fonts/ClashDisplay/ClashDisplay-Variable.woff') format('woff'),
+    url('./assets/fonts/ClashDisplay/ClashDisplay-Variable.ttf') format('truetype');
+  font-weight: 200 700;
+  font-display: swap;
+  font-style: normal;
+}
+
 @tailwind base;
 
 @tailwind components;
@@ -8,5 +59,5 @@
 @tailwind utilities;
 
 html {
-    background-color: #11222E;
+  background-color: rgba(7, 14, 18, 1);
 }

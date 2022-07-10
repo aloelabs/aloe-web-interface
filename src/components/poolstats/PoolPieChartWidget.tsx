@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import WidgetHeading from '../common/WidgetHeading';
 import styled from 'styled-components';
 import tw from 'twin.macro';
@@ -6,20 +6,15 @@ import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { ResolveBlendPoolDrawData } from '../../data/BlendPoolDataResolver';
 
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
+import Tooltip from '../common/Tooltip';
+import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
+import { Text } from '../common/Typography';
 
 export type PoolStatsWidgetProps = {
   poolData: BlendPoolMarkers;
 };
 
 // MARK: Capturing Mouse Data on container div ---------------------------------------
-
-interface MouseMoveData {
-  x: number;
-  y: number;
-  r: number;
-  theta: number;
-  isActive: boolean;
-}
 
 const PIE_CHART_HOVER_GROWTH = 1.05;
 const TOKEN0_COLOR_UNISWAP = '#BEEDC7';
@@ -33,68 +28,23 @@ const PieChartContainer = styled.div`
   transform: rotate(90deg);
 `;
 
-const useMove = () => {
-  const [state, setState] = useState<MouseMoveData>({
-    x: 0,
-    y: 0,
-    r: 0,
-    theta: 0,
-    isActive: false,
-  });
-
-  const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
-    const currentTarget = e.currentTarget;
-    const boundingRect = currentTarget.getBoundingClientRect();
-
-    // Compute pointer's offset from center of element (in pixels)
-    const offsetX =
-      e.clientX - (boundingRect.x + currentTarget.offsetWidth / 2);
-    const offsetY =
-      e.clientY - (boundingRect.y + currentTarget.offsetHeight / 2);
-
-    // Non-dimensionalize it (-1 to 1)
-    const percentX = (offsetX * 2) / currentTarget.offsetWidth;
-    const percentY = (offsetY * 2) / currentTarget.offsetHeight;
-
-    const r = Math.hypot(percentX, percentY);
-    let theta = (Math.atan2(-percentX, percentY) * 180) / Math.PI;
-    if (theta < 0) theta += 360;
-
-    setState((state) => {
-      const data: MouseMoveData = {
-        ...state,
-        x: percentX,
-        y: percentY,
-        r,
-        theta,
-        isActive: true,
-      };
-
-      return data;
-    });
-  };
-
-  const handleMouseLeave: MouseEventHandler<HTMLDivElement> = (e) => {
-    setState((state) => ({ ...state, isActive: false }));
-  };
-
-  return {
-    mouseData: state,
-    handleMouseMove,
-    handleMouseLeave,
-  };
-};
-
 // MARK: Pie chart setup -------------------------------------------------------------
 
 type PieChartSlice = {
+  index: number;
   percent: number;
   color: string;
+};
+
+type AllocationPieChartSlice = PieChartSlice & {
+  category: string;
+  metric?: string;
 };
 
 type PieChartSlicePath = {
   data: string;
   color: string;
+  percent: number;
 };
 
 function getCoordinatesForPercent(percent: number) {
@@ -102,6 +52,15 @@ function getCoordinatesForPercent(percent: number) {
   const y = Math.sin(2 * Math.PI * percent);
   return [x, y];
 }
+
+const TokenAllocationWrapper = styled.div`
+  ${tw`w-full h-full mt-4 pt-2 flex flex-nowrap`}
+  flex-direction: row;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    flex-direction: column;
+  }
+`;
 
 const ExpandingPath = styled.path`
   transition: all 0.15s ease-in;
@@ -111,13 +70,9 @@ const ExpandingPath = styled.path`
   }
 `;
 
-const PieChartLabel = styled.div.attrs<{ shouldShow: boolean }>((props) => {
-  return {
-    style: { color: props.shouldShow ? 'white' : 'transparent' },
-  };
-})<{ shouldShow: boolean }>`
-  --width: 90px;
-  --height: 90px;
+const PieChartLabel = styled.div`
+  --width: 145.28px;
+  --height: 145.28px;
 
   position: absolute;
   width: var(--width);
@@ -142,38 +97,137 @@ const PieChartLabel = styled.div.attrs<{ shouldShow: boolean }>((props) => {
 
   // colors, borders, text
   border-radius: calc(var(--height) / 2);
-  ${tw`bg-grey-50 font-bold`};
+  background-color: rgba(7, 14, 18, 1);
+  color: rgba(255, 255, 255, 1);
+  ${tw`font-bold`};
 `;
 
-const CategoryAndAPRLabel = styled.div<{ color: string }>`
-  position: relative;
-  margin: 2px 0px;
-  white-space: nowrap;
+const TokenAllocationBreakdown = styled.div`
+  ${tw`flex flex-col justify-center gap-y-12`};
+  margin-left: 45px;
 
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    margin-left: 0;
+    margin-top: 32px;
+  }
+`;
+
+const LabelWrapper = styled.div`
+  ${tw`flex flex-col justify-center items-center`};
+  & div {
+    transition: color 0.15s linear;
+  }
+`;
+
+const TokenLabel = styled.div`
+  width: 80px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  color: rgba(255, 255, 255, 1);
+  transition: color 0.15s linear;
+
+  &.inactive {
+    color: rgba(255, 255, 255, 0.5);
+  }
+`;
+
+const AllocationSection = styled.div<{ color: string }>`
+  ${tw`w-full flex`};
+  position: relative;
+  white-space: nowrap;
+  padding-left: 24px;
+
+  /* The colored circles to the left of the label */
   :before {
     content: '';
-
     position: absolute;
     top: 50%;
-    left: -22px;
+    left: 0px;
 
+    width: 8px;
     height: 8px;
     aspect-ratio: 1;
     margin-top: -4px;
 
     border-radius: 50%;
     background: ${({ color }) => color};
+    z-index: 5;
+  }
+
+  /* The bar that connects the top circle to a middle circle (doesn't need to extend upwards) */
+  :first-child:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 3.5px;
+    width: 2px;
+    height: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    z-index: 2;
+  }
+
+  /* The bar that connects a middle circle to the surrounding circles */
+  :not(:first-child):not(:last-child):after {
+    content: '';
+    position: absolute;
+    top: 0%;
+    left: 3.5px;
+    width: 2px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    z-index: 2;
+  }
+
+  /* The bar that connects the bottom circle to a middle circle (doesn't need to extend downwards) */
+  :last-child:after {
+    content: '';
+    position: absolute;
+    top: 0%;
+    left: 3.5px;
+    width: 2px;
+    height: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    z-index: 2;
+  }
+`;
+
+const DashedDivider = styled.div`
+  margin-left: 8px;
+  margin-right: 8px;
+  position: relative;
+  flex-grow: 1;
+  /* The dashed line */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: calc(50% - 1px);
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
   }
 `;
 
 export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
   const drawData = ResolveBlendPoolDrawData(props.poolData);
-  const { mouseData, handleMouseMove, handleMouseLeave } = useMove();
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [currentPercent, setCurrentPercent] = useState('');
+
+  const onMouseEnter = (index: number, percent: string) => {
+    setActiveIndex(index);
+    setCurrentPercent(`${(parseFloat(percent) * 100).toFixed(2)}%`);
+  };
+
+  const onMouseLeave = () => {
+    setActiveIndex(-1);
+    setCurrentPercent('');
+  };
 
   const { poolStats } = useContext(BlendPoolContext);
 
-  const slices: PieChartSlice[] = [];
-  if (poolStats) {
+  const slices: AllocationPieChartSlice[] = [];
+  if (drawData && poolStats) {
     const silo0_1 = poolStats.inventory0.silo.mul(poolStats.token1OverToken0);
     const float0_1 = poolStats.inventory0.float.mul(poolStats.token1OverToken0);
     const uni0_1 = poolStats.inventory0.uniswap.mul(poolStats.token1OverToken0);
@@ -183,28 +237,44 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
 
     if (poolStats.tvl_1.gt(0)) {
       slices[0] = {
+        index: 0,
         percent: float0_1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN0_COLOR_FLOAT,
+        category: 'Float',
       };
       slices[1] = {
+        index: 1,
         percent: silo0_1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN0_COLOR_SILO,
+        category: drawData.silo0Label,
+        // metric: '2% APY',
       };
       slices[2] = {
+        index: 2,
         percent: uni0_1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN0_COLOR_UNISWAP,
+        category: 'Uniswap',
+        // metric: '1% APR',
       };
       slices[3] = {
+        index: 3,
         percent: uni1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN1_COLOR_UNISWAP,
+        category: 'Uniswap',
+        // metric: '1% APR',
       };
       slices[4] = {
+        index: 4,
         percent: silo1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN1_COLOR_SILO,
+        category: drawData.silo1Label,
+        // metric: '2% APY',
       };
       slices[5] = {
+        index: 5,
         percent: float1.div(poolStats.tvl_1).toNumber(),
         color: TOKEN1_COLOR_FLOAT,
+        category: 'Float',
       };
     }
   }
@@ -228,22 +298,9 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
     return {
       data: pathData,
       color: slice.color,
+      percent: slice.percent,
     };
   });
-
-  cumulativePercent = 0;
-  let activeSliceIdx: number | null = null;
-  let pieChartLabelText = '';
-  for (let i = 0; i < slices.length; i++) {
-    const slice = slices[i];
-    cumulativePercent += slice.percent;
-
-    if (cumulativePercent > mouseData.theta / 360) {
-      activeSliceIdx = i;
-      pieChartLabelText = `${(slice.percent * 100).toFixed(2)}%`;
-      break;
-    }
-  }
 
   const combinedSiloLabelA =
     drawData.silo0Label === drawData.silo1Label
@@ -255,17 +312,33 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
       : ` and ${drawData.silo1Label}`
   );
 
-  const mouseIsInsidePieChart = mouseData.isActive && mouseData.r < 1;
+  const firstHalfOfSlices = slices.slice(0, slices.length / 2).reverse();
+  const secondHalfOfSlices = slices.slice(slices.length / 2);
+
+  const tooltipContent = (
+    <>
+      As prices shift, tokens are moved between Uniswap{combinedSiloLabelA} to
+      keep liquidity in range. Blend replicates Uniswap V2 payoffs with extreme
+      capital efficiency, so most tokens can earn yield in {combinedSiloLabelB}.
+      Value marked as {<em>"Float"</em>} helps facilitate gas-efficient
+      withdrawals.
+    </>
+  );
 
   return (
     <div className='w-full flex flex-col items-start justify-start mb-8'>
-      <WidgetHeading>Token Allocation</WidgetHeading>
-      <div className='w-full h-full mt-4 flex flex-row flex-nowrap'>
-        <div className='w-[200px] h-[200px] relative'>
-          <PieChartContainer
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          >
+      <WidgetHeading>
+        Token Allocation{' '}
+        <Tooltip
+          buttonSize='S'
+          content={tooltipContent}
+          position='top-center'
+          filled={true}
+        />
+      </WidgetHeading>
+      <TokenAllocationWrapper>
+        <div className='w-[227px] h-[227px] relative'>
+          <PieChartContainer>
             <svg viewBox='-1 -1 2 2' overflow='visible'>
               {paths.map((path, index) => {
                 return (
@@ -273,99 +346,120 @@ export default function PoolPieChartWidget(props: PoolStatsWidgetProps) {
                     key={index}
                     d={path.data}
                     fill={path.color}
+                    onMouseEnter={() =>
+                      onMouseEnter(index, path.percent.toString())
+                    }
+                    onMouseLeave={() => onMouseLeave()}
                   ></ExpandingPath>
                 );
               })}
             </svg>
           </PieChartContainer>
-
-          <PieChartLabel shouldShow={mouseIsInsidePieChart}>
-            {pieChartLabelText}
-          </PieChartLabel>
+          <PieChartLabel>{currentPercent}</PieChartLabel>
         </div>
-        <div className='flex flex-col flex-nowrap ml-8'>
-          <div className='h-1/2 flex flex-row flex-nowrap justify-start items-center'>
-            <div className='font-semibold w-14'>{drawData.token0Label}</div>
-            <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
-            <div className='grid grid-rows-3'>
-              <CategoryAndAPRLabel
-                color={TOKEN0_COLOR_UNISWAP}
-                className={
-                  mouseIsInsidePieChart && activeSliceIdx === 2
-                    ? 'text-white'
-                    : 'text-grey-600'
-                }
-              >
-                Uniswap
-              </CategoryAndAPRLabel>
-              <CategoryAndAPRLabel
-                color={TOKEN0_COLOR_SILO}
-                className={
-                  mouseIsInsidePieChart && activeSliceIdx === 1
-                    ? 'text-white'
-                    : 'text-grey-600'
-                }
-              >
-                {drawData.silo0Label}
-              </CategoryAndAPRLabel>
-              <CategoryAndAPRLabel
-                color={TOKEN0_COLOR_FLOAT}
-                className={
-                  mouseIsInsidePieChart && activeSliceIdx === 0
-                    ? 'italic text-white'
-                    : 'italic text-grey-600'
-                }
-              >
-                Float
-              </CategoryAndAPRLabel>
+        <TokenAllocationBreakdown>
+          <div className='flex items-center gap-4 w-full'>
+            <TokenLabel
+              className={
+                activeIndex !== -1 && activeIndex >= firstHalfOfSlices.length
+                  ? 'inactive'
+                  : ''
+              }
+            >
+              {drawData.token0Label}
+            </TokenLabel>
+            <div className='w-64 flex flex-col'>
+              {firstHalfOfSlices.map((slice, index) => {
+                return (
+                  <AllocationSection color={slice.color} key={index}>
+                    <LabelWrapper>
+                      <Text
+                        size='L'
+                        weight='medium'
+                        color={
+                          activeIndex !== -1 && activeIndex !== slice.index
+                            ? 'rgba(255, 255, 255, 0.5)'
+                            : 'rgba(255, 255, 255, 1)'
+                        }
+                      >
+                        {slice.category}
+                      </Text>
+                    </LabelWrapper>
+                    {slice.metric && (
+                      <>
+                        <DashedDivider />
+                        <LabelWrapper>
+                          <Text
+                            size='M'
+                            weight='medium'
+                            color={
+                              activeIndex !== -1 && activeIndex !== slice.index
+                                ? 'rgba(255, 255, 255, 0.5)'
+                                : 'rgba(236, 247, 255, 1)'
+                            }
+                          >
+                            {slice.metric}
+                          </Text>
+                        </LabelWrapper>
+                      </>
+                    )}
+                  </AllocationSection>
+                );
+              })}
             </div>
           </div>
-          <div className='h-1/2 flex flex-row flex-nowrap justify-start items-center'>
-            <div className='font-semibold w-14'>{drawData.token1Label}</div>
-            <div className='border-2 border-grey-300 h-[60%] mx-[16px]' />
-            <div className='grid grid-rows-3'>
-              <CategoryAndAPRLabel
-                color={TOKEN1_COLOR_UNISWAP}
-                className={
-                  mouseIsInsidePieChart && activeSliceIdx === 3
-                    ? 'text-white'
-                    : 'text-grey-600'
-                }
-              >
-                Uniswap
-              </CategoryAndAPRLabel>
-              <CategoryAndAPRLabel
-                color={TOKEN1_COLOR_SILO}
-                className={
-                  mouseIsInsidePieChart && activeSliceIdx === 4
-                    ? 'text-white'
-                    : 'text-grey-600'
-                }
-              >
-                {drawData.silo1Label}
-              </CategoryAndAPRLabel>
-              <CategoryAndAPRLabel
-                color={TOKEN1_COLOR_FLOAT}
-                className={
-                  mouseIsInsidePieChart && activeSliceIdx === 5
-                    ? 'italic text-white'
-                    : 'italic text-grey-600'
-                }
-              >
-                Float
-              </CategoryAndAPRLabel>
+          <div className='flex items-center gap-4'>
+            <TokenLabel
+              className={
+                activeIndex !== -1 && activeIndex < firstHalfOfSlices.length
+                  ? 'inactive'
+                  : ''
+              }
+            >
+              {drawData.token1Label}
+            </TokenLabel>
+            <div className='w-64 flex flex-col'>
+              {secondHalfOfSlices.map((slice, index) => {
+                return (
+                  <AllocationSection color={slice.color} key={index}>
+                    <LabelWrapper>
+                      <Text
+                        size='L'
+                        weight='medium'
+                        color={
+                          activeIndex !== -1 && activeIndex !== slice.index
+                            ? 'rgba(255, 255, 255, 0.5)'
+                            : 'rgba(255, 255, 255, 1)'
+                        }
+                      >
+                        {slice.category}
+                      </Text>
+                    </LabelWrapper>
+                    {slice.metric && (
+                      <>
+                        <DashedDivider />
+                        <LabelWrapper>
+                          <Text
+                            size='M'
+                            weight='medium'
+                            color={
+                              activeIndex !== -1 && activeIndex !== slice.index
+                                ? 'rgba(255, 255, 255, 0.5)'
+                                : 'rgba(236, 247, 255, 1)'
+                            }
+                          >
+                            {slice.metric}
+                          </Text>
+                        </LabelWrapper>
+                      </>
+                    )}
+                  </AllocationSection>
+                );
+              })}
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className='text-grey-700 text-md mt-6 pb-2'>
-        As prices shift, tokens are moved between Uniswap{combinedSiloLabelA} to
-        keep liquidity in range. Blend replicates Uniswap V2 payoffs with
-        extreme capital efficiency, so most tokens can earn yield in{' '}
-        {combinedSiloLabelB}. Value marked as <i>"Float"</i> helps facilitate
-        gas-efficient withdrawals.
-      </div>
+        </TokenAllocationBreakdown>
+      </TokenAllocationWrapper>
     </div>
   );
 }

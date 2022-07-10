@@ -1,126 +1,381 @@
-import React, { useContext, useState } from 'react';
-import { TertiaryButton } from '../components/common/Buttons';
-import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
-import BlendPoolSelectTableRow from '../components/poolselect/BlendPoolSelectTableRow';
-import EllipsesIcon from '../assets/svg/more_ellipses.svg';
-import LeftArrow from '../assets/svg/left_arrow.svg';
-import RightArrow from '../assets/svg/right_arrow.svg';
-import { TextInput } from '../components/common/Input';
-import SearchIcon from '../assets/svg/search.svg';
-import AppPage from '../components/common/AppPage';
-import PageHeading from '../components/common/PageHeading';
-import { BlendTableContext } from '../data/context/BlendTableContext';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { ReactComponent as PlusIcon } from '../assets/svg/white_plus.svg';
+import BrowseCard from '../components/browse/BrowseCard';
+import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
+import { OutlinedGradientRoundedButtonWithIcon } from '../components/common/Buttons';
+import {
+  DropdownWithPlaceholder,
+  DropdownWithPlaceholderOption,
+  MultiDropdown,
+  MultiDropdownOption,
+} from '../components/common/Dropdown';
+import { FilterBadge } from '../components/common/FilterBadge';
+import { RoundedInputWithIcon } from '../components/common/Input';
+import Pagination, { ItemsPerPage } from '../components/common/Pagination';
+import { Display } from '../components/common/Typography';
+import WideAppPage from '../components/common/WideAppPage';
 import { ResolveBlendPoolDrawData } from '../data/BlendPoolDataResolver';
+import { BlendPoolMarkers } from '../data/BlendPoolMarkers';
+import {
+  BROWSE_CARD_WIDTH_LG,
+  BROWSE_CARD_WIDTH_MD,
+  BROWSE_CARD_WIDTH_XL,
+  RESPONSIVE_BREAKPOINT_LG,
+  RESPONSIVE_BREAKPOINT_MD,
+  RESPONSIVE_BREAKPOINT_SM,
+  RESPONSIVE_BREAKPOINTS,
+} from '../data/constants/Breakpoints';
+import { BlendTableContext } from '../data/context/BlendTableContext';
+import { GetTokenData } from '../data/TokenData';
+import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
+import useMediaQuery from '../data/hooks/UseMediaQuery';
+import tw from 'twin.macro';
+import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
 
-export default function BlendPoolSelectPage() {
+const BROWSE_CARD_GAP = '24px';
+const MAX_WIDTH_XL =
+  parseInt(BROWSE_CARD_WIDTH_XL) * 2 + parseInt(BROWSE_CARD_GAP) + 'px';
+const MAX_WIDTH_L =
+  parseInt(BROWSE_CARD_WIDTH_LG) * 2 + parseInt(BROWSE_CARD_GAP) + 'px';
+const MAX_WIDTH_M =
+  parseInt(BROWSE_CARD_WIDTH_MD) * 2 + parseInt(BROWSE_CARD_GAP) + 'px';
+
+const PageWrapper = styled.div`
+  min-width: 300px;
+  width: 100%;
+  /* The width of the 2 cards + the gap between */
+  max-width: ${MAX_WIDTH_XL};
+  margin: 0 auto;
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_LG}) {
+    max-width: ${MAX_WIDTH_L};
+  }
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
+    max-width: ${MAX_WIDTH_M};
+  }
+`;
+
+const InnerSearchBar = styled.div`
+  ${tw`flex gap-x-4`}
+  width: 100%;
+  flex-direction: row;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    flex-direction: column;
+    row-gap: 12px;
+  }
+`;
+
+const BrowseCards = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${BROWSE_CARD_GAP};
+  justify-content: start;
+  align-items: center;
+`;
+
+const SearchInputWrapper = styled.div`
+  width: 420px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
+    max-width: 420px;
+    width: 100%;
+    min-width: 300px;
+  }
+`;
+
+const DropdownContainer = styled.div`
+  ${tw`flex flex-row gap-x-4`}
+`;
+
+export type BlendPoolSelectPageProps = {
+  blockNumber: string | null;
+};
+
+export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
+  const { blockNumber } = props;
+  const [poolsLoading, setPoolsLoading] = useState(true);
+  const [activeLoading, setActiveLoading] = useState(true);
+  const [toDisplayLoading, settoDisplayLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
+  const [activeSearchText, setActiveSearchText] = useState<string>('');
+  const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
+  const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
+  const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
+  const [poolsToDisplay, setPoolsToDisplay] = useState<BlendPoolMarkers[]>([]);
+  const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
+  const [activeTokenOptions, setActiveTokenOptions] = useState<
+    MultiDropdownOption[]
+  >([]);
+  const [page, setPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<10 | 20 | 50 | 100>(10);
+  const sortByOptions = [
+    {
+      label: 'Default',
+      value: 'default',
+      isDefault: true,
+    },
+    {
+      label: 'Newest First',
+      value: 'newest',
+      isDefault: false,
+    },
+    {
+      label: 'Oldest First',
+      value: 'oldest',
+      isDefault: false,
+    },
+  ] as DropdownWithPlaceholderOption[];
+  const [selectedSortByOption, setSelectedSortByOption] =
+    useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
+
+  const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const { poolDataMap } = useContext(BlendTableContext);
+  const loadData = useCallback(async () => {
+    let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
+    setPools(poolData);
+    if (poolData.length > 0) {
+      setPoolsLoading(false);
+    }
+    let tokenAddresses = Array.from(
+      new Set(
+        poolData.flatMap((pool) => [
+          pool.token0Address.toLowerCase(),
+          pool.token1Address.toLocaleLowerCase(),
+        ])
+      )
+    );
+    let tokenData = tokenAddresses.map((address) => GetTokenData(address));
+    let tokenOptionData = tokenData.map(
+      (data) =>
+        ({
+          label: data.ticker,
+          value: data.address,
+          icon: data.iconPath,
+        } as MultiDropdownOption)
+    );
+    setTokenOptions(tokenOptionData);
+    setActiveTokenOptions(tokenOptionData);
+  }, [poolDataMap]);
 
-  let pools: BlendPoolMarkers[] = Array.from(poolDataMap.values());
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
-  if (searchText.length > 0) {
-    pools = pools.filter((pool) => {
-      const {
-        silo0Name,
-        silo1Name,
-        silo0Label,
-        silo1Label,
-        token0Label,
-        token1Label,
-      } = ResolveBlendPoolDrawData(pool);
+  useEffect(() => {
+    if (activeSearchText.length > 0 && pools.length > 0) {
+      setFilteredPools(
+        pools.filter((pool) => {
+          const {
+            silo0Name,
+            silo1Name,
+            silo0Label,
+            silo1Label,
+            token0Label,
+            token1Label,
+          } = ResolveBlendPoolDrawData(pool);
 
-      return (
-        [
-          silo0Name,
-          silo1Name,
-          silo0Label,
-          silo1Label,
-          token0Label,
-          token1Label,
-        ].findIndex((field) => {
-          return field.toLowerCase().includes(searchText.toLowerCase());
-        }) !== -1
+          return (
+            [
+              silo0Name,
+              silo1Name,
+              silo0Label,
+              silo1Label,
+              token0Label,
+              token1Label,
+            ].findIndex((field) => {
+              return field
+                .toLowerCase()
+                .includes(activeSearchText.toLowerCase());
+            }) !== -1
+          );
+        })
       );
-    });
+    } else if (pools.length > 0) {
+      setFilteredPools(pools);
+    }
+  }, [activeSearchText, pools]);
+
+  useEffect(() => {
+    if (activeTokenOptions.length > 0) {
+      setActivePools(
+        pools.filter((pool) => {
+          const {
+            silo0Name,
+            silo1Name,
+            silo0Label,
+            silo1Label,
+            token0Label,
+            token1Label,
+          } = ResolveBlendPoolDrawData(pool);
+
+          return (
+            [
+              silo0Name,
+              silo1Name,
+              silo0Label,
+              silo1Label,
+              token0Label,
+              token1Label,
+            ].findIndex((field) => {
+              return activeTokenOptions
+                .map((option) => option.label.toLowerCase())
+                .includes(field.toLowerCase());
+            }) !== -1
+          );
+        })
+      );
+      setActiveLoading(false);
+    } else if (pools.length > 0) {
+      setActivePools(pools);
+      setActiveLoading(poolsLoading);
+    }
+  }, [pools, activeTokenOptions, poolsLoading]);
+
+  useEffect(() => {
+    if (activePools.length > 0 && filteredPools.length > 0) {
+      if (filteredPools.length >= activePools.length) {
+        setPoolsToDisplay(
+          filteredPools.filter((pool) => {
+            return activePools.includes(pool);
+          })
+        );
+        settoDisplayLoading(false);
+      } else {
+        setPoolsToDisplay(
+          activePools.filter((pool) => {
+            return filteredPools.includes(pool);
+          })
+        );
+      }
+      settoDisplayLoading(false);
+    } else {
+      setPoolsToDisplay([]);
+      if (!poolsLoading) {
+        settoDisplayLoading(activeLoading);
+      }
+    }
+  }, [filteredPools, activePools, poolsLoading, activeLoading]);
+
+  /* Calculating the number of applied filters */
+  let numberOfFiltersApplied = 0;
+  if (activeTokenOptions.length < tokenOptions.length) {
+    numberOfFiltersApplied++;
+  }
+  if (selectedSortByOption.value !== 'default') {
+    numberOfFiltersApplied++;
   }
 
-  return (
-    <AppPage>
-      <div>
-        <PageHeading>Browse Deployed Pools</PageHeading>
-      </div>
-      <div className='py-4 flex flex-row items-center justify-between text-lg'>
-        <TextInput
-          className='lg:basis-5/12 md:basis-1/2 md:grow-0 sm:basis-0 sm:grow sm:mr-12'
-          icon={SearchIcon}
-          placeholder='Search by name or symbol'
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
+  const handlePageChange = (page: number) => {
+    setPage(page);
+  };
 
-        <a
-          href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
-          target='_blank'
-          rel='noopener noreferrer'
-          tabIndex={-1}
-        >
-          <TertiaryButton
-            name='Deploy New Pool'
-            className='flex-none px-8 py-3'
-          >
-            Deploy&nbsp;New&nbsp;Pool
-          </TertiaryButton>
-        </a>
-      </div>
-      <div className='text-left rounded-md border-2 border-grey-200'>
-        <table className='w-full'>
-          <thead>
-            <tr className='bg-grey-200'>
-              <th className='p-4'>Token&nbsp;Pair</th>
-              <th className='p-4'>
-                Additional&nbsp;Sources&nbsp;of&nbsp;Yield
-              </th>
-              <th className='p-4'></th>
-              <th className='p-4'>Uniswap&nbsp;Fee&nbsp;Tier</th>
-              {/*<th className='p-4'>TVL</th>*/}
-            </tr>
-          </thead>
-          <tbody className=''>
-            {pools.map((pool, index, array) => {
-              return (
-                <React.Fragment key={index}>
-                  <BlendPoolSelectTableRow poolData={pool} />
-                  {/* Insert Partial-width divider */}
-                  {index !== array.length - 1 && (
-                    <tr className='w-full'>
-                      <td colSpan={4} className='w-full h-full'>
-                        <div className='flex flex-row items-center justify-center px-4'>
-                          <div className='border-b-2 border-b-grey-200 grow' />
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      <div className='w-full h-10 bg-grey-200 rounded-md mt-8 pl-4 flex flex-row items-center justify-between text-sm text-grey-800 select-none'>
-        <button>
-          <img alt='More' src={EllipsesIcon} />
-        </button>
-        <div className='flex flex-row items-center justify-between space-x-8 mr-4'>
-          <button className='text-grey-800'>
-            <img alt='Prev' src={LeftArrow} />
-          </button>
-          <span>Page&nbsp;1&nbsp;of&nbsp;1</span>
-          <button className=''>
-            <img className='' alt='Prev' src={RightArrow} />
-          </button>
+  const handleItemsPerPageChange = (itemsPerPage: ItemsPerPage) => {
+    setItemsPerPage(itemsPerPage);
+  };
+
+  return (
+    <WideAppPage>
+      <PageWrapper>
+        <div className='flex flex-col gap-6'>
+          <Display size='L' weight='semibold'>
+            Aloe's Performance
+          </Display>
+          <BrowsePoolsPerformance poolData={pools} />
         </div>
-      </div>
-    </AppPage>
+        <div className='flex items-center gap-6'>
+          <Display size='L' weight='semibold'>
+            Browse Deployed Pools
+          </Display>
+          {numberOfFiltersApplied > 0 && (
+            <FilterBadge>
+              {numberOfFiltersApplied}{' '}
+              {numberOfFiltersApplied === 1 ? 'Filter' : 'Filters'} Applied
+            </FilterBadge>
+          )}
+        </div>
+        <div className='py-4 flex items-center justify-between'>
+          <InnerSearchBar>
+            <SearchInputWrapper>
+              <RoundedInputWithIcon
+                value={searchText}
+                size='L'
+                onChange={(e) => setSearchText(e.target.value)}
+                Icon={<SearchIcon />}
+                svgColorType='fill'
+                placeholder='Search by name, symbol or address'
+                fullWidth={true}
+                onIconClick={() => setActiveSearchText(searchText)}
+                onEnter={() => setActiveSearchText(searchText)}
+              />
+            </SearchInputWrapper>
+            <DropdownContainer>
+              <MultiDropdown
+                options={tokenOptions}
+                activeOptions={activeTokenOptions}
+                handleChange={setActiveTokenOptions}
+                placeholder='All Tokens'
+                selectedText='Tokens'
+              />
+              <DropdownWithPlaceholder
+                options={sortByOptions}
+                selectedOption={selectedSortByOption}
+                onSelect={setSelectedSortByOption}
+                placeholder='Sort By'
+              />
+            </DropdownContainer>
+          </InnerSearchBar>
+          {isGTMediumScreen && (
+            <a
+              href='https://docs.aloe.capital/aloe-blend/overview/creating-a-pool'
+              target='_blank'
+              rel='noopener noreferrer'
+              tabIndex={-1}
+            >
+              <OutlinedGradientRoundedButtonWithIcon
+                size='L'
+                position='trailing'
+                activeGradientId='#plus-icon-gradient'
+                svgColorType='stroke'
+                name='Deploy New Pool'
+                Icon={<PlusIcon />}
+              >
+                <span>Deploy&nbsp;New&nbsp;Pool</span>
+              </OutlinedGradientRoundedButtonWithIcon>
+            </a>
+          )}
+        </div>
+        <BrowseCards>
+          {toDisplayLoading &&
+            [...Array(5)].map((_placeholder, index) => (
+              <BrowseCardPlaceholder key={index} />
+            ))}
+          {!toDisplayLoading &&
+            poolsToDisplay
+              .slice(
+                (page - 1) * itemsPerPage,
+                (page - 1) * itemsPerPage + itemsPerPage
+              )
+              .map((pool, index) => {
+                return (
+                  <BrowseCard
+                    blendPoolMarkers={pool}
+                    blockNumber={blockNumber}
+                    key={index}
+                  />
+                );
+              })}
+        </BrowseCards>
+        <Pagination
+          currentPage={page}
+          itemsPerPage={itemsPerPage}
+          totalItems={poolsToDisplay.length}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+          loading={toDisplayLoading}
+        />
+      </PageWrapper>
+    </WideAppPage>
   );
 }

@@ -1,156 +1,141 @@
 import React, { useContext } from 'react';
-import WidgetHeading from '../common/WidgetHeading';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
-import { ResolveBlendPoolDrawData } from '../../data/BlendPoolDataResolver';
-
+import { formatDistance } from 'date-fns';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
-import { prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
-import { useAccount, useBalance } from 'wagmi';
+import { OffChainPoolStats } from '../../data/PoolStats';
+import { formatUSDAuto, roundPercentage } from '../../util/Numbers';
+import { Display, Text } from '../common/Typography';
+import WidgetHeading from '../common/WidgetHeading';
+
+const ROUNDING_PRECISION = 2;
+const POOL_STAT_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
+const POOL_STAT_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
+const IN_RANGE_COLOR = '#00C143';
+const OUT_OF_RANGE_COLOR = POOL_STAT_VALUE_TEXT_COLOR; //'#EB5757';
+
+const Wrapper = styled.div`
+  ${tw`flex flex-col`}
+  /* 16px due to the bottom padding already being 8px making the total space 24px */
+  gap: 16px;
+  margin-bottom: 64px;
+`;
+
+const PoolStatsWidgetGrid = styled.div`
+  display: grid;
+  grid-template-columns: calc(50% - 12px) calc(50% - 12px);
+  column-gap: 24px;
+  border-top: 1px solid rgba(26, 41, 52, 1);
+`;
+
+const PoolStat = styled.div`
+  ${tw`flex items-center justify-between`}
+  padding: 18px 8px;
+  border-bottom: 1px solid rgba(26, 41, 52, 1);
+`;
 
 export type PoolStatsWidgetProps = {
-  poolData: BlendPoolMarkers;
+  offChainPoolStats: OffChainPoolStats | undefined;
+  uniswapVolume: number | null;
 };
 
-const HorizDivider = styled.div`
-  ${tw`w-full px-4 border-t-2 border-t-grey-200 h-0`}
-`;
-
-const Card = styled.div`
-  ${tw`w-full py-2 flex flex-row items-center justify-between hover:bg-grey-75`}
-`;
-
 export default function PoolStatsWidget(props: PoolStatsWidgetProps) {
-  const drawData = ResolveBlendPoolDrawData(props.poolData);
+  const { offChainPoolStats, uniswapVolume } = props;
 
   const { poolStats } = useContext(BlendPoolContext);
 
-  const [{ data: accountData }] = useAccount();
-  const [{ data: shareBalanceData }] = useBalance({
-    addressOrName: accountData?.address,
-    token: props.poolData.poolAddress,
-    watch: true,
-  });
-
-  const sharesBalance = shareBalanceData
-    ? toBig(shareBalanceData.value)
-    : undefined;
-
-  const token0Reserves = prettyFormatBalance(
-    poolStats?.inventory0.total,
-    poolStats?.token0Decimals
-  );
-  const token1Reserves = prettyFormatBalance(
-    poolStats?.inventory1.total,
-    poolStats?.token1Decimals
-  );
-
-  const token0OwedToUser =
-    !poolStats || !sharesBalance || poolStats.outstandingShares.eq(0)
-      ? '-'
-      : prettyFormatBalance(
-          poolStats.inventory0.total
-            .mul(sharesBalance)
-            .div(poolStats.outstandingShares),
-          poolStats.token0Decimals
-        );
-  const token1OwedToUser =
-    !poolStats || !sharesBalance || poolStats.outstandingShares.eq(0)
-      ? '-'
-      : prettyFormatBalance(
-          poolStats.inventory1.total
-            .mul(sharesBalance)
-            .div(poolStats.outstandingShares),
-          poolStats.token1Decimals
-        );
-  const poolSharesBalance = sharesBalance
-    ? sharesBalance.div(String1E(18)).toExponential(4)
-    : '-';
-
   return (
-    <div className='w-full flex flex-col items-start justify-start'>
-      <WidgetHeading>Vault Usage</WidgetHeading>
-      <div className='w-full flex flex-col items-start justify-start pb-4 text-grey-800'>
-        {/*<Card>*/}
-        {/*  <span>TVL</span>*/}
-        {/*  <span>-</span>*/}
-        {/*</Card>*/}
-        {/*<HorizDivider />*/}
-        <Card>
-          <span>
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token0Label}
-            </span>
-            &nbsp;Reserves
-          </span>
-          <span>
-            {token0Reserves}&nbsp;
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token0Label}
-            </span>
-          </span>
-        </Card>
-        <HorizDivider />
-        <Card>
-          <span>
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token1Label}
-            </span>
-            &nbsp;Reserves
-          </span>
-          <span>
-            {token1Reserves}&nbsp;
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token1Label}
-            </span>
-          </span>
-        </Card>
-        <HorizDivider />
-      </div>
-      {/*User Stats*/}
-      <WidgetHeading>Your&nbsp;Position</WidgetHeading>
-      <div className='w-full flex flex-col items-start justify-start text-grey-800'>
-        <Card>
-          <span>Shares</span>
-          <span>{poolSharesBalance}</span>
-        </Card>
-        <HorizDivider />
-        {/*<Card>*/}
-        {/*  <span>Value</span>*/}
-        {/*  <span>-</span>*/}
-        {/*</Card>*/}
-        {/*<HorizDivider />*/}
-        <Card>
-          <span>
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token0Label}
-            </span>
-            &nbsp;Holdings
-          </span>
-          <span>
-            {token0OwedToUser}&nbsp;
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token0Label}
-            </span>
-          </span>
-        </Card>
-        <HorizDivider />
-        <Card>
-          <span>
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token1Label}
-            </span>
-            &nbsp;Holdings
-          </span>
-          <span>
-            {token1OwedToUser}&nbsp;
-            <span className='font-semibold text-grey-1000'>
-              {drawData.token1Label}
-            </span>
-          </span>
-        </Card>
-      </div>
-    </div>
+    <Wrapper>
+      <WidgetHeading>Stats</WidgetHeading>
+      <PoolStatsWidgetGrid>
+        <PoolStat>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            APR (14d avg)
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            {offChainPoolStats
+              ? roundPercentage(
+                  100 * offChainPoolStats.annual_percentage_rate,
+                  ROUNDING_PRECISION
+                )
+                  .toFixed(ROUNDING_PRECISION)
+                  .concat('%')
+              : '--'}
+          </Display>
+        </PoolStat>
+        <PoolStat>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            Uniswap Position
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={poolStats ? (poolStats.isInRange ? IN_RANGE_COLOR : OUT_OF_RANGE_COLOR) : POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            {poolStats ? (poolStats.isInRange ? 'In-Range' : 'Out-of-Range') : '--'}
+          </Display>
+        </PoolStat>
+        <PoolStat>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            24H Uniswap Volume
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            {formatUSDAuto(uniswapVolume, '--')}
+          </Display>
+        </PoolStat>
+        <PoolStat>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            Implied Volatility
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            {poolStats
+              ? roundPercentage(100 * poolStats.IV, ROUNDING_PRECISION)
+                  .toFixed(ROUNDING_PRECISION)
+                  .concat('%')
+              : '--'}
+          </Display>
+        </PoolStat>
+        <PoolStat>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            TVL
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            {formatUSDAuto(offChainPoolStats?.total_value_locked || null, '--')}
+          </Display>
+        </PoolStat>
+        <PoolStat>
+          <Text size='S' weight='medium' color={POOL_STAT_LABEL_TEXT_COLOR}>
+            Last Rebalance
+          </Text>
+          <Display
+            size='S'
+            weight='semibold'
+            color={POOL_STAT_VALUE_TEXT_COLOR}
+          >
+            {poolStats
+              ? formatDistance(poolStats.recenterTimestamp * 1000, Date.now(), {
+                  addSuffix: true,
+                })
+              : '--'}
+          </Display>
+        </PoolStat>
+      </PoolStatsWidgetGrid>
+    </Wrapper>
   );
 }
