@@ -13,18 +13,23 @@ import AppBody from './components/common/AppBody';
 import { RedirectPartialPath } from './util/RedirectPartialPath';
 import { BlendTableProvider } from './data/context/BlendTableContext';
 import ScrollToTop from './util/ScrollToTop';
+import { IS_DEV } from './util/Env';
+import ButtonExamplesPage from './pages/ButtonExamplesPage';
+import InputExamplesPage from './pages/InputExamplesPage';
 import {
   ApolloClient,
   InMemoryCache,
   HttpLink,
   gql,
 } from '@apollo/react-hooks';
+
 export const theGraphUniswapV3Client = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
   }),
   cache: new InMemoryCache(),
 });
+
 export const theGraphEthereumBlocksClient = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
@@ -99,8 +104,15 @@ function App() {
                       element={<Navigate replace to='/blend/pools' />}
                     />
                   </Route>
-                  <Route path='/portfolio' element={<PortfolioPage />} />
-                  <Route path='/governance' element={<GovernancePage />} />
+                  { // Devmode-only example page routing
+                    IS_DEV && (
+                      <>
+                        <Route path='/buttons' element={<ButtonExamplesPage />} />
+                        <Route path='/inputs' element={<InputExamplesPage />} />
+                        <Route path='/portfolio' element={<PortfolioPage />} />
+                        <Route path='/governance' element={<GovernancePage />} />
+                      </>
+                  )}
                   <Route path='/' element={<Navigate replace to='/blend' />} />
                   <Route path='*' element={<Navigate to='/' />} />
                 </Routes>
