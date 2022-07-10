@@ -6,7 +6,6 @@ import {
   CardBodyWrapper,
   CardTitleWrapper,
   CardWrapper,
-  TokenIconsWrapper,
   CardSubTitleWrapper,
 } from './PortfolioCard';
 import { PositivePercentChangeContainer } from '../common/PercentChange';

@@ -6,7 +6,6 @@ import WithdrawTab from './WithdrawTab';
 import tw from 'twin.macro';
 import styled from 'styled-components';
 import ConnectWallet from './ConnectWallet';
-import { useAccount } from 'wagmi';
 import { OffChainPoolStats } from '../../data/PoolStats';
 
 export const MODAL_BLACK_TEXT_COLOR = 'rgba(7, 14, 18, 1)';

@@ -13,7 +13,6 @@ import {
   RATIO_CHANGE_CUTOFF
 } from '../../data/constants/Values';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
-import { GetTokenData } from '../../data/TokenData';
 import { formatUSDCompact, prettyFormatBalance, String1E, toBig } from '../../util/Numbers';
 import { FilledStylizedButton } from '../common/Buttons';
 import Pending from '../common/Pending';

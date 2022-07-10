@@ -6,7 +6,7 @@ import Graph from './Graph';
 import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
 
 const TEXT_COLOR = '#82a0b6';
-const GREEN_GRADIENT_COLOR = '#59d67c';
+// const GREEN_GRADIENT_COLOR = '#59d67c';
 const GREEN_STROKE_COLOR = '#00C143';
 const PURPLE_STROKE_COLOR = '#865EF2';
 const GRAY_STROKE_COLOR = '#C2D1DD';
