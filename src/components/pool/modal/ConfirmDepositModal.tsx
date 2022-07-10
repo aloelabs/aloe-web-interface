@@ -63,6 +63,12 @@ export default function ConfirmDepositModal(props: ConfirmDepositModalProps) {
           <DashedDivider />
           <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{maxSlippage}%</Text>
         </div>
+        {/*Hidden for the time being*/}
+        <div className='hidden flex justify-between items-center'>
+          <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>Network fee</Text>
+          <DashedDivider />
+          <Text size='L' weight='medium' color={VALUE_TEXT_COLOR}>{networkFee}%</Text>
+        </div>
       </div>
       {/* <HorizontalDivider />
       <div className='flex justify-between items-center mb-8'>

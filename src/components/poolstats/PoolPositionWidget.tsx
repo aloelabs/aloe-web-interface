@@ -11,7 +11,7 @@ import { RESPONSIVE_BREAKPOINT_MD } from '../../data/constants/Breakpoints';
 import { API_URL } from '../../data/constants/Values';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { OffChainPoolStats } from '../../data/PoolStats';
-import { formatUSD, formatUSDAuto, toBig } from '../../util/Numbers';
+import { formatUSDAuto, toBig } from '../../util/Numbers';
 import { PoolReturns, TokenReturns } from '../../util/ReturnsCalculations';
 import { PercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
@@ -156,7 +156,7 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
           let cashBasis = 0;
           let cashBasis1D = 0;
           let shareDiff1D = 0;
-          
+
           for (const transfer of transfers) {
             const addrFrom: string = transfer.topics[1].slice(26).toLowerCase();
             const addrTo: string = transfer.topics[2].slice(26).toLowerCase();
@@ -168,7 +168,7 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
             const R = findNearestElementByTime(poolReturns, transfer.timeStamp);
             const P0 = findNearestElementByTime(prices0, transfer.timeStamp);
             const P1 = findNearestElementByTime(prices1, transfer.timeStamp);
-            
+
             const valueToken0 = amountShares.mul(R.inventory0).div(R.total_supply).mul(P0.price);
             const valueToken1 = amountShares.mul(R.inventory1).div(R.total_supply).mul(P1.price);
             const valueAll = valueToken0.toNumber() + valueToken1.toNumber();
@@ -194,7 +194,7 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
             const R = findNearestElementByTime(poolReturns, twentyFourHoursAgo);
             const P0 = findNearestElementByTime(prices0, twentyFourHoursAgo);
             const P1 = findNearestElementByTime(prices1, twentyFourHoursAgo);
-            
+
             const accountShares1DAgo = toBig(accountShareBalance.value).div('1e18').minus(shareDiff1D);
             const valueToken0 = accountShares1DAgo.mul(R.inventory0).div(R.total_supply).mul(P0.price);
             const valueToken1 = accountShares1DAgo.mul(R.inventory1).div(R.total_supply).mul(P1.price);
@@ -216,7 +216,7 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
     return () => {
       mounted = false;
     }
-  }, [offChainPoolStats, poolStats, accountShareBalance, poolData]);
+  }, [offChainPoolStats, poolStats, accountShareBalance, poolData, accountData]);
   
   return (
     <Wrapper>

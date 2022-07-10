@@ -1,5 +1,3 @@
-import Big from "big.js";
-import { closestTo } from "date-fns";
 
 interface PoolPerformanceSnapshot {
     timestamp: string; // TODO this should be a number like `TokenPerformanceSnapshot`, but Matt hasn't standardized the API yet
