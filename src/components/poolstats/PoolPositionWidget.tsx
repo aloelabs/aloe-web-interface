@@ -131,15 +131,15 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
         false // `or` between topics, not `and`
       );
 
-      const endTime = Date.now() / 1000;
+      const endTime = (Date.now() / 1000).toFixed(0);
       // Get all-time data for "Total Returns"
-      const getPoolReturns = axios.get(`${API_URL}/pool_returns/${poolData.poolAddress}/1/all/${endTime.toFixed(0)}`);
-      const getPrices0 = axios.get(`${API_URL}/token_returns/${poolData.token0Address}/1/all/${endTime.toFixed(0)}`);
-      const getPrices1 = axios.get(`${API_URL}/token_returns/${poolData.token1Address}/1/all/${endTime.toFixed(0)}`);
+      const getPoolReturns = axios.get(`${API_URL}/pool_returns/${poolData.poolAddress}/1/all/${endTime}`);
+      const getPrices0 = axios.get(`${API_URL}/token_returns/${poolData.token0Address}/1/all/${endTime}`);
+      const getPrices1 = axios.get(`${API_URL}/token_returns/${poolData.token1Address}/1/all/${endTime}`);
       // Get 3-month data for "Today's Returns" (we need data from exactly 24 hours ago, and 3m gives us that without as many extraneous entries as 1d)
-      const getPoolReturns3M = axios.get(`${API_URL}/pool_returns/${poolData.poolAddress}/1/3m/${endTime.toFixed(0)}`);
-      const getPrices03M = axios.get(`${API_URL}/token_returns/${poolData.token0Address}/1/3m/${endTime.toFixed(0)}`);
-      const getPrices13M = axios.get(`${API_URL}/token_returns/${poolData.token1Address}/1/3m/${endTime.toFixed(0)}`);
+      const getPoolReturns3M = axios.get(`${API_URL}/pool_returns/${poolData.poolAddress}/1/3m/${endTime}`);
+      const getPrices03M = axios.get(`${API_URL}/token_returns/${poolData.token0Address}/1/3m/${endTime}`);
+      const getPrices13M = axios.get(`${API_URL}/token_returns/${poolData.token1Address}/1/3m/${endTime}`);
 
       axios.all([getEvents, getPoolReturns, getPrices0, getPrices1, getPoolReturns3M, getPrices03M, getPrices13M]).then(
         axios.spread((eventData, poolReturnsData, price0Data, price1Data, poolReturnsData3M, price0Data3M, price1Data3M) => {
