@@ -106,7 +106,7 @@ const FeeTierContainer = styled.div`
   padding: 8px 16px;
   background: ${FEE_TIER_BG_COLOR};
   color: ${FEE_TIER_TEXT_COLOR};
-  outline: 2px solid ${FEE_TIER_OUTLINE_COLOR};
+  box-shadow: 0px 0px 0px 2px ${FEE_TIER_OUTLINE_COLOR};
   border-radius: 100px;
 `;
 
