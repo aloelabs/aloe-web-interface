@@ -214,7 +214,10 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
               />
             </GridExpandingDiv>
           )}
-          {walletIsConnected && <PoolPositionWidget poolData={poolData} />}
+          {walletIsConnected && <PoolPositionWidget
+            poolData={poolData}
+            offChainPoolStats={offChainPoolStats}
+          />}
           <PoolStatsWidget
             offChainPoolStats={offChainPoolStats}
             uniswapVolume={uniswapVolume}
