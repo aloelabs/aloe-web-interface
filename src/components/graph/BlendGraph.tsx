@@ -3,7 +3,7 @@ import BlendGraphTooltip from './tooltips/BlendGraphTooltip';
 import styled from 'styled-components';
 import { Text } from '../common/Typography';
 import Graph from './Graph';
-import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
+import { RESPONSIVE_BREAKPOINT_SM, RESPONSIVE_BREAKPOINT_XS } from '../../data/constants/Breakpoints';
 
 const TEXT_COLOR = '#82a0b6';
 // const GREEN_GRADIENT_COLOR = '#59d67c';
@@ -18,9 +18,16 @@ const ResponsiveContainerStyled = styled.div`
   width: calc(100% + 64px);
   height: 300px;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     left: -16px;
     width: calc(100% + 32px);
+  }
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    left: 0;
+    /* 31px in order to avoid overflow in case of decimals */
+    // NOTE: this value is 100% plus 2 * the padding of the pool page minus 1 to fill the entire space
+    width: calc(100% + 31px);
   }
 `;
 
@@ -38,6 +45,7 @@ const LegendItem = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  text-align: center;
 
   @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     flex-direction: column;

@@ -5,6 +5,7 @@ import tw from 'twin.macro';
 import { SectionLabel } from './DepositTab';
 import { Text } from '../common/Typography';
 import Tooltip from '../common/Tooltip';
+import { RESPONSIVE_BREAKPOINT_XS } from '../../data/constants/Breakpoints';
 
 const MESSAGE_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
 
@@ -21,7 +22,8 @@ const SlippageTabsWrapper = styled.div`
 `;
 
 const SlippageButton = styled.button`
-  ${tw`w-full flex justify-center items-center py-2 px-3`}
+  ${tw`w-full flex justify-center items-center`}
+  padding: 8px 12px;
   height: 35px;
   color: rgba(75, 105, 128, 1);
   background-color: rgba(13, 23, 30, 1);
@@ -44,16 +46,25 @@ const SlippageButton = styled.button`
       -webkit-text-fill-color: transparent;
     }
   }
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    padding: 4px 6px;
+  }
 `;
 
 const CustomSlippageInputWrapper = styled.div`
-  ${tw`w-full flex px-3`}
+  ${tw`w-full flex`}
   position: relative;
   flex: 1;
+  padding: 0px 12px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    padding: 0px 6px;
+  }
 `;
 
 const CustomSlippageInput = styled.input`
-  ${tw`w-full h-full px-3`}
+  ${tw`w-full h-full`}
   position: absolute;
   left: 0;
   background-color: rgba(13, 23, 30, 1);
