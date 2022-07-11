@@ -144,8 +144,7 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
       axios.all([getEvents, getPoolReturns, getPrices0, getPrices1, getPoolReturns3M, getPrices03M, getPrices13M]).then(
         axios.spread((eventData, poolReturnsData, price0Data, price1Data, poolReturnsData3M, price0Data3M, price1Data3M) => {
           const events = eventData.data.result;
-          // If there are no events, we can't calculate anything
-          if (events.length === 0) return;
+          if (!Array.isArray(events)) return;
           const transfers = events.filter((ev: any) => ev.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef');
 
           let poolReturns = (poolReturnsData.data as PoolReturns).concat(...(poolReturnsData3M.data as PoolReturns));
