@@ -96,14 +96,15 @@ function findNearestElementByTime<T extends Timestamp>(arr: T[], timestamp: stri
 }
 
 export type PoolPositionWidgetProps = {
+  walletIsConnected: boolean;
   poolData: BlendPoolMarkers;
   offChainPoolStats: OffChainPoolStats | undefined;
-  accountData: AccountData;
+  accountData: AccountData | undefined;
 };
 
 export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
 
-  const { poolData, offChainPoolStats, accountData } = props;
+  const { walletIsConnected, poolData, offChainPoolStats, accountData } = props;
   const { poolStats } = useContext(BlendPoolContext);
 
   // const [{ data: accountData }] = useAccount();
@@ -216,14 +217,18 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
         }
       ));
     }
-    if (offChainPoolStats && poolStats && accountShareBalance && accountData) {
+    if (walletIsConnected && offChainPoolStats && poolStats && accountShareBalance && accountData && !accountStats) {
       fetchAccountStats(offChainPoolStats, poolStats, accountShareBalance, accountData);
     }
     return () => {
       mounted = false;
     }
-  }, [accountData, accountShareBalance, offChainPoolStats, poolData, poolStats]);
+  }, [accountData, accountShareBalance, accountStats, offChainPoolStats, poolData, poolStats, walletIsConnected]);
   
+  if (!walletIsConnected) {
+    return null;
+  }
+
   return (
     <Wrapper>
       <WidgetHeading>Your Position</WidgetHeading>
