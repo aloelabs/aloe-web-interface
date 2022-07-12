@@ -167,6 +167,11 @@ export default function WithdrawTab(props: WithdrawTabProps) {
 
   // Determine button state
   useEffect(() => {
+    let mounted = true;
+
+    if (!mounted) {
+      return;
+    }
     if (isTransactionPending) {
       setButtonState(ButtonState.PENDING_TRANSACTION);
     } else if (!maxShares || !poolStats || sharesBig.eq(0)) {
@@ -177,6 +182,9 @@ export default function WithdrawTab(props: WithdrawTabProps) {
       setButtonState(ButtonState.INSUFFICIENT_SHARES);
     } else {
       setButtonState(ButtonState.READY);
+    }
+    return () => {
+      mounted = false;
     }
   }, [
     isTransactionPending,
