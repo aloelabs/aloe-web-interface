@@ -1,16 +1,18 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import axios from 'axios';
 import Big from 'big.js';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { useAccount, useBalance } from 'wagmi';
+import { useBalance } from 'wagmi';
+import { BlendPoolStats } from '../../data/BlendPoolDataResolver';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { BLEND_FACTORY_CREATION_BLOCK } from '../../data/constants/Addresses';
 import { RESPONSIVE_BREAKPOINT_MD } from '../../data/constants/Breakpoints';
 import { API_URL } from '../../data/constants/Values';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { OffChainPoolStats } from '../../data/PoolStats';
+import { AccountData } from '../../pages/BlendPoolPage';
 import { formatUSDAuto, toBig } from '../../util/Numbers';
 import { PoolReturns, TokenReturns } from '../../util/ReturnsCalculations';
 import { PercentChange } from '../common/PercentChange';
@@ -47,11 +49,6 @@ const PerformanceCard = styled.div`
   background-color: rgba(13, 23, 30, 1);
 `;
 
-export type PoolPositionWidgetProps = {
-  poolData: BlendPoolMarkers;
-  offChainPoolStats: OffChainPoolStats | undefined;
-};
-
 type AccountStats = {
   accountValue: number,
   accountValue1DAgo: number | null,
@@ -70,7 +67,7 @@ function makeEtherscanRequest(
   shouldMatchAll: boolean,
   pageLength = 1000,
   page?: number,
-  toBlock?: number
+  toBlock?: number,
 ) {
   let query = `https://api.etherscan.io/api?module=logs&action=getLogs`.concat(
     `&fromBlock=${fromBlock.toFixed(0)}`,
@@ -98,24 +95,30 @@ function findNearestElementByTime<T extends Timestamp>(arr: T[], timestamp: stri
   return arr[idx];
 }
 
+export type PoolPositionWidgetProps = {
+  poolData: BlendPoolMarkers;
+  offChainPoolStats: OffChainPoolStats | undefined;
+  accountData: AccountData;
+};
+
 export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
 
-  const { poolData, offChainPoolStats } = props;
+  const { poolData, offChainPoolStats, accountData } = props;
   const { poolStats } = useContext(BlendPoolContext);
 
-  const [{ data: accountData }] = useAccount();
+  // const [{ data: accountData }] = useAccount();
   const [{ data: accountShareBalance }] = useBalance({
     addressOrName: accountData?.address,
     token: poolData.poolAddress,
     watch: false,
   });
 
-  const [accountStats, setAccountStats] = useState<AccountStats | null>(null)
+  const [accountStats, setAccountStats] = useState<AccountStats | null>(null);
 
   useEffect(() => {
     let mounted = true;
 
-    if (offChainPoolStats && poolStats && accountShareBalance && accountData) {
+    async function fetchAccountStats(offChainPoolStats: OffChainPoolStats, poolStats: BlendPoolStats, accountShareBalance: any, accountData: any) {
       const tvl = new Big(offChainPoolStats.total_value_locked);
       const accountValue = tvl.mul(toBig(accountShareBalance.value)).div(poolStats.outstandingShares);
       const accountAddress = accountData.address.slice(2).toLowerCase();
@@ -128,7 +131,7 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
           `0x000000000000000000000000${accountAddress}`, // to this user
           `0x000000000000000000000000${accountAddress}` // from this user
         ],
-        false // `or` between topics, not `and`
+        false, // `or` between topics, not `and`
       );
 
       const endTime = (Date.now() / 1000).toFixed(0);
@@ -213,11 +216,13 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
         }
       ));
     }
-
+    if (offChainPoolStats && poolStats && accountShareBalance && accountData) {
+      fetchAccountStats(offChainPoolStats, poolStats, accountShareBalance, accountData);
+    }
     return () => {
       mounted = false;
     }
-  }, [offChainPoolStats, poolStats, accountShareBalance, poolData, accountData]);
+  }, [accountData, accountShareBalance, offChainPoolStats, poolData, poolStats]);
   
   return (
     <Wrapper>
