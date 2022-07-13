@@ -25,8 +25,11 @@ const GraphButtonsWrapper = styled.div`
   right: 0;
 
   @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
-    // NOTE: this value is based on the padding of the pool page
-    right: -16px;
+    right: 0;
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
   }
 `;
 
