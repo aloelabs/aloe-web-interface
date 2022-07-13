@@ -10,10 +10,9 @@ import { Display, Text } from '../common/Typography';
 const SILO_TEXT_COLOR = 'rgba(236, 247, 255, 1)';
 
 const TokenPairContainer = styled.div`
-  ${tw`flex relative`}
+  ${tw`flex items-center relative`}
   column-gap: 16px;
   flex-direction: row;
-  align-items: center;
 
   @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
     width: max-content;
