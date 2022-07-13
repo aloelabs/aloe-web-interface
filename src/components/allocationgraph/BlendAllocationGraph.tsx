@@ -15,7 +15,7 @@ import { GetTokenData } from '../../data/TokenData';
 import { Text } from '../common/Typography';
 import { fixTimestamp } from '../../util/Dates';
 import { API_URL } from '../../data/constants/Values';
-import { RESPONSIVE_BREAKPOINT_MD } from '../../data/constants/Breakpoints';
+import { RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_XS } from '../../data/constants/Breakpoints';
 import { BlendGraphPlaceholder } from '../graph/BlendGraphPlaceholder';
 
 const GraphButtonsWrapper = styled.div`
@@ -23,6 +23,14 @@ const GraphButtonsWrapper = styled.div`
   position: absolute;
   top: -36px;
   right: 0;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    right: 0;
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+  }
 `;
 
 export type GraphButtonProps = {

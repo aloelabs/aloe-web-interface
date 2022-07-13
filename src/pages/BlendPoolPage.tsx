@@ -17,6 +17,7 @@ import {
   RESPONSIVE_BREAKPOINT_LG,
   RESPONSIVE_BREAKPOINT_MD,
   RESPONSIVE_BREAKPOINT_SM,
+  RESPONSIVE_BREAKPOINT_XS,
 } from '../data/constants/Breakpoints';
 import { API_URL } from '../data/constants/Values';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
@@ -68,6 +69,12 @@ const PoolBodyWrapper = styled.div`
     padding-left: 32px;
     padding-right: 32px;
   }
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    // TODO: standardize this across all pages that use this padding
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 `;
 
 const GridExpandingDiv = styled.div`
@@ -80,11 +87,17 @@ const GridExpandingDiv = styled.div`
     margin-top: 64px;
     margin-bottom: 64px;
   }
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    margin-top: 48px;
+    margin-bottom: 48px;
+  }
 `;
 
 const HeaderBarContainer = styled.div`
-  ${tw`flex items-center relative pt-16`}
+  ${tw`flex items-center relative`}
   flex-direction: row;
+  padding-top: 64px;
   gap: 32px;
 
   @media (max-width: ${RESPONSIVE_BREAKPOINT_SM}) {
@@ -96,7 +109,24 @@ const HeaderBarContainer = styled.div`
     justify-content: flex-start;
     gap: 16px;
   }
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 48px;
+    gap: 0;
+  }
 `;
+
+const GeneralPoolSectionContainer = styled.div`
+  ${tw`flex flex-col`}
+  margin-top: 64px;
+  row-gap: 16px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    margin-top: 48px;
+  }
+`
 
 export type BlendPoolPageProps = {
   blockNumber: string | null;
@@ -237,7 +267,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
             uniswapVolume={uniswapVolume}
           />
           <PoolPieChartWidget poolData={poolData} />
-          <div className='flex flex-col gap-y-6 mt-16'>
+          <GeneralPoolSectionContainer>
             <WidgetHeading>About The Pool</WidgetHeading>
             <Text
               size='M'
@@ -270,11 +300,11 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
                 .
               </p>
             </Text>
-          </div>
-          <div className='flex flex-col gap-y-6 mt-16'>
+          </GeneralPoolSectionContainer>
+          <GeneralPoolSectionContainer>
             <WidgetHeading>Investing Risks</WidgetHeading>
             <RiskCard />
-          </div>
+          </GeneralPoolSectionContainer>
         </div>
       </PoolBodyWrapper>
     </BlendPoolProvider>
