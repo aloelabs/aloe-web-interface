@@ -59,7 +59,7 @@ const EndAlignedBodySubContainer = styled(BodySubContainer)`
 
 const ExternalPositionNameContainer = styled.div`
   ${tw`flex flex-col items-center justify-center`}
-  padding: 8px 24px;
+  padding: 8px 16px;
   height: 36px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 100px;
@@ -92,9 +92,9 @@ export default function ExternalPortfolioCard(
             token1AltText={`${token1.name}'s Icon`}
           />
           <ExternalPositionNameContainer>
-            <Text size='S' weight='bold' color='rgba(204, 223, 237, 1)'>
+            <Display size='XS' weight='medium' color='rgba(204, 223, 237, 1)'>
               {externalPositionName}
-            </Text>
+            </Display>
           </ExternalPositionNameContainer>
         </CardSubTitleWrapper>
       </CardTitleWrapper>
