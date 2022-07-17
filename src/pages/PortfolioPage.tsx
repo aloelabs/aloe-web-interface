@@ -18,11 +18,12 @@ import axios, { AxiosResponse } from 'axios';
 import rateLimit from 'axios-rate-limit';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { theGraphUniswapV2Client } from '../App';
-import { getUniswapPairValueQuery } from '../util/GraphQL';
+import { UniswapPairValueQuery } from '../util/GraphQL';
 import { API_URL } from '../data/constants/Values';
 import { PortfolioCardPlaceholder } from '../components/portfolio/PortfolioCardPlaceholder';
 import { ExternalPortfolioCardPlaceholder } from '../components/portfolio/ExternalPortfolioCardPlaceholder';
 import { useAccount } from 'wagmi';
+import { ApolloQueryResult } from '@apollo/react-hooks';
 
 const http = rateLimit(axios.create(), {
   maxRequests: 2,
@@ -33,6 +34,14 @@ const http = rateLimit(axios.create(), {
 type EtherscanBalanceResponse = {
   balance: number;
   error: boolean;
+};
+
+type UniswapV2PositionResponse = {
+  pair: {
+    reserveUSD: string;
+    totalSupply: string;
+    __typename: string;
+  }
 };
 
 const PORTFOLIO_TITLE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
@@ -153,8 +162,11 @@ export default function PortfolioPage() {
           },
         ) as AxiosResponse<EtherscanBalanceResponse, any>,
         uniswapData: await theGraphUniswapV2Client.query({
-          query: getUniswapPairValueQuery(pairAddress),
-        }),
+          query: UniswapPairValueQuery,
+          variables: {
+            pairAddress: pairAddress,
+          },
+        }) as ApolloQueryResult<UniswapV2PositionResponse>,
       };
     });
     const uniswapPositionResponse = await Promise.all(uniswapPositionRequests);
