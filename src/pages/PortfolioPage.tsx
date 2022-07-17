@@ -170,9 +170,7 @@ export default function PortfolioPage() {
     <AppPage>
       <Container>
         <div className='w-full'>
-          {accountData && (
-            <PortfolioGraph accountAddress={accountData.address} />
-          )}
+          <PortfolioGraph accountAddress={accountData ? accountData.address : null} />
         </div>
         <div className='w-full max-w-[1280px]'>
           <Text size='XL' weight='medium' color={PORTFOLIO_TITLE_TEXT_COLOR}>

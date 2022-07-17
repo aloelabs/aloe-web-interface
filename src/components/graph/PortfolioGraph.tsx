@@ -17,6 +17,7 @@ import { CombinedPercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
 import Graph from './Graph';
 import GraphButtons, { buttonIdxToText } from './GraphButtons';
+import { PortfolioGraphPlaceholder } from './PortfolioGraphPlaceholder';
 import PortfolioGraphTooltip, {
   PORTFOLIO_TOOLTIP_WIDTH,
 } from './tooltips/PortfolioGraphTooltip';
@@ -187,7 +188,7 @@ function generateEmptyData(fromDate: Date, toDate: Date, activeButton: number) {
 }
 
 export type PortfolioGraphProps = {
-  accountAddress: string;
+  accountAddress: string | null;
 };
 export default function PortfolioGraph(props: PortfolioGraphProps) {
   const { accountAddress } = props;
@@ -239,7 +240,7 @@ export default function PortfolioGraph(props: PortfolioGraphProps) {
 
   useEffect(() => {
     let mounted = true;
-    const fetchPoolStats = async () => {
+    const fetchPoolStats = async (accountAddress: string) => {
       const getShareBalances = makeRequest(
         `${API_URL}/share_balances/${accountAddress}/1/${buttonIdxToText(
           activeButton
@@ -338,7 +339,9 @@ export default function PortfolioGraph(props: PortfolioGraphProps) {
           }
         });
     };
-    fetchPoolStats();
+    if (accountAddress) {
+      fetchPoolStats(accountAddress);
+    }
     return () => {
       mounted = false;
     };
@@ -374,9 +377,7 @@ export default function PortfolioGraph(props: PortfolioGraphProps) {
       </GraphButtonsWrapper>
       {graphLoading && (
         <GraphPlaceholderWrapper>
-          <Text size='M' weight='medium'>
-            Loading...
-          </Text>
+          <PortfolioGraphPlaceholder />
         </GraphPlaceholderWrapper>
       )}
       {!graphLoading && graphError && (
