@@ -9,11 +9,13 @@ import useMediaQuery from '../../data/hooks/UseMediaQuery';
 import { Text } from '../common/Typography';
 import ConnectWalletButton from './ConnectWalletButton';
 import { IS_DEV } from '../../util/Env';
+import { useAccount } from 'wagmi';
 
 type MenuItem = {
   title: string;
   name: string;
   url: string;
+  onlyShowIfConnected?: boolean;
 };
 
 const menuItems: MenuItem[] = [
@@ -22,6 +24,12 @@ const menuItems: MenuItem[] = [
     name: 'blend',
     url: '/blend',
   },
+  {
+    title: 'Portfolio',
+    name: 'portfolio',
+    url: '/portfolio',
+    onlyShowIfConnected: true,
+  }
 ];
 
 if (IS_DEV) {
@@ -78,6 +86,9 @@ const NavDropdown = styled.div`
 `;
 
 export default function Header() {
+  const [{ data: accountData }, disconnect] = useAccount({
+    fetchEns: true,
+  });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleNavDropdown = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -97,20 +108,22 @@ export default function Header() {
           <>
             <VerticalDivider />
             <div className='flex flex-row align-middle items-center h-full text-md'>
-              {menuItems.map((menuitem, index) => (
+              {menuItems.map((menuItem, index) => (
                 <React.Fragment key={index}>
-                  <StyledNavLink
-                    size='M'
-                    weight='medium'
-                    color='rgba(75, 105, 128, 1)'
-                    as={NavLink}
-                    id={`${menuitem.name}-nav-link`}
-                    to={menuitem.url}
-                    key={menuitem.name}
-                  >
-                    {menuitem.title}
-                  </StyledNavLink>
-                  <VerticalDivider />
+                  <div className={`${!menuItem.onlyShowIfConnected || accountData ? 'flex' : 'hidden'}`}>
+                    <StyledNavLink
+                      size='M'
+                      weight='medium'
+                      color='rgba(75, 105, 128, 1)'
+                      as={NavLink}
+                      id={`${menuItem.name}-nav-link`}
+                      to={menuItem.url}
+                      key={menuItem.name}
+                    >
+                      {menuItem.title}
+                    </StyledNavLink>
+                    <VerticalDivider />
+                  </div>
                 </React.Fragment>
               ))}
             </div>
@@ -129,31 +142,33 @@ export default function Header() {
       )}
       {!isGTSmallScreen && isMenuOpen && (
         <NavDropdown>
-          {menuItems.map((menuitem, index) => (
+          {menuItems.map((menuItem, index) => (
             <React.Fragment key={index}>
-              <StyledNavLink
-                size='M'
-                weight='medium'
-                color='rgba(75, 105, 128, 1)'
-                className='mobile w-full text-center'
-                as={NavLink}
-                id={`${menuitem.name}-nav-link`}
-                to={menuitem.url}
-                key={menuitem.name}
-                onClick={toggleNavDropdown}
-              >
-                {menuitem.title}
-              </StyledNavLink>
+              <div className={`${!menuItem.onlyShowIfConnected || accountData ? 'w-full flex' : 'hidden'}`}>
+                <StyledNavLink
+                  size='M'
+                  weight='medium'
+                  color='rgba(75, 105, 128, 1)'
+                  className='mobile w-full text-center'
+                  as={NavLink}
+                  id={`${menuItem.name}-nav-link`}
+                  to={menuItem.url}
+                  key={menuItem.name}
+                  onClick={toggleNavDropdown}
+                >
+                  {menuItem.title}
+                </StyledNavLink>
+              </div>
             </React.Fragment>
           ))}
           <div className='w-full'>
-            <ConnectWalletButton buttonStyle='tertiary' />
+            <ConnectWalletButton accountData={accountData} disconnect={disconnect} buttonStyle='tertiary' />
           </div>
         </NavDropdown>
       )}
       {isGTSmallScreen && (
         <div className='mr-8'>
-          <ConnectWalletButton />
+          <ConnectWalletButton accountData={accountData} disconnect={disconnect} />
         </div>
       )}
     </Nav>
