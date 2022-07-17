@@ -14,7 +14,7 @@ import PortfolioGraph from '../components/graph/PortfolioGraph';
 import Tooltip from '../components/common/Tooltip';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
 import { RESPONSIVE_BREAKPOINTS } from '../data/constants/Breakpoints';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import rateLimit from 'axios-rate-limit';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { theGraphUniswapV2Client } from '../App';
@@ -29,6 +29,11 @@ const http = rateLimit(axios.create(), {
   perMilliseconds: 1000,
   maxRPS: 2,
 });
+
+type EtherscanBalanceResponse = {
+  balance: number;
+  error: boolean;
+};
 
 const PORTFOLIO_TITLE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -136,24 +141,32 @@ export default function PortfolioPage() {
       return {
         pool: pool,
         etherscanData: await http.get(
-          `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${pairAddress}&address=${accountData.address}&tag=latest&apikey=F7XAB91MQBBZ1HSCUEI343VVP7CTASW4N1`
-        ),
+          `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${pairAddress}&address=${accountData.address}&tag=latest&apikey=F7XAB91MQBBZ1HSCUEI343VVP7CTASW4N1`,
+          {
+            transformResponse: (response) => {
+              const responseJSON = JSON.parse(response);
+              return {
+                balance: isNaN(responseJSON.result) ? 0 : parseInt(responseJSON.result),
+                error: responseJSON.message !== '1',
+              } as EtherscanBalanceResponse;
+            }
+          },
+        ) as AxiosResponse<EtherscanBalanceResponse, any>,
         uniswapData: await theGraphUniswapV2Client.query({
           query: getUniswapPairValueQuery(pairAddress),
         }),
       };
     });
     const uniswapPositionResponse = await Promise.all(uniswapPositionRequests);
-    const filtered = uniswapPositionResponse.filter((uniswapPosition) => {
-      // TODO: make this more robust
-      return parseInt(uniswapPosition.etherscanData.data.result) > 0;
+    const nonZeroUniswapPositions = uniswapPositionResponse.filter((uniswapPosition) => {
+      return uniswapPosition.etherscanData.data.balance > 0;
     });
-    const uniswapPositionData = filtered.map((uniswapPosition) => {
-      const userBalance = parseInt(uniswapPosition.etherscanData.data.result) / 10 ** 18;
-      const pairTotalSupply = parseFloat(uniswapPosition.uniswapData.data.pair.totalSupply);
-      const pairValue = parseFloat(uniswapPosition.uniswapData.data.pair.reserveUSD);
+    const uniswapPositionData = nonZeroUniswapPositions.map((nonZeroUniswapPosition) => {
+      const userBalance = nonZeroUniswapPosition.etherscanData.data.balance / 10 ** 18;
+      const pairTotalSupply = parseFloat(nonZeroUniswapPosition.uniswapData.data.pair.totalSupply);
+      const pairValue = parseFloat(nonZeroUniswapPosition.uniswapData.data.pair.reserveUSD);
       return {
-        pool: uniswapPosition.pool,
+        pool: nonZeroUniswapPosition.pool,
         estimatedValue: (userBalance * pairValue) / pairTotalSupply,
         externalPositionName: 'Uniswap V2',
       };
