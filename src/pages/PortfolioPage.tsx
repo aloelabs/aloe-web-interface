@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import AppPage from '../components/common/AppPage';
 import styled from 'styled-components';
 import tw from 'twin.macro';
@@ -99,6 +99,16 @@ export default function PortfolioPage() {
   const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const { poolDataMap } = useContext(BlendTableContext);
+
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    }
+  }, []);
+
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
     if (!accountData?.address || poolData.length === 0) {
@@ -138,53 +148,66 @@ export default function PortfolioPage() {
           estimatedValue,
         };
       });
-      setPositions(positionsData);
-      setPositionsLoading(false);
+      if (mounted.current) {
+        setPositions(positionsData);
+        setPositionsLoading(false);
+      }
     } catch (e) {
       console.log(e);
-      setPositionsLoading(false);
+      if (mounted.current) {
+        setPositionsLoading(false);
+      }
     }
 
-    const uniswapPositionRequests = poolData.map(async (pool) => {
-      const pairAddress = poolToUniswapV2Pair(pool.poolAddress);
-      return {
-        pool: pool,
-        etherscanData: await http.get(
-          `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${pairAddress}&address=${accountData.address}&tag=latest&apikey=F7XAB91MQBBZ1HSCUEI343VVP7CTASW4N1`,
-          {
-            transformResponse: (response) => {
-              const responseJSON = JSON.parse(response);
-              return {
-                balance: isNaN(responseJSON.result) ? 0 : parseInt(responseJSON.result),
-                error: responseJSON.message !== '1',
-              } as EtherscanBalanceResponse;
-            }
-          },
-        ) as AxiosResponse<EtherscanBalanceResponse, any>,
-        uniswapData: await theGraphUniswapV2Client.query({
-          query: UniswapPairValueQuery,
-          variables: {
-            pairAddress: pairAddress,
-          },
-        }) as ApolloQueryResult<UniswapV2PositionResponse>,
-      };
-    });
-    const uniswapPositionResponse = await Promise.all(uniswapPositionRequests);
-    const nonZeroUniswapPositions = uniswapPositionResponse.filter((uniswapPosition) => {
-      return uniswapPosition.etherscanData.data.balance > 0;
-    });
-    const uniswapPositionData = nonZeroUniswapPositions.map((nonZeroUniswapPosition) => {
-      const userBalance = nonZeroUniswapPosition.etherscanData.data.balance / 10 ** 18;
-      const pairTotalSupply = parseFloat(nonZeroUniswapPosition.uniswapData.data.pair.totalSupply);
-      const pairValue = parseFloat(nonZeroUniswapPosition.uniswapData.data.pair.reserveUSD);
-      return {
-        pool: nonZeroUniswapPosition.pool,
-        estimatedValue: (userBalance * pairValue) / pairTotalSupply,
-        externalPositionName: 'Uniswap V2',
-      };
-    });
-    setExternalPositions(uniswapPositionData);
-    setExternalPositionsLoading(false);
+    try {
+      const uniswapPositionRequests = poolData.map(async (pool) => {
+        const pairAddress = poolToUniswapV2Pair(pool.poolAddress);
+        return {
+          pool: pool,
+          etherscanData: await http.get(
+            `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${pairAddress}&address=${accountData.address}&tag=latest&apikey=F7XAB91MQBBZ1HSCUEI343VVP7CTASW4N1`,
+            {
+              transformResponse: (response) => {
+                const responseJSON = JSON.parse(response);
+                return {
+                  balance: isNaN(responseJSON.result) ? 0 : parseInt(responseJSON.result),
+                  error: responseJSON.message !== '1',
+                } as EtherscanBalanceResponse;
+              }
+            },
+          ) as AxiosResponse<EtherscanBalanceResponse, any>,
+          uniswapData: await theGraphUniswapV2Client.query({
+            query: UniswapPairValueQuery,
+            variables: {
+              pairAddress: pairAddress,
+            },
+          }) as ApolloQueryResult<UniswapV2PositionResponse>,
+        };
+      });
+      const uniswapPositionResponse = await Promise.all(uniswapPositionRequests);
+      const nonZeroUniswapPositions = uniswapPositionResponse.filter((uniswapPosition) => {
+        return uniswapPosition.etherscanData.data.balance > 0;
+      });
+      const uniswapPositionData = nonZeroUniswapPositions.map((nonZeroUniswapPosition) => {
+        const userBalance = nonZeroUniswapPosition.etherscanData.data.balance / 10 ** 18;
+        const pairTotalSupply = parseFloat(nonZeroUniswapPosition.uniswapData.data.pair.totalSupply);
+        const pairValue = parseFloat(nonZeroUniswapPosition.uniswapData.data.pair.reserveUSD);
+        return {
+          pool: nonZeroUniswapPosition.pool,
+          estimatedValue: (userBalance * pairValue) / pairTotalSupply,
+          externalPositionName: 'Uniswap V2',
+        };
+      });
+      if (mounted.current) {
+        setExternalPositions(uniswapPositionData);
+        setExternalPositionsLoading(false);
+      }
+    } catch (e) {
+      console.log(e);
+      if (mounted.current) {
+        setExternalPositionsLoading(false);
+      }
+    }
   }, [accountData?.address, poolDataMap]);
 
   useEffect(() => {
