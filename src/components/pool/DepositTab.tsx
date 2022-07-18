@@ -6,17 +6,17 @@ import { useSigner } from 'wagmi';
 import {
   approve,
   deposit,
-  mintWeth
+  mintWeth,
 } from '../../connector/BlendDepositActions';
 import {
   BlendPoolDrawData,
-  ResolveBlendPoolDrawData
+  ResolveBlendPoolDrawData,
 } from '../../data/BlendPoolDataResolver';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { WETH_9_MAINNET_ADDRESS } from '../../data/constants/Addresses';
 import {
   DEFAULT_RATIO_CHANGE,
-  RATIO_CHANGE_CUTOFF
+  RATIO_CHANGE_CUTOFF,
 } from '../../data/constants/Values';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { useDeposit } from '../../data/hooks/UseDeposit';
@@ -84,7 +84,8 @@ export const SectionLabel = styled.div`
   color: rgba(130, 160, 182, 1);
 `;
 
-const TOOLTIP_CONTENT_DEPOSIT = 'Deposit amounts are based on current prices. If prices shift while your transaction is pending, some funds may be returned to you instead of being deposited to Blend. Slippage is the threshold between returning funds and canceling the transaction altogether (to save gas).';
+const TOOLTIP_CONTENT_DEPOSIT =
+  'Deposit amounts are based on current prices. If prices shift while your transaction is pending, some funds may be returned to you instead of being deposited to Blend. Slippage is the threshold between returning funds and canceling the transaction altogether (to save gas).';
 
 export default function DepositTab(props: DepositTabProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -127,6 +128,8 @@ export default function DepositTab(props: DepositTabProps) {
 
   // Determine button state
   useEffect(() => {
+    let mounted = true;
+
     const token0IsWETH =
       props.poolData.token0Address === WETH_9_MAINNET_ADDRESS;
     const token1IsWETH =
@@ -143,27 +146,36 @@ export default function DepositTab(props: DepositTabProps) {
         : new Big(token1Amount).mul(String1E(depositData.token1Decimals));
 
     if (offChainPoolStats && poolStats && depositData) {
-
       // Compute shares estimate
       // Assumes amount0/1 have beeen balanced to current pool ratio
       const depositProportionToPool = amount0.div(poolStats.inventory0.total);
-      setSharesEstimate(depositProportionToPool
-        .mul(poolStats.outstandingShares).div(String1E(18))
-        .toExponential(2));
 
       // Compute USD estimate
-      setUsdEstimate(formatUSDCompact(
-          depositProportionToPool.mul(offChainPoolStats.total_value_locked).toNumber()
-        )
-      );
-
+      if (mounted) {
+        setSharesEstimate(
+          depositProportionToPool
+            .mul(poolStats.outstandingShares)
+            .div(String1E(18))
+            .toExponential(2)
+        );
+        setUsdEstimate(
+          formatUSDCompact(
+            depositProportionToPool
+              .mul(offChainPoolStats.total_value_locked)
+              .toNumber()
+          )
+        );
+      }
     } else {
-      setUsdEstimate('-');
-      setSharesEstimate('-');
+      if (mounted) {
+        setUsdEstimate('-');
+        setSharesEstimate('-');
+      }
     }
 
-
-
+    if (!mounted) {
+      return;
+    }
     if (isTransactionPending) {
       setButtonState(ButtonState.PENDING_TRANSACTION);
     } else if (!depositData || amount0.eq(0) || amount1.eq(0)) {
@@ -189,6 +201,10 @@ export default function DepositTab(props: DepositTabProps) {
     } else {
       setButtonState(ButtonState.READY);
     }
+
+    return () => {
+      mounted = false;
+    };
   }, [
     depositData,
     isTransactionPending,
@@ -199,8 +215,8 @@ export default function DepositTab(props: DepositTabProps) {
     token1Amount,
     signer,
     offChainPoolStats,
-    poolStats]
-  );
+    poolStats,
+  ]);
 
   const buttonLabel = printButtonState(buttonState, drawData);
 
@@ -374,7 +390,12 @@ export default function DepositTab(props: DepositTabProps) {
           errorMessage='Error message'
         />
       </div>
-      <MaxSlippageInput tooltipContent={TOOLTIP_CONTENT_DEPOSIT} updateMaxSlippage={(updatedMaxSlippage) => setMaxSlippage(updatedMaxSlippage)} />
+      <MaxSlippageInput
+        tooltipContent={TOOLTIP_CONTENT_DEPOSIT}
+        updateMaxSlippage={(updatedMaxSlippage) =>
+          setMaxSlippage(updatedMaxSlippage)
+        }
+      />
       <div className='w-full mt-8'>
         <FilledStylizedButton
           className='w-full py-2'

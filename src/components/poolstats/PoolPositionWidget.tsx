@@ -7,7 +7,7 @@ import tw from 'twin.macro';
 import { useAccount, useBalance } from 'wagmi';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { BLEND_FACTORY_CREATION_BLOCK } from '../../data/constants/Addresses';
-import { RESPONSIVE_BREAKPOINT_MD } from '../../data/constants/Breakpoints';
+import { RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_XS } from '../../data/constants/Breakpoints';
 import { API_URL } from '../../data/constants/Values';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { OffChainPoolStats } from '../../data/PoolStats';
@@ -26,6 +26,10 @@ const Wrapper = styled.div`
   /* 16px due to the bottom padding already being 8px making the total space 24px */
   gap: 16px;
   margin-bottom: 64px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    margin-bottom: 48px;
+  }
 `;
 
 const PerformanceCardGrid = styled.div`

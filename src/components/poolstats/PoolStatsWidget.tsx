@@ -7,6 +7,7 @@ import { OffChainPoolStats } from '../../data/PoolStats';
 import { formatUSDAuto, roundPercentage } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
 import WidgetHeading from '../common/WidgetHeading';
+import { RESPONSIVE_BREAKPOINT_XS } from '../../data/constants/Breakpoints';
 
 const ROUNDING_PRECISION = 2;
 const POOL_STAT_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
@@ -19,6 +20,10 @@ const Wrapper = styled.div`
   /* 16px due to the bottom padding already being 8px making the total space 24px */
   gap: 16px;
   margin-bottom: 64px;
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    margin-bottom: 48px;
+  }
 `;
 
 const PoolStatsWidgetGrid = styled.div`
@@ -26,12 +31,25 @@ const PoolStatsWidgetGrid = styled.div`
   grid-template-columns: calc(50% - 12px) calc(50% - 12px);
   column-gap: 24px;
   border-top: 1px solid rgba(26, 41, 52, 1);
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    grid-template-columns: 100%;
+  }
 `;
 
 const PoolStat = styled.div`
-  ${tw`flex items-center justify-between`}
+  ${tw`flex`}
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   padding: 18px 8px;
   border-bottom: 1px solid rgba(26, 41, 52, 1);
+
+  @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 8px;
+  }
 `;
 
 export type PoolStatsWidgetProps = {
