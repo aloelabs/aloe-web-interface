@@ -50,13 +50,7 @@ const VerticalDivider = styled.div`
   }
 `;
 
-export type BrowsePoolsPerformanceProps = {
-  poolData: BlendPoolMarkers[];
-};
-
-export default function BrowsePoolsPerformance(
-  props: BrowsePoolsPerformanceProps
-) {
+export default function BrowsePoolsPerformance() {
   const [globalStats, setGlobalStats] = useState<GlobalStats>();
 
   useEffect(() => {

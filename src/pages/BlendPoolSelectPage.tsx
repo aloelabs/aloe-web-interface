@@ -32,6 +32,15 @@ import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
 import tw from 'twin.macro';
 import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
+import { ReactComponent as APYIcon } from '../assets/svg/apy.svg';
+import { API_URL } from '../data/constants/Values';
+import { OffChainPoolStats } from '../data/PoolStats';
+import axios, { AxiosResponse } from 'axios';
+
+export type PoolStatsData = {
+  poolData: BlendPoolMarkers;
+  poolStats: OffChainPoolStats;
+};
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -99,10 +108,10 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const [toDisplayLoading, settoDisplayLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
   const [activeSearchText, setActiveSearchText] = useState<string>('');
-  const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
-  const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
-  const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
-  const [poolsToDisplay, setPoolsToDisplay] = useState<BlendPoolMarkers[]>([]);
+  const [pools, setPools] = useState<PoolStatsData[]>([]);
+  const [filteredPools, setFilteredPools] = useState<PoolStatsData[]>([]);
+  const [activePools, setActivePools] = useState<PoolStatsData[]>([]);
+  const [poolsToDisplay, setPoolsToDisplay] = useState<PoolStatsData[]>([]);
   const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
   const [activeTokenOptions, setActiveTokenOptions] = useState<
     MultiDropdownOption[]
@@ -116,14 +125,10 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
       isDefault: true,
     },
     {
-      label: 'Newest First',
-      value: 'newest',
+      label: 'APY',
+      value: 'apy',
       isDefault: false,
-    },
-    {
-      label: 'Oldest First',
-      value: 'oldest',
-      isDefault: false,
+      Icon: APYIcon,
     },
   ] as DropdownWithPlaceholderOption[];
   const [selectedSortByOption, setSelectedSortByOption] =
@@ -134,7 +139,33 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const { poolDataMap } = useContext(BlendTableContext);
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
-    setPools(poolData);
+    const poolRequests = poolData.map(async (pool) => {
+      return {
+        poolData: pool,
+        poolStats: await axios.get(
+          `${API_URL}/pool_stats/${pool.poolAddress}/1`,
+          {
+            transformResponse: (response) => {
+              const responseJSON = JSON.parse(response)[0];
+              return responseJSON as OffChainPoolStats;
+            },
+          }
+        ),
+      };
+    });
+    const poolStatsDataResponse = await Promise.all(poolRequests);
+    const poolStatsData = poolStatsDataResponse.map(
+      (response: {
+        poolData: BlendPoolMarkers;
+        poolStats: AxiosResponse<any, any>;
+      }) => {
+        return {
+          poolData: response.poolData,
+          poolStats: response.poolStats.data,
+        };
+      }
+    );
+    setPools(poolStatsData);
     if (poolData.length > 0) {
       setPoolsLoading(false);
     }
@@ -174,7 +205,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
             silo1Label,
             token0Label,
             token1Label,
-          } = ResolveBlendPoolDrawData(pool);
+          } = ResolveBlendPoolDrawData(pool.poolData);
 
           return (
             [
@@ -208,7 +239,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
             silo1Label,
             token0Label,
             token1Label,
-          } = ResolveBlendPoolDrawData(pool);
+          } = ResolveBlendPoolDrawData(pool.poolData);
 
           return (
             [
@@ -258,6 +289,14 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     }
   }, [filteredPools, activePools, poolsLoading, activeLoading]);
 
+  const sortedPools = poolsToDisplay.sort((poolA, poolB) => {
+    if (selectedSortByOption.value === 'apy') {
+      return poolB.poolStats.annual_percentage_rate - poolA.poolStats.annual_percentage_rate;
+    } else {
+      return poolB.poolStats.total_value_locked - poolA.poolStats.total_value_locked;
+    }
+  });
+
   /* Calculating the number of applied filters */
   let numberOfFiltersApplied = 0;
   if (activeTokenOptions.length < tokenOptions.length) {
@@ -282,7 +321,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
           <Display size='L' weight='semibold'>
             Aloe's Performance
           </Display>
-          <BrowsePoolsPerformance poolData={pools} />
+          <BrowsePoolsPerformance />
         </div>
         <div className='flex items-center gap-6'>
           <Display size='L' weight='semibold'>
@@ -352,7 +391,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
               <BrowseCardPlaceholder key={index} />
             ))}
           {!toDisplayLoading &&
-            poolsToDisplay
+            sortedPools
               .slice(
                 (page - 1) * itemsPerPage,
                 (page - 1) * itemsPerPage + itemsPerPage
@@ -360,7 +399,8 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
               .map((pool, index) => {
                 return (
                   <BrowseCard
-                    blendPoolMarkers={pool}
+                    blendPoolMarkers={pool.poolData}
+                    poolStats={pool.poolStats}
                     blockNumber={blockNumber}
                     key={index}
                   />
