@@ -26,7 +26,7 @@ const DropdownWrapper = styled.div`
 const DropdownHeader = styled.button.attrs(
   (props: { small?: boolean }) => props
 )`
-  ${tw`flex flex-row items-center justify-between`}
+  ${tw`flex flex-row gap-2 items-center justify-between`}
   background: transparent;
   padding: ${(props) =>
     props.small ? '12px 36px 12px 16px' : '16px 52px 16px 24px'};
@@ -62,7 +62,7 @@ const MultiDropdownList = styled(DropdownList)`
 `;
 
 const DropdownOptionContainer = styled.button`
-  ${tw`w-full`}
+  ${tw`w-full flex gap-2 items-center`}
   text-align: start;
   padding: 6px 12px;
   white-space: nowrap;
@@ -148,6 +148,7 @@ export function Dropdown(props: DropdownProps) {
 
 export type DropdownWithPlaceholderOption = DropdownOption & {
   isDefault: boolean;
+  Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 };
 
 export type DropdownWithPlaceholderProps = {
@@ -175,6 +176,7 @@ export function DropdownWithPlaceholder(props: DropdownWithPlaceholderProps) {
   return (
     <DropdownWrapper ref={dropdownRef}>
       <DropdownHeader onClick={toggleList}>
+        {selectedOption.Icon && <selectedOption.Icon width={24} height={24} />}
         <Text size='M'>
           {selectedOption.isDefault ? placeholder : selectedOption.label}
         </Text>
@@ -192,6 +194,7 @@ export function DropdownWithPlaceholder(props: DropdownWithPlaceholderProps) {
               key={index}
               onClick={() => selectItem(option, index)}
             >
+              {option.Icon && <option.Icon width={24} height={24} />}
               <Text size='M'>{option.label}</Text>
             </DropdownOptionContainer>
           ))}
