@@ -28,7 +28,7 @@ import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
 import tw from 'twin.macro';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
-import { useAccount } from 'wagmi';
+import { Connector, useAccount } from 'wagmi';
 import { FeeTier } from '../data/BlendPoolMarkers';
 import { theGraphUniswapV3Client } from '../App';
 import { getUniswapVolumeQuery } from '../util/GraphQL';
@@ -39,6 +39,15 @@ const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 type PoolParams = {
   pooladdress: string;
 };
+
+export type AccountData = {
+  address: string;
+  connector: Connector<any, any> | undefined;
+    ens: {
+        avatar: string | null | undefined;
+        name: string;
+    } | undefined;
+}
 
 const LoaderWrapper = styled.div`
   position: absolute;
@@ -255,8 +264,10 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
         <div className='w-full py-4'>
           {walletIsConnected && (
             <PoolPositionWidget
+              walletIsConnected={walletIsConnected}
               poolData={poolData}
               offChainPoolStats={offChainPoolStats}
+              accountData={accountData}
             />
           )}
           <PoolStatsWidget
