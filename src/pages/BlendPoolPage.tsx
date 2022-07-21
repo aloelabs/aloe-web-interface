@@ -135,7 +135,7 @@ const GeneralPoolSectionContainer = styled.div`
   @media (max-width: ${RESPONSIVE_BREAKPOINT_XS}) {
     margin-top: 48px;
   }
-`
+`;
 
 export type BlendPoolPageProps = {
   blockNumber: string | null;
@@ -221,7 +221,9 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
     }
     return (
       <LoaderWrapper>
-        <IOSStyleSpinner size={isGTMediumScreen ? 'L' : isGTSmallScreen ? 'M' : 'S'} />
+        <IOSStyleSpinner
+          size={isGTMediumScreen ? 'L' : isGTSmallScreen ? 'M' : 'S'}
+        />
       </LoaderWrapper>
     );
   }
@@ -229,50 +231,45 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
   return (
     <BlendPoolProvider poolData={poolData}>
       <PoolBodyWrapper>
-        <HeaderBarContainer>
-          <PreviousPageButton onClick={() => navigate('../pools')} />
-          <TokenPairHeader
-            token0={GetTokenData(poolData.token0Address.toLowerCase())}
-            token1={GetTokenData(poolData.token1Address.toLowerCase())}
-            silo0={GetSiloData(poolData.silo0Address.toLowerCase())}
-            silo1={GetSiloData(poolData.silo1Address.toLowerCase())}
-            feeTier={poolData.feeTier}
-          />
-          <a
-            href={`https://etherscan.io/address/${poolData.poolAddress}`}
-            target='_blank'
-            title='Etherscan Link'
-            rel='noreferrer'
-          >
-            <OpenIcon width={24} height={24} />
-          </a>
-        </HeaderBarContainer>
-        {isGTMediumScreen && (
-          <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
-            <PoolInteractionTabs
-              poolData={poolData}
-              walletIsConnected={walletIsConnected}
-              offChainPoolStats={offChainPoolStats}
+        <div>
+          <HeaderBarContainer>
+            <PreviousPageButton onClick={() => navigate('../pools')} />
+            <TokenPairHeader
+              token0={GetTokenData(poolData.token0Address.toLowerCase())}
+              token1={GetTokenData(poolData.token1Address.toLowerCase())}
+              silo0={GetSiloData(poolData.silo0Address.toLowerCase())}
+              silo1={GetSiloData(poolData.silo1Address.toLowerCase())}
+              feeTier={poolData.feeTier}
             />
-          </GridExpandingDiv>
-        )}
-        <div className='w-full py-4'>
-          <BlendAllocationGraph poolData={poolData} />
-          {!isGTMediumScreen && (
-            <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
-              <PoolInteractionTabs
-                poolData={poolData}
-                walletIsConnected={walletIsConnected}
-                offChainPoolStats={offChainPoolStats}
-              />
-            </GridExpandingDiv>
-          )}
-          <PoolPositionWidget
-            walletIsConnected={walletIsConnected}
+            <a
+              href={`https://etherscan.io/address/${poolData.poolAddress}`}
+              target='_blank'
+              title='Etherscan Link'
+              rel='noreferrer'
+            >
+              <OpenIcon width={24} height={24} />
+            </a>
+          </HeaderBarContainer>
+          <div className='w-full py-4'>
+            <BlendAllocationGraph poolData={poolData} />
+          </div>
+        </div>
+        <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
+          <PoolInteractionTabs
             poolData={poolData}
+            walletIsConnected={walletIsConnected}
             offChainPoolStats={offChainPoolStats}
-            accountData={accountData}
           />
+        </GridExpandingDiv>
+        <div className='w-full py-4'>
+          {walletIsConnected && (
+            <PoolPositionWidget
+              walletIsConnected={walletIsConnected}
+              poolData={poolData}
+              offChainPoolStats={offChainPoolStats}
+              accountData={accountData}
+            />
+          )}
           <PoolStatsWidget
             offChainPoolStats={offChainPoolStats}
             uniswapVolume={uniswapVolume}
@@ -287,8 +284,8 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
               className='flex flex-col gap-y-6'
             >
               <p>
-                Placing assets into a Blend Pool will allow the Aloe Protocol
-                to use Uniswap V3 and yield-earning silos on your behalf.
+                Placing assets into a Blend Pool will allow the Aloe Protocol to
+                use Uniswap V3 and yield-earning silos on your behalf.
               </p>
               <p>
                 When you deposit, your tokens are pooled together with other

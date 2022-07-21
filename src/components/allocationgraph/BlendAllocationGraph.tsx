@@ -44,7 +44,8 @@ const Wrapper = styled.div`
   ${tw`flex flex-row items-center justify-start`}
   position: relative;
   height: 372px;
-  margin-bottom: 64px;
+  margin-top: 32px;
+  margin-bottom: 16px;
 
   @media (max-width: ${RESPONSIVE_BREAKPOINT_MD}) {
     margin-top: 96px;
