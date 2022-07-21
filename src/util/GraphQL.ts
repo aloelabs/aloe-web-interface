@@ -40,3 +40,14 @@ export function getUniswapVolumeQuery(
   }
   `;
 }
+
+export function getUniswapPairValueQuery(pairAddress: string) {
+  return gql`
+  {
+    pair(id: "${pairAddress}") {
+      reserveUSD
+      totalSupply
+    }
+  }
+  `
+}

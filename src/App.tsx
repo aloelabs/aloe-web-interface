@@ -23,6 +23,13 @@ import {
   gql,
 } from '@apollo/react-hooks';
 
+export const theGraphUniswapV2Client = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
+  }),
+  cache: new InMemoryCache(),
+});
+
 export const theGraphUniswapV3Client = new ApolloClient({
   link: new HttpLink({
     uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
@@ -104,6 +111,7 @@ function App() {
                       element={<Navigate replace to='/blend/pools' />}
                     />
                   </Route>
+                  <Route path='/portfolio' element={<PortfolioPage />} />
                   { // Devmode-only example page routing
                     IS_DEV && (
                       <>

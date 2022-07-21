@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CloseableModal } from '../common/Modal';
 
-import { useAccount, useConnect } from 'wagmi';
+import { useConnect } from 'wagmi';
 import { FormatAddress } from '../../util/FormatAddress';
 import {
   FilledStylizedButton,
@@ -11,16 +11,15 @@ import { mapConnectorNameToIcon } from './ConnectorIconMap';
 import { Text } from '../common/Typography';
 
 export type ConnectWalletButtonProps = {
+  accountData: any;
+  disconnect: () => void;
   buttonStyle?: 'secondary' | 'tertiary';
 };
 
 export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
+  const { accountData, disconnect } = props;
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-
   const [{ data: connectData, error: connectError }, connect] = useConnect();
-  const [{ data: accountData }, disconnect] = useAccount({
-    fetchEns: true,
-  });
 
   const ensName: string | undefined = accountData?.ens?.name;
   const formattedAddr = accountData ? FormatAddress(accountData.address) : '';

@@ -1,5 +1,8 @@
 import axios from 'axios';
 import {
+  addDays,
+  addHours,
+  addMonths,
   closestTo,
   subDays,
   subMinutes,
@@ -14,6 +17,7 @@ import { CombinedPercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
 import Graph from './Graph';
 import GraphButtons, { buttonIdxToText } from './GraphButtons';
+import { PortfolioGraphPlaceholder } from './PortfolioGraphPlaceholder';
 import PortfolioGraphTooltip, {
   PORTFOLIO_TOOLTIP_WIDTH,
 } from './tooltips/PortfolioGraphTooltip';
@@ -151,7 +155,43 @@ function makeRequest(reqUrl: string) {
   });
 }
 
-export default function PortfolioGraph() {
+function calculateNextDate(currentDate: Date, activeButton: number) : Date {
+  switch (activeButton) {
+    case 0:
+      return addHours(currentDate, 1);
+    case 1:
+      return addDays(currentDate, 1);
+    case 2:
+      return addDays(currentDate, 5);
+    case 3:
+      return addDays(currentDate, 15);
+    case 4:
+      return addMonths(currentDate, 2);
+    default:
+      return addMonths(currentDate, 12);
+  }
+}
+
+function generateEmptyData(fromDate: Date, toDate: Date, activeButton: number) {
+  const data = [];
+  let currentDate = fromDate;
+
+  while (currentDate <= toDate) {
+    data.push({
+      'Portfolio Value': 0,
+      'Net Deposits': 0,
+      x: currentDate.toISOString(),
+    });
+    currentDate = calculateNextDate(currentDate, activeButton);
+  }
+  return data;
+}
+
+export type PortfolioGraphProps = {
+  accountAddress: string | null;
+};
+export default function PortfolioGraph(props: PortfolioGraphProps) {
+  const { accountAddress } = props;
   const [activeButton, setActiveButton] = useState(0);
   const now = new Date(Date.now());
   const [fromDate, setFromDate] = useState(subDays(now, 1));
@@ -200,9 +240,9 @@ export default function PortfolioGraph() {
 
   useEffect(() => {
     let mounted = true;
-    const fetchPoolStats = async () => {
+    const fetchPoolStats = async (accountAddress: string) => {
       const getShareBalances = makeRequest(
-        `${API_URL}/share_balances/0x74d92d4bd54123271c841e363915f7d8758e59e7/1/${buttonIdxToText(
+        `${API_URL}/share_balances/${accountAddress}/1/${buttonIdxToText(
           activeButton
         ).toLowerCase()}/${(subMinutes(toDate, 2).getTime() / 1000).toFixed(0)}`
       );
@@ -281,7 +321,11 @@ export default function PortfolioGraph() {
                 }
               }
               if (mounted) {
-                setData(portfolioData);
+                if (portfolioData.length > 0) {
+                  setData(portfolioData);
+                } else {
+                  setData(generateEmptyData(fromDate, toDate, activeButton));
+                }
                 setGraphError(false);
                 setGraphLoading(false);
               }
@@ -295,14 +339,16 @@ export default function PortfolioGraph() {
           }
         });
     };
-    fetchPoolStats();
+    if (accountAddress) {
+      fetchPoolStats(accountAddress);
+    }
     return () => {
       mounted = false;
     };
-  }, [activeButton, toDate]);
-
-  const initialEstimatedValue = data[0]['Portfolio Value'];
-  const currentEstimatedValue = data[data.length - 1]['Portfolio Value'];
+  }, [accountAddress, activeButton, fromDate, toDate]);
+  
+  const initialEstimatedValue = data.length > 0 ? data[0]['Portfolio Value'] : 0;
+  const currentEstimatedValue = data.length > 0 ? data[data.length - 1]['Portfolio Value'] : 0;
   const estimatedValueChange = currentEstimatedValue - initialEstimatedValue;
   const estimatedValueChangePercent =
     (estimatedValueChange / initialEstimatedValue) * 100 || 0;
@@ -331,9 +377,7 @@ export default function PortfolioGraph() {
       </GraphButtonsWrapper>
       {graphLoading && (
         <GraphPlaceholderWrapper>
-          <Text size='M' weight='medium'>
-            Loading...
-          </Text>
+          <PortfolioGraphPlaceholder />
         </GraphPlaceholderWrapper>
       )}
       {!graphLoading && graphError && (
