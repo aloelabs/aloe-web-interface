@@ -144,10 +144,6 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
     let mounted = true;
     async function fetchData() {
       let range = buttonIdxToText(activeButton).toLowerCase();
-      // TODO: remove this once 1m endpoint is working
-      if (range === '1m') {
-        range = '3m';
-      }
 
       const toDateParam = (toDate.getTime() / 1000).toFixed(0);
       const getPoolReturns = makeRequest(
@@ -164,17 +160,6 @@ export default function BlendAllocationGraph(props: BlendAllocationGraphProps) {
         .all([getPoolReturns, getToken0, getToken1])
         .then(
           axios.spread((poolReturns, token0, token1) => {
-            // TODO: remove this once 1m endpoint is working
-            if (buttonIdxToText(activeButton).toLowerCase() === '1m') {
-              poolReturns.data = poolReturns.data.map((el: any) => {
-                if (toDate.getTime() / 1000 - Number(el.timestamp) > 30 * 24 * 60 * 60) {
-                  // setting this to null tricks the returns calculator into starting from a later date
-                  el.total_supply = null;
-                }
-                return el;
-              });
-            }
-            
             const poolReturnsData = poolReturns.data as PoolReturns;
             const token0Data = token0.data as TokenReturns;
             const token1Data = token1.data as TokenReturns;
