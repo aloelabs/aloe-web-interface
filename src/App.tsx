@@ -22,6 +22,7 @@ import {
   HttpLink,
   gql,
 } from '@apollo/react-hooks';
+import { AccountProvider } from './data/context/AccountContext';
 
 export const theGraphUniswapV2Client = new ApolloClient({
   link: new HttpLink({
@@ -83,50 +84,52 @@ function App() {
       <Suspense fallback={null}>
         <WagmiProvider>
           <BlendTableProvider>
-            <ScrollToTop />
-            <AppBody>
-              <Header />
-              <main className='flex-grow'>
-                <Routes>
-                  <Route
-                    path='/blend'
-                    element={
-                      <RedirectPartialPath
-                        from={['/blend', '/blend/']}
-                        to={'/blend/pools'}
+            <AccountProvider>
+              <ScrollToTop />
+              <AppBody>
+                <Header />
+                <main className='flex-grow'>
+                  <Routes>
+                    <Route
+                      path='/blend'
+                      element={
+                        <RedirectPartialPath
+                          from={['/blend', '/blend/']}
+                          to={'/blend/pools'}
+                        />
+                      }
+                    >
+                      <Route path='pools' element={<BlendPoolSelectPage blockNumber={blockNumber} />} />
+                      <Route
+                        path='pool/:pooladdress'
+                        element={<BlendPoolPage blockNumber={blockNumber} />}
                       />
-                    }
-                  >
-                    <Route path='pools' element={<BlendPoolSelectPage blockNumber={blockNumber} />} />
-                    <Route
-                      path='pool/:pooladdress'
-                      element={<BlendPoolPage blockNumber={blockNumber} />}
-                    />
-                    <Route
-                      path='pool'
-                      element={<Navigate replace to='/blend' />}
-                    />
-                    <Route
-                      path='*'
-                      element={<Navigate replace to='/blend/pools' />}
-                    />
-                  </Route>
-                  <Route path='/portfolio' element={<PortfolioPage />} />
-                  { // Devmode-only example page routing
-                    IS_DEV && (
-                      <>
-                        <Route path='/buttons' element={<ButtonExamplesPage />} />
-                        <Route path='/inputs' element={<InputExamplesPage />} />
-                        <Route path='/portfolio' element={<PortfolioPage />} />
-                        <Route path='/governance' element={<GovernancePage />} />
-                      </>
-                  )}
-                  <Route path='/' element={<Navigate replace to='/blend' />} />
-                  <Route path='*' element={<Navigate to='/' />} />
-                </Routes>
-              </main>
-              <Footer />
-            </AppBody>
+                      <Route
+                        path='pool'
+                        element={<Navigate replace to='/blend' />}
+                      />
+                      <Route
+                        path='*'
+                        element={<Navigate replace to='/blend/pools' />}
+                      />
+                    </Route>
+                    <Route path='/portfolio' element={<PortfolioPage />} />
+                    { // Devmode-only example page routing
+                      IS_DEV && (
+                        <>
+                          <Route path='/buttons' element={<ButtonExamplesPage />} />
+                          <Route path='/inputs' element={<InputExamplesPage />} />
+                          <Route path='/portfolio' element={<PortfolioPage />} />
+                          <Route path='/governance' element={<GovernancePage />} />
+                        </>
+                    )}
+                    <Route path='/' element={<Navigate replace to='/blend' />} />
+                    <Route path='*' element={<Navigate to='/' />} />
+                  </Routes>
+                </main>
+                <Footer />
+              </AppBody>
+            </AccountProvider>
           </BlendTableProvider>
         </WagmiProvider>
       </Suspense>

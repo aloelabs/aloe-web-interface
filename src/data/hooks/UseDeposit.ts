@@ -1,11 +1,12 @@
 import { BlendPoolMarkers } from '../BlendPoolMarkers';
-import { useAccount, useBalance } from 'wagmi';
+import { useBalance } from 'wagmi';
 import { useAllowance } from './UseAllowance';
 import Big from 'big.js';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { toBig } from '../../util/Numbers';
 import { WETH_9_MAINNET_ADDRESS } from '../constants/Addresses';
 import { WETH_GAS_RESERVE } from '../constants/Values';
+import { AccountContext } from '../context/AccountContext';
 
 type DepositPageState = {
   token0Balance: Big;
@@ -32,7 +33,7 @@ function tokenMaxFromBalance(
 export function useDeposit(poolData: BlendPoolMarkers) {
   const [state, setState] = useState<DepositPageState | null>(null);
 
-  const [{ data: accountData }] = useAccount();
+  const { accountData } = useContext(AccountContext)
   const [{ data: token0BalanceData }] = useBalance({
     addressOrName: accountData?.address,
     token: poolData.token0Address,

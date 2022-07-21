@@ -22,8 +22,8 @@ import { UniswapPairValueQuery } from '../util/GraphQL';
 import { API_URL } from '../data/constants/Values';
 import { PortfolioCardPlaceholder } from '../components/portfolio/PortfolioCardPlaceholder';
 import { ExternalPortfolioCardPlaceholder } from '../components/portfolio/ExternalPortfolioCardPlaceholder';
-import { useAccount } from 'wagmi';
 import { ApolloQueryResult } from '@apollo/react-hooks';
+import { AccountContext } from '../data/context/AccountContext';
 
 const http = rateLimit(axios.create(), {
   maxRequests: 2,
@@ -88,9 +88,7 @@ function poolToUniswapV2Pair(address: string): string {
 export type PortfolioPageProps = {
 }; 
 export default function PortfolioPage() {
-  const [{ data: accountData }] = useAccount({
-    fetchEns: true,
-  });
+  const { accountData } = useContext(AccountContext);
   const [positionsLoading, setPositionsLoading] = useState(true);
   const [externalPositionsLoading, setExternalPositionsLoading] =
     useState(true);

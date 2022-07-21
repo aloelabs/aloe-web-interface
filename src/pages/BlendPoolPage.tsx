@@ -28,26 +28,17 @@ import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
 import tw from 'twin.macro';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
-import { Connector, useAccount } from 'wagmi';
 import { FeeTier } from '../data/BlendPoolMarkers';
 import { theGraphUniswapV3Client } from '../App';
 import { getUniswapVolumeQuery } from '../util/GraphQL';
 import { IOSStyleSpinner } from '../components/common/Spinner';
+import { AccountContext } from '../data/context/AccountContext';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
 type PoolParams = {
   pooladdress: string;
 };
-
-export type AccountData = {
-  address: string;
-  connector: Connector<any, any> | undefined;
-    ens: {
-        avatar: string | null | undefined;
-        name: string;
-    } | undefined;
-}
 
 const LoaderWrapper = styled.div`
   position: absolute;
@@ -152,6 +143,9 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
   const isGTSmallScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
 
   const { poolDataMap, fetchPoolData } = useContext(BlendTableContext);
+  
+  const { accountData } = useContext(AccountContext);
+  const walletIsConnected = accountData?.address !== undefined;
 
   const poolData = poolDataMap.get(params.pooladdress || '');
 
@@ -212,9 +206,6 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
     };
   }, [blockNumber, poolData]);
 
-  const [{ data: accountData }] = useAccount({ fetchEns: true });
-  const walletIsConnected = accountData?.address !== undefined;
-
   if (!poolData) {
     if (params.pooladdress) {
       fetchPoolData(params.pooladdress);
@@ -267,7 +258,6 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
               walletIsConnected={walletIsConnected}
               poolData={poolData}
               offChainPoolStats={offChainPoolStats}
-              accountData={accountData}
             />
           )}
           <PoolStatsWidget
