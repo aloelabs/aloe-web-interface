@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as PlusIcon } from '../assets/svg/white_plus.svg';
 import BrowseCard from '../components/browse/BrowseCard';
@@ -96,7 +96,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const { blockNumber } = props;
   const [poolsLoading, setPoolsLoading] = useState(true);
   const [activeLoading, setActiveLoading] = useState(true);
-  const [toDisplayLoading, settoDisplayLoading] = useState(true);
+  const [toDisplayLoading, setToDisplayLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
   const [activeSearchText, setActiveSearchText] = useState<string>('');
   const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
@@ -130,13 +130,24 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
 
   const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
-
   const { poolDataMap } = useContext(BlendTableContext);
+
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    }
+  }, []);
+
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
-    setPools(poolData);
-    if (poolData.length > 0) {
-      setPoolsLoading(false);
+    if (isMounted.current) {
+      setPools(poolData);
+      if (poolData.length > 0) {
+        setPoolsLoading(false);
+      }
     }
     let tokenAddresses = Array.from(
       new Set(
@@ -155,8 +166,10 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
           icon: data.iconPath,
         } as MultiDropdownOption)
     );
-    setTokenOptions(tokenOptionData);
-    setActiveTokenOptions(tokenOptionData);
+    if (isMounted.current) {
+      setTokenOptions(tokenOptionData);
+      setActiveTokenOptions(tokenOptionData);
+    }
   }, [poolDataMap]);
 
   useEffect(() => {
@@ -165,95 +178,111 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
 
   useEffect(() => {
     if (activeSearchText.length > 0 && pools.length > 0) {
-      setFilteredPools(
-        pools.filter((pool) => {
-          const {
-            silo0Name,
-            silo1Name,
-            silo0Label,
-            silo1Label,
-            token0Label,
-            token1Label,
-          } = ResolveBlendPoolDrawData(pool);
-
-          return (
-            [
+      if (isMounted.current) {
+        setFilteredPools(
+          pools.filter((pool) => {
+            const {
               silo0Name,
               silo1Name,
               silo0Label,
               silo1Label,
               token0Label,
               token1Label,
-            ].findIndex((field) => {
-              return field
-                .toLowerCase()
-                .includes(activeSearchText.toLowerCase());
-            }) !== -1
-          );
-        })
-      );
+            } = ResolveBlendPoolDrawData(pool);
+
+            return (
+              [
+                silo0Name,
+                silo1Name,
+                silo0Label,
+                silo1Label,
+                token0Label,
+                token1Label,
+              ].findIndex((field) => {
+                return field
+                  .toLowerCase()
+                  .includes(activeSearchText.toLowerCase());
+              }) !== -1
+            );
+          })
+        );
+      }
     } else if (pools.length > 0) {
-      setFilteredPools(pools);
+      if (isMounted.current) {
+        setFilteredPools(pools);
+      }
     }
   }, [activeSearchText, pools]);
 
   useEffect(() => {
     if (activeTokenOptions.length > 0) {
-      setActivePools(
-        pools.filter((pool) => {
-          const {
-            silo0Name,
-            silo1Name,
-            silo0Label,
-            silo1Label,
-            token0Label,
-            token1Label,
-          } = ResolveBlendPoolDrawData(pool);
-
-          return (
-            [
+      if (isMounted.current) {
+        setActivePools(
+          pools.filter((pool) => {
+            const {
               silo0Name,
               silo1Name,
               silo0Label,
               silo1Label,
               token0Label,
               token1Label,
-            ].findIndex((field) => {
-              return activeTokenOptions
-                .map((option) => option.label.toLowerCase())
-                .includes(field.toLowerCase());
-            }) !== -1
-          );
-        })
-      );
-      setActiveLoading(false);
+            } = ResolveBlendPoolDrawData(pool);
+
+            return (
+              [
+                silo0Name,
+                silo1Name,
+                silo0Label,
+                silo1Label,
+                token0Label,
+                token1Label,
+              ].findIndex((field) => {
+                return activeTokenOptions
+                  .map((option) => option.label.toLowerCase())
+                  .includes(field.toLowerCase());
+              }) !== -1
+            );
+          })
+        );
+        setActiveLoading(false);
+      }
     } else if (pools.length > 0) {
-      setActivePools(pools);
-      setActiveLoading(poolsLoading);
+      if (isMounted.current) {
+        setActivePools(pools);
+        setActiveLoading(poolsLoading);
+      }
     }
   }, [pools, activeTokenOptions, poolsLoading]);
 
   useEffect(() => {
     if (activePools.length > 0 && filteredPools.length > 0) {
       if (filteredPools.length >= activePools.length) {
-        setPoolsToDisplay(
-          filteredPools.filter((pool) => {
-            return activePools.includes(pool);
-          })
-        );
-        settoDisplayLoading(false);
+        if (isMounted.current) {
+          setPoolsToDisplay(
+            filteredPools.filter((pool) => {
+              return activePools.includes(pool);
+            })
+          );
+          setToDisplayLoading(false);
+        }
       } else {
-        setPoolsToDisplay(
-          activePools.filter((pool) => {
-            return filteredPools.includes(pool);
-          })
-        );
+        if (isMounted.current) {
+          setPoolsToDisplay(
+            activePools.filter((pool) => {
+              return filteredPools.includes(pool);
+            })
+          );
+        }
       }
-      settoDisplayLoading(false);
+      if (isMounted.current) {
+        setToDisplayLoading(false);
+      }
     } else {
-      setPoolsToDisplay([]);
-      if (!poolsLoading) {
-        settoDisplayLoading(activeLoading);
+      if (isMounted.current) {
+        setPoolsToDisplay([]);
+        if (!poolsLoading) {
+          setToDisplayLoading(activeLoading);
+        }
       }
     }
   }, [filteredPools, activePools, poolsLoading, activeLoading]);
