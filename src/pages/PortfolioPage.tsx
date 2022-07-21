@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import AppPage from '../components/common/AppPage';
 import styled from 'styled-components';
 import tw from 'twin.macro';
@@ -14,21 +14,35 @@ import PortfolioGraph from '../components/graph/PortfolioGraph';
 import Tooltip from '../components/common/Tooltip';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
 import { RESPONSIVE_BREAKPOINTS } from '../data/constants/Breakpoints';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import rateLimit from 'axios-rate-limit';
 import { BlendTableContext } from '../data/context/BlendTableContext';
 import { theGraphUniswapV2Client } from '../App';
-import { getUniswapPairValueQuery } from '../util/GraphQL';
+import { UniswapPairValueQuery } from '../util/GraphQL';
 import { API_URL } from '../data/constants/Values';
 import { PortfolioCardPlaceholder } from '../components/portfolio/PortfolioCardPlaceholder';
 import { ExternalPortfolioCardPlaceholder } from '../components/portfolio/ExternalPortfolioCardPlaceholder';
 import { useAccount } from 'wagmi';
+import { ApolloQueryResult } from '@apollo/react-hooks';
 
 const http = rateLimit(axios.create(), {
   maxRequests: 2,
   perMilliseconds: 1000,
   maxRPS: 2,
 });
+
+type EtherscanBalanceResponse = {
+  balance: number;
+  error: boolean;
+};
+
+type UniswapV2PositionResponse = {
+  pair: {
+    reserveUSD: string;
+    totalSupply: string;
+    __typename: string;
+  }
+};
 
 const PORTFOLIO_TITLE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -85,6 +99,16 @@ export default function PortfolioPage() {
   const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
 
   const { poolDataMap } = useContext(BlendTableContext);
+
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    }
+  }, []);
+
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
     if (!accountData?.address || poolData.length === 0) {
@@ -124,42 +148,66 @@ export default function PortfolioPage() {
           estimatedValue,
         };
       });
-      setPositions(positionsData);
-      setPositionsLoading(false);
+      if (mounted.current) {
+        setPositions(positionsData);
+        setPositionsLoading(false);
+      }
     } catch (e) {
       console.log(e);
-      setPositionsLoading(false);
+      if (mounted.current) {
+        setPositionsLoading(false);
+      }
     }
 
-    const uniswapPositionRequests = poolData.map(async (pool) => {
-      const pairAddress = poolToUniswapV2Pair(pool.poolAddress);
-      return {
-        pool: pool,
-        etherscanData: await http.get(
-          `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${pairAddress}&address=${accountData.address}&tag=latest&apikey=F7XAB91MQBBZ1HSCUEI343VVP7CTASW4N1`
-        ),
-        uniswapData: await theGraphUniswapV2Client.query({
-          query: getUniswapPairValueQuery(pairAddress),
-        }),
-      };
-    });
-    const uniswapPositionResponse = await Promise.all(uniswapPositionRequests);
-    const filtered = uniswapPositionResponse.filter((uniswapPosition) => {
-      // TODO: make this more robust
-      return parseInt(uniswapPosition.etherscanData.data.result) > 0;
-    });
-    const uniswapPositionData = filtered.map((uniswapPosition) => {
-      const userBalance = parseInt(uniswapPosition.etherscanData.data.result) / 10 ** 18;
-      const pairTotalSupply = parseFloat(uniswapPosition.uniswapData.data.pair.totalSupply);
-      const pairValue = parseFloat(uniswapPosition.uniswapData.data.pair.reserveUSD);
-      return {
-        pool: uniswapPosition.pool,
-        estimatedValue: (userBalance * pairValue) / pairTotalSupply,
-        externalPositionName: 'Uniswap V2',
-      };
-    });
-    setExternalPositions(uniswapPositionData);
-    setExternalPositionsLoading(false);
+    try {
+      const uniswapPositionRequests = poolData.map(async (pool) => {
+        const pairAddress = poolToUniswapV2Pair(pool.poolAddress);
+        return {
+          pool: pool,
+          etherscanData: await http.get(
+            `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${pairAddress}&address=${accountData.address}&tag=latest&apikey=F7XAB91MQBBZ1HSCUEI343VVP7CTASW4N1`,
+            {
+              transformResponse: (response) => {
+                const responseJSON = JSON.parse(response);
+                return {
+                  balance: isNaN(responseJSON.result) ? 0 : parseInt(responseJSON.result),
+                  error: responseJSON.message !== '1',
+                } as EtherscanBalanceResponse;
+              }
+            },
+          ) as AxiosResponse<EtherscanBalanceResponse, any>,
+          uniswapData: await theGraphUniswapV2Client.query({
+            query: UniswapPairValueQuery,
+            variables: {
+              pairAddress: pairAddress,
+            },
+          }) as ApolloQueryResult<UniswapV2PositionResponse>,
+        };
+      });
+      const uniswapPositionResponse = await Promise.all(uniswapPositionRequests);
+      const nonZeroUniswapPositions = uniswapPositionResponse.filter((uniswapPosition) => {
+        return uniswapPosition.etherscanData.data.balance > 0;
+      });
+      const uniswapPositionData = nonZeroUniswapPositions.map((nonZeroUniswapPosition) => {
+        const userBalance = nonZeroUniswapPosition.etherscanData.data.balance / 10 ** 18;
+        const pairTotalSupply = parseFloat(nonZeroUniswapPosition.uniswapData.data.pair.totalSupply);
+        const pairValue = parseFloat(nonZeroUniswapPosition.uniswapData.data.pair.reserveUSD);
+        return {
+          pool: nonZeroUniswapPosition.pool,
+          estimatedValue: (userBalance * pairValue) / pairTotalSupply,
+          externalPositionName: 'Uniswap V2',
+        };
+      });
+      if (mounted.current) {
+        setExternalPositions(uniswapPositionData);
+        setExternalPositionsLoading(false);
+      }
+    } catch (e) {
+      console.log(e);
+      if (mounted.current) {
+        setExternalPositionsLoading(false);
+      }
+    }
   }, [accountData?.address, poolDataMap]);
 
   useEffect(() => {
