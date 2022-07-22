@@ -12,12 +12,12 @@ import { RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_XS } from '../../data/c
 import { API_URL } from '../../data/constants/Values';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { OffChainPoolStats } from '../../data/PoolStats';
-import { AccountData } from '../../pages/BlendPoolPage';
 import { formatUSDAuto, toBig } from '../../util/Numbers';
 import { PoolReturns, TokenReturns } from '../../util/ReturnsCalculations';
 import { PercentChange } from '../common/PercentChange';
 import { Display, Text } from '../common/Typography';
 import WidgetHeading from '../common/WidgetHeading';
+import { AccountContext } from '../../data/context/AccountContext';
 
 const PERFORMANCE_LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 const PERFORMANCE_VALUE_TEXT_COLOR = 'rgba(255, 255, 255, 1)';
@@ -103,15 +103,12 @@ export type PoolPositionWidgetProps = {
   walletIsConnected: boolean;
   poolData: BlendPoolMarkers;
   offChainPoolStats: OffChainPoolStats | undefined;
-  accountData: AccountData | undefined;
 };
 
 export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
-
-  const { walletIsConnected, poolData, offChainPoolStats, accountData } = props;
+  const { walletIsConnected, poolData, offChainPoolStats } = props;
   const { poolStats } = useContext(BlendPoolContext);
-
-  // const [{ data: accountData }] = useAccount();
+  const { accountData } = useContext(AccountContext);
   const [{ data: accountShareBalance }] = useBalance({
     addressOrName: accountData?.address,
     token: poolData.poolAddress,

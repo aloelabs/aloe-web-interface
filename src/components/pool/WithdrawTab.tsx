@@ -1,7 +1,7 @@
 import Big from 'big.js';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useAccount, useBalance, useSigner } from 'wagmi';
+import { useBalance, useSigner } from 'wagmi';
 import { withdraw } from '../../connector/BlendWithdrawActions';
 import {
   BlendPoolDrawData,
@@ -26,6 +26,7 @@ import TransactionFailedModal from './modal/TransactionFailedModal';
 import TokenBreakdown from '../common/TokenBreakdown';
 import { Text } from '../common/Typography';
 import { OffChainPoolStats } from '../../data/PoolStats';
+import { AccountContext } from '../../data/context/AccountContext';
 
 const LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -89,7 +90,7 @@ export default function WithdrawTab(props: WithdrawTabProps) {
   const [usdEstimate, setUsdEstimate] = useState('-')
 
   const { poolStats } = useContext(BlendPoolContext);
-  const [{ data: accountData }] = useAccount();
+  const { accountData } = useContext(AccountContext);
   const [{ data: shareBalanceData }] = useBalance({
     addressOrName: accountData?.address,
     token: props.poolData.poolAddress,

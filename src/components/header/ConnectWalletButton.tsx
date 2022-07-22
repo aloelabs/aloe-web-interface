@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { CloseableModal } from '../common/Modal';
-
 import { useConnect } from 'wagmi';
 import { FormatAddress } from '../../util/FormatAddress';
 import {
@@ -9,15 +8,14 @@ import {
 } from '../common/Buttons';
 import { mapConnectorNameToIcon } from './ConnectorIconMap';
 import { Text } from '../common/Typography';
+import { AccountContext } from '../../data/context/AccountContext';
 
 export type ConnectWalletButtonProps = {
-  accountData: any;
-  disconnect: () => void;
   buttonStyle?: 'secondary' | 'tertiary';
 };
 
 export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
-  const { accountData, disconnect } = props;
+  const { accountData, disconnect } = useContext(AccountContext);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [{ data: connectData, error: connectError }, connect] = useConnect();
 

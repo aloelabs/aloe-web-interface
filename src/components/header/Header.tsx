@@ -1,5 +1,5 @@
 import { MenuIcon } from '@heroicons/react/solid';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import tw from 'twin.macro';
@@ -9,7 +9,7 @@ import useMediaQuery from '../../data/hooks/UseMediaQuery';
 import { Text } from '../common/Typography';
 import ConnectWalletButton from './ConnectWalletButton';
 import { IS_DEV } from '../../util/Env';
-import { useAccount } from 'wagmi';
+import { AccountContext } from '../../data/context/AccountContext';
 
 type MenuItem = {
   title: string;
@@ -86,9 +86,7 @@ const NavDropdown = styled.div`
 `;
 
 export default function Header() {
-  const [{ data: accountData }, disconnect] = useAccount({
-    fetchEns: true,
-  });
+  const { accountData } = useContext(AccountContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleNavDropdown = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -162,13 +160,13 @@ export default function Header() {
             </React.Fragment>
           ))}
           <div className='w-full'>
-            <ConnectWalletButton accountData={accountData} disconnect={disconnect} buttonStyle='tertiary' />
+            <ConnectWalletButton buttonStyle='tertiary' />
           </div>
         </NavDropdown>
       )}
       {isGTSmallScreen && (
         <div className='mr-8'>
-          <ConnectWalletButton accountData={accountData} disconnect={disconnect} />
+          <ConnectWalletButton />
         </div>
       )}
     </Nav>
