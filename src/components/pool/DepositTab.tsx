@@ -77,13 +77,6 @@ export const TabWrapper = styled.div`
   padding: 24px;
 `;
 
-export const SectionLabel = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: rgba(130, 160, 182, 1);
-`;
-
 const TOOLTIP_CONTENT_DEPOSIT =
   'Deposit amounts are based on current prices. If prices shift while your transaction is pending, some funds may be returned to you instead of being deposited to Blend. Slippage is the threshold between returning funds and canceling the transaction altogether (to save gas).';
 
