@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { ReactComponent as MigrateIcon } from '../../assets/svg/migrate.svg';
-import { FeeTier } from '../../data/BlendPoolMarkers';
 import {
   RESPONSIVE_BREAKPOINT_MD,
   RESPONSIVE_BREAKPOINT_SM
@@ -10,7 +9,6 @@ import {
 import { TokenData } from '../../data/TokenData';
 import { formatUSDAuto } from '../../util/Numbers';
 import { OutlinedGradientButtonWithIcon } from '../common/Buttons';
-import FeeTierContainer from '../common/FeeTierContainer';
 import { PercentChange } from '../common/PercentChange';
 import TokenPairIcons from '../common/TokenPairIcons';
 import { Display, Text } from '../common/Typography';
@@ -59,10 +57,18 @@ const EndAlignedBodySubContainer = styled(BodySubContainer)`
   }
 `;
 
+const ExternalPositionNameContainer = styled.div`
+  ${tw`flex flex-col items-center justify-center`}
+  padding: 8px 16px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+`;
+
 export type ExternalPortfolioCardProps = {
   token0: TokenData;
   token1: TokenData;
-  uniswapFeeTier: FeeTier;
+  externalPositionName: string;
   estimatedValue: number;
   percentageChange: number;
 };
@@ -70,7 +76,7 @@ export type ExternalPortfolioCardProps = {
 export default function ExternalPortfolioCard(
   props: ExternalPortfolioCardProps
 ) {
-  const { token0, token1, uniswapFeeTier, estimatedValue, percentageChange } =
+  const { token0, token1, externalPositionName, estimatedValue, percentageChange } =
     props;
   return (
     <ExternalCardWrapper>
@@ -85,7 +91,11 @@ export default function ExternalPortfolioCard(
             token0AltText={`${token0.name}'s Icon`}
             token1AltText={`${token1.name}'s Icon`}
           />
-          <FeeTierContainer feeTier={uniswapFeeTier} />
+          <ExternalPositionNameContainer>
+            <Display size='XS' weight='medium' color='rgba(204, 223, 237, 1)'>
+              {externalPositionName}
+            </Display>
+          </ExternalPositionNameContainer>
         </CardSubTitleWrapper>
       </CardTitleWrapper>
       <CardBodyWrapper>

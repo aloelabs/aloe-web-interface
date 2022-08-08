@@ -96,6 +96,10 @@ const TokenDataMap = new Map<string, TokenData>([
   ],
 ]);
 
+export function getTokens(): TokenData[] {
+  return Array.from(TokenDataMap.values());
+}
+
 export function GetTokenData(address: string): TokenData {
   if (TokenDataMap.has(address)) {
     return TokenDataMap.get(address)!;
