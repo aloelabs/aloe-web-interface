@@ -111,7 +111,7 @@ function App() {
                       element={<Navigate replace to='/blend/pools' />}
                     />
                   </Route>
-                  <Route path='/portfolio' element={<PortfolioPage />} />
+                  {/* <Route path='/portfolio' element={<PortfolioPage />} /> */}
                   { // Devmode-only example page routing
                     IS_DEV && (
                       <>

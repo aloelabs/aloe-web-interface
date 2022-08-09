@@ -24,12 +24,12 @@ const menuItems: MenuItem[] = [
     name: 'blend',
     url: '/blend',
   },
-  {
-    title: 'Portfolio',
-    name: 'portfolio',
-    url: '/portfolio',
-    onlyShowIfConnected: true,
-  }
+  // {
+  //   title: 'Portfolio',
+  //   name: 'portfolio',
+  //   url: '/portfolio',
+  //   onlyShowIfConnected: true,
+  // }
 ];
 
 if (IS_DEV) {
