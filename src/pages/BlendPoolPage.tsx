@@ -40,15 +40,6 @@ type PoolParams = {
   pooladdress: string;
 };
 
-export type AccountData = {
-  address: string;
-  connector: Connector<any, any> | undefined;
-    ens: {
-        avatar: string | null | undefined;
-        name: string;
-    } | undefined;
-}
-
 const LoaderWrapper = styled.div`
   position: absolute;
   left: 0;
@@ -212,8 +203,8 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
     };
   }, [blockNumber, poolData]);
 
-  const [{ data: accountData }] = useAccount({ fetchEns: true });
-  const walletIsConnected = accountData?.address !== undefined;
+  const { address } = useAccount();
+  const walletIsConnected = address !== undefined;
 
   if (!poolData) {
     if (params.pooladdress) {
@@ -267,7 +258,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
               walletIsConnected={walletIsConnected}
               poolData={poolData}
               offChainPoolStats={offChainPoolStats}
-              accountData={accountData}
+              accountAddress={address}
             />
           )}
           <PoolStatsWidget

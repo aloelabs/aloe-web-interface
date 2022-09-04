@@ -12,7 +12,6 @@ import { RESPONSIVE_BREAKPOINT_MD, RESPONSIVE_BREAKPOINT_XS } from '../../data/c
 import { API_URL } from '../../data/constants/Values';
 import { BlendPoolContext } from '../../data/context/BlendPoolContext';
 import { OffChainPoolStats } from '../../data/PoolStats';
-import { AccountData } from '../../pages/BlendPoolPage';
 import { formatUSDAuto, toBig } from '../../util/Numbers';
 import { PoolReturns, TokenReturns } from '../../util/ReturnsCalculations';
 import { PercentChange } from '../common/PercentChange';
@@ -103,17 +102,17 @@ export type PoolPositionWidgetProps = {
   walletIsConnected: boolean;
   poolData: BlendPoolMarkers;
   offChainPoolStats: OffChainPoolStats | undefined;
-  accountData: AccountData | undefined;
+  accountAddress: string | undefined;
 };
 
 export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
 
-  const { walletIsConnected, poolData, offChainPoolStats, accountData } = props;
+  const { walletIsConnected, poolData, offChainPoolStats, accountAddress } = props;
   const { poolStats } = useContext(BlendPoolContext);
 
   // const [{ data: accountData }] = useAccount();
-  const [{ data: accountShareBalance }] = useBalance({
-    addressOrName: accountData?.address,
+  const { data: accountShareBalance } = useBalance({
+    addressOrName: accountAddress,
     token: poolData.poolAddress,
     watch: false,
   });
@@ -126,7 +125,7 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
     async function fetchAccountStats(offChainPoolStats: OffChainPoolStats, poolStats: BlendPoolStats, accountShareBalance: any, accountData: any) {
       const tvl = new Big(offChainPoolStats.total_value_locked);
       const accountValue = tvl.mul(toBig(accountShareBalance.value)).div(poolStats.outstandingShares);
-      const accountAddress = accountData.address.slice(2).toLowerCase();
+      const accountAddress = accountData.slice(2).toLowerCase();
 
       const getEvents = makeEtherscanRequest(
         BLEND_FACTORY_CREATION_BLOCK,
@@ -221,13 +220,13 @@ export default function PoolPositionWidget(props: PoolPositionWidgetProps) {
         }
       ));
     }
-    if (walletIsConnected && offChainPoolStats && poolStats && accountShareBalance && accountData && !accountStats) {
-      fetchAccountStats(offChainPoolStats, poolStats, accountShareBalance, accountData);
+    if (walletIsConnected && offChainPoolStats && poolStats && accountShareBalance && accountAddress && !accountStats) {
+      fetchAccountStats(offChainPoolStats, poolStats, accountShareBalance, accountAddress);
     }
     return () => {
       mounted = false;
     }
-  }, [accountData, accountShareBalance, accountStats, offChainPoolStats, poolData, poolStats, walletIsConnected]);
+  }, [accountAddress, accountShareBalance, accountStats, offChainPoolStats, poolData, poolStats, walletIsConnected]);
   
   if (!walletIsConnected) {
     return null;

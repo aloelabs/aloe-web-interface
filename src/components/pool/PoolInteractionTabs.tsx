@@ -7,6 +7,7 @@ import tw from 'twin.macro';
 import styled from 'styled-components';
 import ConnectWallet from './ConnectWallet';
 import { OffChainPoolStats } from '../../data/PoolStats';
+import SwapTab from './SwapTab';
 
 export const MODAL_BLACK_TEXT_COLOR = 'rgba(7, 14, 18, 1)';
 
@@ -110,7 +111,7 @@ export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
       {props.walletIsConnected && (
         <Tab.Group>
           <Tab.List className='flex rounded-md'>
-            {['Deposit', 'Withdraw'].map((tabName) => (
+            {['Deposit', 'Withdraw', 'Swap'].map((tabName) => (
               <Tab key={tabName} as={Fragment}>
                 {({ selected }) => (
                   <TabButton className={selected ? 'selected' : ''}>
@@ -127,6 +128,9 @@ export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
               </Tab.Panel>
               <Tab.Panel>
                 <WithdrawTab poolData={props.poolData} offChainPoolStats={offChainPoolStats} />
+              </Tab.Panel>
+              <Tab.Panel>
+                <SwapTab poolData={props.poolData} offChainPoolStats={offChainPoolStats} />
               </Tab.Panel>
             </PanelsWrapper>
           </Tab.Panels>

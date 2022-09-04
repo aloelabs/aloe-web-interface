@@ -96,7 +96,7 @@ export default function DepositTab(props: DepositTabProps) {
 
   const { poolStats } = useContext(BlendPoolContext);
   const depositData = useDeposit(props.poolData);
-  const [{ data: signer }] = useSigner();
+  const { data: signer } = useSigner();
 
   const [token0Amount, setToken0Amount] = useState('');
   const [token1Amount, setToken1Amount] = useState('');

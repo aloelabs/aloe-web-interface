@@ -89,13 +89,13 @@ export default function WithdrawTab(props: WithdrawTabProps) {
   const [usdEstimate, setUsdEstimate] = useState('-')
 
   const { poolStats } = useContext(BlendPoolContext);
-  const [{ data: accountData }] = useAccount();
-  const [{ data: shareBalanceData }] = useBalance({
-    addressOrName: accountData?.address,
+  const { address } = useAccount();
+  const { data: shareBalanceData } = useBalance({
+    addressOrName: address,
     token: props.poolData.poolAddress,
     watch: true,
   });
-  const [{ data: signer }] = useSigner();
+  const { data: signer } = useSigner();
 
   const [buttonState, setButtonState] = useState<ButtonState>(
     ButtonState.NO_WALLET

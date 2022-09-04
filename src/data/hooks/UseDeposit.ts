@@ -1,6 +1,5 @@
 import { BlendPoolMarkers } from '../BlendPoolMarkers';
-import { useAccount, useBalance } from 'wagmi';
-import { useAllowance } from './UseAllowance';
+import { erc20ABI, useAccount, useBalance, useContractRead } from 'wagmi';
 import Big from 'big.js';
 import { useEffect, useState } from 'react';
 import { toBig } from '../../util/Numbers';
@@ -32,31 +31,35 @@ function tokenMaxFromBalance(
 export function useDeposit(poolData: BlendPoolMarkers) {
   const [state, setState] = useState<DepositPageState | null>(null);
 
-  const [{ data: accountData }] = useAccount();
-  const [{ data: token0BalanceData }] = useBalance({
-    addressOrName: accountData?.address,
+  const { address } = useAccount();
+  const { data: token0BalanceData } = useBalance({
+    addressOrName: address,
     token: poolData.token0Address,
     watch: true,
   });
-  const [{ data: token1BalanceData }] = useBalance({
-    addressOrName: accountData?.address,
+  const { data: token1BalanceData } = useBalance({
+    addressOrName: address,
     token: poolData.token1Address,
     watch: true,
   });
-  const [{ data: ethBalanceData }] = useBalance({
-    addressOrName: accountData?.address,
+  const { data: ethBalanceData } = useBalance({
+    addressOrName: address,
     watch: true,
   });
-  const [{ data: token0Allowance }] = useAllowance({
-    holderAddressOrName: accountData?.address,
-    spenderAddressOrName: poolData.poolAddress,
-    token: poolData.token0Address,
+  const { data: token0Allowance } = useContractRead({
+    addressOrName: poolData.token0Address,
+    contractInterface: erc20ABI,
+    functionName: 'allowance',
+    args: [address, poolData.poolAddress],
+    cacheOnBlock: true,
     watch: true,
   });
-  const [{ data: token1Allowance }] = useAllowance({
-    holderAddressOrName: accountData?.address,
-    spenderAddressOrName: poolData.poolAddress,
-    token: poolData.token1Address,
+  const { data: token1Allowance } = useContractRead({
+    addressOrName: poolData.token1Address,
+    contractInterface: erc20ABI,
+    functionName: 'allowance',
+    args: [address, poolData.poolAddress],
+    cacheOnBlock: true,
     watch: true,
   });
 
@@ -85,8 +88,8 @@ export function useDeposit(poolData: BlendPoolMarkers) {
           ethBalanceBig,
           poolData.token1Address
         ),
-        token0Allowance: token0Allowance,
-        token1Allowance: token1Allowance,
+        token0Allowance: token0Allowance.value,
+        token1Allowance: token1Allowance.value,
         token0Decimals: token0BalanceData.decimals,
         token1Decimals: token1BalanceData.decimals,
       });
