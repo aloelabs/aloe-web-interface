@@ -21,8 +21,7 @@ export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
   const { address, ensName, activeConnector } = props;
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-  // const { data: connectData, error: connectError, connect } = useConnect();
-  const { data: connectData, error: connectError, connect, connectors, error, isLoading, pendingConnector } = useConnect({
+  const {error: connectError, connect, connectors } = useConnect({
     onSuccess(data) {
       setModalOpen(false);
     }

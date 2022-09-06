@@ -86,7 +86,7 @@ const NavDropdown = styled.div`
 `;
 
 export default function Header() {
-  const { address, isConnecting, isDisconnected, connector: activeConnector } = useAccount();
+  const { address, connector: activeConnector } = useAccount();
   const { data: ensName } = useEnsName({ address });
 
   // const [{ data: accountData }, disconnect] = useAccount({

@@ -1,16 +1,14 @@
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { useSigner } from 'wagmi';
-import { BlendPoolDrawData } from '../../data/BlendPoolDataResolver';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
-import { OffChainPoolStats } from '../../data/PoolStats';
 
 import { SwapWidget, Theme } from '@uniswap/widgets'
 import '@uniswap/widgets/fonts.css'
 
 export type DepositTabProps = {
   poolData: BlendPoolMarkers;
-  offChainPoolStats: OffChainPoolStats | undefined;
+  // offChainPoolStats: OffChainPoolStats | undefined;
 };
 
 export const TabWrapper = styled.div`

@@ -130,7 +130,7 @@ export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
                 <WithdrawTab poolData={props.poolData} offChainPoolStats={offChainPoolStats} />
               </Tab.Panel>
               <Tab.Panel>
-                <SwapTab poolData={props.poolData} offChainPoolStats={offChainPoolStats} />
+                <SwapTab poolData={props.poolData} />
               </Tab.Panel>
             </PanelsWrapper>
           </Tab.Panels>
