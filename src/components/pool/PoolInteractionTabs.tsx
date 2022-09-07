@@ -67,7 +67,7 @@ const PanelsWrapper = styled.div`
   &:before {
     content: '';
     position: absolute;
-    z-index: 30;
+    z-index: 0;
     inset: 0;
     pointer-events: none;
     border-bottom-left-radius: 8px;
@@ -83,7 +83,7 @@ const PanelsWrapper = styled.div`
   &:after {
     content: '';
     position: absolute;
-    z-index: 10;
+    z-index: 5;
     inset: 0;
     pointer-events: none;
     border-bottom-left-radius: 8px;
