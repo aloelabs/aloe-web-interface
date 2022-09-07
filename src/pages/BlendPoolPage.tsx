@@ -28,7 +28,7 @@ import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
 import tw from 'twin.macro';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
-import { Connector, useAccount } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { FeeTier } from '../data/BlendPoolMarkers';
 import { theGraphUniswapV3Client } from '../App';
 import { getUniswapVolumeQuery } from '../util/GraphQL';
@@ -39,15 +39,6 @@ const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 type PoolParams = {
   pooladdress: string;
 };
-
-export type AccountData = {
-  address: string;
-  connector: Connector<any, any> | undefined;
-    ens: {
-        avatar: string | null | undefined;
-        name: string;
-    } | undefined;
-}
 
 const LoaderWrapper = styled.div`
   position: absolute;
@@ -212,8 +203,8 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
     };
   }, [blockNumber, poolData]);
 
-  const [{ data: accountData }] = useAccount({ fetchEns: true });
-  const walletIsConnected = accountData?.address !== undefined;
+  const { address } = useAccount();
+  const walletIsConnected = address !== undefined;
 
   if (!poolData) {
     if (params.pooladdress) {
@@ -267,7 +258,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
               walletIsConnected={walletIsConnected}
               poolData={poolData}
               offChainPoolStats={offChainPoolStats}
-              accountData={accountData}
+              accountAddress={address}
             />
           )}
           <PoolStatsWidget

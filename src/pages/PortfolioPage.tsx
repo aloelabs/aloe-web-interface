@@ -88,9 +88,7 @@ function poolToUniswapV2Pair(address: string): string {
 export type PortfolioPageProps = {
 }; 
 export default function PortfolioPage() {
-  const [{ data: accountData }] = useAccount({
-    fetchEns: true,
-  });
+  const {address} = useAccount();
   const [positionsLoading, setPositionsLoading] = useState(true);
   const [externalPositionsLoading, setExternalPositionsLoading] =
     useState(true);
@@ -111,12 +109,12 @@ export default function PortfolioPage() {
 
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
-    if (!accountData?.address || poolData.length === 0) {
+    if (!address || poolData.length === 0) {
       return;
     }
     try {
       const shareBalancesResponse = await http.get(
-        `${API_URL}/share_balances/${accountData.address}/1/1d/${(
+        `${API_URL}/share_balances/${address}/1/1d/${(
           new Date().getTime() / 1000
         ).toFixed(0)}`
       );
@@ -165,7 +163,7 @@ export default function PortfolioPage() {
         return {
           pool: pool,
           etherscanData: await http.get(
-            `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${pairAddress}&address=${accountData.address}&tag=latest&apikey=F7XAB91MQBBZ1HSCUEI343VVP7CTASW4N1`,
+            `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${pairAddress}&address=${address}&tag=latest&apikey=F7XAB91MQBBZ1HSCUEI343VVP7CTASW4N1`,
             {
               transformResponse: (response) => {
                 const responseJSON = JSON.parse(response);
@@ -208,7 +206,7 @@ export default function PortfolioPage() {
         setExternalPositionsLoading(false);
       }
     }
-  }, [accountData?.address, poolDataMap]);
+  }, [address, poolDataMap]);
 
   useEffect(() => {
     loadData();
@@ -218,7 +216,7 @@ export default function PortfolioPage() {
     <AppPage>
       <Container>
         <div className='w-full'>
-          <PortfolioGraph accountAddress={accountData ? accountData.address : null} />
+          <PortfolioGraph accountAddress={address ?? null} />
         </div>
         <div className='w-full max-w-[1280px]'>
           <Text size='XL' weight='medium' color={PORTFOLIO_TITLE_TEXT_COLOR}>
