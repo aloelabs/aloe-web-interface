@@ -2,7 +2,6 @@ import { Tab } from '@headlessui/react';
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { SectionLabel } from './DepositTab';
 import { Text } from '../common/Typography';
 import Tooltip from '../common/Tooltip';
 import { RESPONSIVE_BREAKPOINT_XS } from '../../data/constants/Breakpoints';
@@ -114,9 +113,9 @@ export default function MaxSlippageInput(props: MaxSlippageInputProps) {
   const { updateMaxSlippage, tooltipContent } = props;
   return (
     <div className='w-full flex flex-col gap-y-2 mt-6'>
-      <SectionLabel className='flex gap-x-2 mb-1'>
+      <Text size='S' weight='medium' color='rgba(130, 160, 182, 1)' className='flex gap-x-2 mb-1'>
         <Tooltip content={tooltipContent} buttonText='Max Slippage' buttonSize='S' position='top-left' filled={true} />
-      </SectionLabel>
+      </Text>
       <Tab.Group>
         <Tab.List>
           <SlippageTabsWrapper>
