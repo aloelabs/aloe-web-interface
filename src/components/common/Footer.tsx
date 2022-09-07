@@ -88,7 +88,7 @@ export default function Footer() {
           <img src={DiscordFooterIcon} alt='Discord Icon' width={14} height={11} />
         </a>
         <a
-          href={'https://discord.com/invite/gpt4sUv6sw'}
+          href={'https://twitter.com/aloecapital'}
           target='_blank'
           rel='noopener noreferrer'
           title='Follow us on Twitter'
@@ -96,7 +96,7 @@ export default function Footer() {
           <img src={TwitterFooterIcon} alt='Twitter Icon' width={15} height={11} />
         </a>
         <a
-          href={'https://discord.com/invite/gpt4sUv6sw'}
+          href={'https://aloelabs.medium.com/'}
           target='_blank'
           rel='noopener noreferrer'
           title='Connect with us on Medium'
