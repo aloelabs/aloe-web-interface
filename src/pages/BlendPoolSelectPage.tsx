@@ -32,6 +32,8 @@ import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
 import tw from 'twin.macro';
 import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
+import { IS_DEV } from '../util/Env';
+import { isHiddenPool } from '../data/HiddenBlendPools';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -218,7 +220,9 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     if (activeTokenOptions.length > 0) {
       if (isMounted.current) {
         setActivePools(
-          pools.filter((pool) => {
+          pools
+          .filter((pool) => IS_DEV || !isHiddenPool(pool.poolAddress)) // Hide pools that should only be shown in dev mode
+          .filter((pool) => {
             const {
               silo0Name,
               silo1Name,
