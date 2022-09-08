@@ -1,11 +1,11 @@
 const HiddenBlendPools: string[] = [];
 
-const HiddenBlendPoolsMap: Map<string, boolean> = new Map();
+const HiddenBlendPoolsSet: Set<string> = new Set();
 
 HiddenBlendPools.forEach((poolAddress: string) => {
-  HiddenBlendPoolsMap.set(poolAddress, true);
+  HiddenBlendPoolsSet.add(poolAddress);
 });
 
 export function isHiddenPool(poolAddress: string) : boolean {
-  return HiddenBlendPoolsMap.has(poolAddress);
+  return HiddenBlendPoolsSet.has(poolAddress);
 }
