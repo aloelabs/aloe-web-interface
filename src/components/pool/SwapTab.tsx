@@ -50,6 +50,7 @@ export default function SwapTab(props: DepositTabProps) {
         }}
         defaultInputTokenAddress={props.poolData.token0Address}
         defaultOutputTokenAddress={props.poolData.token1Address}
+        tokenList={'https://tokens.coingecko.com/uniswap/all.json'}
         width={'100%'}
         theme={theme}
         />
