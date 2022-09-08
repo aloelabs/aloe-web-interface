@@ -1,6 +1,4 @@
-const HiddenBlendPools = [
-  "0x0b76abb170519c292da41404fdc30bb5bef308fc"
-];
+const HiddenBlendPools: string[] = [];
 
 const HiddenBlendPoolsMap: Map<string, boolean> = new Map();
 
