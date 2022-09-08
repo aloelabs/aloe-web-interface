@@ -1,11 +1,5 @@
-const HiddenBlendPools: string[] = [];
-
-const HiddenBlendPoolsSet: Set<string> = new Set();
-
-HiddenBlendPools.forEach((poolAddress: string) => {
-  HiddenBlendPoolsSet.add(poolAddress);
-});
+const HiddenBlendPools: Set<string> = new Set([]);
 
 export function isHiddenPool(poolAddress: string) : boolean {
-  return HiddenBlendPoolsSet.has(poolAddress);
+  return HiddenBlendPools.has(poolAddress);
 }
