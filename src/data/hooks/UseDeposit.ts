@@ -88,8 +88,8 @@ export function useDeposit(poolData: BlendPoolMarkers) {
           ethBalanceBig,
           poolData.token1Address
         ),
-        token0Allowance: token0Allowance.value,
-        token1Allowance: token1Allowance.value,
+        token0Allowance: new Big(token0Allowance.toString()),
+        token1Allowance: new Big(token1Allowance.toString()),
         token0Decimals: token0BalanceData.decimals,
         token1Decimals: token1BalanceData.decimals,
       });
