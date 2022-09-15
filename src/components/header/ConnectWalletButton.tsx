@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CloseableModal } from '../common/Modal';
 
-import { useConnect } from 'wagmi';
+import { Connector, useConnect, useDisconnect } from 'wagmi';
 import { FormatAddress } from '../../util/FormatAddress';
 import {
   FilledStylizedButton,
@@ -11,19 +11,25 @@ import { mapConnectorNameToIcon } from './ConnectorIconMap';
 import { Text } from '../common/Typography';
 
 export type ConnectWalletButtonProps = {
-  accountData: any;
-  disconnect: () => void;
+  address: string | undefined;
+  ensName: string | undefined;
+  activeConnector: Connector<any, any, any> | undefined;
   buttonStyle?: 'secondary' | 'tertiary';
 };
 
 export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
-  const { accountData, disconnect } = props;
+  const { address, ensName, activeConnector } = props;
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [{ data: connectData, error: connectError }, connect] = useConnect();
 
-  const ensName: string | undefined = accountData?.ens?.name;
-  const formattedAddr = accountData ? FormatAddress(accountData.address) : '';
-  const buttonText = accountData
+  const {error: connectError, connect, connectors } = useConnect({
+    onSuccess(data) {
+      setModalOpen(false);
+    }
+  })
+  const { disconnect } = useDisconnect()
+
+  const formattedAddr = address ? FormatAddress(address) : '';
+  const buttonText = address
     ? ensName
       ? ensName
       : formattedAddr
@@ -69,7 +75,7 @@ export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
         title={'Connect Wallet'}
       >
         <div className='w-full'>
-          {accountData ? (
+          {(activeConnector && address) ? (
             // We have an account connected
             <div className='flex flex-col gap-y-2 items-center justify-between p-2 rounded-md border-2 border-grey-200 bg-grey-100'>
               {/*<img src={accountData.ens?.avatar || undefined} alt="ENS Avatar" />*/}
@@ -77,20 +83,20 @@ export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
                 <Text
                   size='M'
                   className='w-full overflow-hidden text-ellipsis'
-                  title={accountData.address}
+                  title={address}
                 >
-                  {accountData.ens?.name
-                    ? `${accountData.ens?.name} (${FormatAddress(
-                        accountData.address
+                  {ensName
+                    ? `${ensName} (${FormatAddress(
+                        address
                       )})`
-                    : accountData.address}
+                    : address}
                 </Text>
                 <Text
                   size='S'
                   color='rgb(194, 209, 221)'
                   className='w-full overflow-hidden text-ellipsis'
                 >
-                  Connected to {accountData.connector?.name}
+                  Connected to {activeConnector.name}
                 </Text>
               </div>
               <FilledStylizedButton
@@ -99,7 +105,7 @@ export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
                 backgroundColor='rgba(26, 41, 52, 1)'
                 color={'rgba(255, 255, 255, 1)'}
                 fillWidth={true}
-                onClick={disconnect}
+                onClick={() => disconnect()}
               >
                 Disconnect
               </FilledStylizedButton>
@@ -128,7 +134,7 @@ export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
                 </a>
                 .
               </Text>
-              {connectData.connectors.map((connector) => (
+              {connectors.map((connector) => (
                 <div
                   key={connector.id}
                   className=' py-2 w-full flex flex-row items-center justify-between'
@@ -145,7 +151,7 @@ export default function ConnectWalletButton(props: ConnectWalletButtonProps) {
                     color={'rgba(255, 255, 255, 1)'}
                     fillWidth={true}
                     disabled={!connector.ready}
-                    onClick={() => connect(connector)}
+                    onClick={() => connect({ connector })}
                   >
                     {connector.name}
                     {!connector.ready && ' (unsupported)'}

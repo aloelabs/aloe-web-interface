@@ -8,7 +8,7 @@ import { BlendPoolMarkers } from '../BlendPoolMarkers';
 
 export function useBlendStats(poolData: BlendPoolMarkers) {
   const [blendStats, setBlendStats] = useState<BlendPoolStats | null>(null);
-  const [{ data: blockNumberData }] = useBlockNumber();
+  const { data: blockNumberData } = useBlockNumber();
 
   const provider = useProvider();
   const blend = useContract({

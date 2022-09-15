@@ -6,6 +6,7 @@ import {
   TribeLogo,
   RaiLogo,
   LooksLogo,
+  OSqthLogo,
 } from '../assets/svg/tokens';
 
 export type TokenData = {
@@ -94,6 +95,17 @@ const TokenDataMap = new Map<string, TokenData>([
       decimals: 18,
     },
   ],
+    // oSQTH
+    [
+      '0xf1b99e3e573a1a9c5e6b2ce818b617f0e664e86b',
+      {
+        address: '0xf1b99e3e573a1a9c5e6b2ce818b617f0e664e86b',
+        name: 'Opyn Squeeth',
+        ticker: 'oSQTH',
+        iconPath: OSqthLogo,
+        decimals: 18,
+      },
+    ],
 ]);
 
 export function getTokens(): TokenData[] {

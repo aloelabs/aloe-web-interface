@@ -24,7 +24,7 @@ import SharesWithdrawnModal from './modal/SharesWithdrawnModal';
 import SubmittingOrderModal from './modal/SubmittingOrderModal';
 import TransactionFailedModal from './modal/TransactionFailedModal';
 import TokenBreakdown from '../common/TokenBreakdown';
-import { Text } from '../common/Typography';
+import { Display, Text } from '../common/Typography';
 import { OffChainPoolStats } from '../../data/PoolStats';
 
 const LABEL_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
@@ -64,13 +64,6 @@ const HorizontalDivider = styled.div`
   background-color: rgba(26, 41, 52, 1);
 `;
 
-const EstimatedReturnValue = styled.div`
-  /* font-family: 'ClashDisplay-Variable'; */
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 40px;
-`;
-
 const TOOLTIP_CONTENT_WITHDRAW = 'Withdrawal amounts are based on current prices. If prices shift while your transaction is pending, you may receive a different combination of tokens. If the token amounts differ by more than your selected slippage, the transaction will be cancelled instead.';
 
 export default function WithdrawTab(props: WithdrawTabProps) {
@@ -89,13 +82,13 @@ export default function WithdrawTab(props: WithdrawTabProps) {
   const [usdEstimate, setUsdEstimate] = useState('-')
 
   const { poolStats } = useContext(BlendPoolContext);
-  const [{ data: accountData }] = useAccount();
-  const [{ data: shareBalanceData }] = useBalance({
-    addressOrName: accountData?.address,
+  const { address } = useAccount();
+  const { data: shareBalanceData } = useBalance({
+    addressOrName: address,
     token: props.poolData.poolAddress,
     watch: true,
   });
-  const [{ data: signer }] = useSigner();
+  const { data: signer } = useSigner();
 
   const [buttonState, setButtonState] = useState<ButtonState>(
     ButtonState.NO_WALLET
@@ -240,9 +233,9 @@ export default function WithdrawTab(props: WithdrawTabProps) {
               <Text size='S' weight='medium' color={LABEL_TEXT_COLOR}>
                 Your estimated return
               </Text>
-              <EstimatedReturnValue>
+              <Display size='L' weight='semibold' className='overflow-hidden'>
                 {usdEstimate}
-              </EstimatedReturnValue>
+              </Display>
             </div>
             <TokenBreakdown
               token0Ticker={drawData.token0Label}

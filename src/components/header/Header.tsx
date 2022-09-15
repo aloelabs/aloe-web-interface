@@ -9,7 +9,7 @@ import useMediaQuery from '../../data/hooks/UseMediaQuery';
 import { Text } from '../common/Typography';
 import ConnectWalletButton from './ConnectWalletButton';
 import { IS_DEV } from '../../util/Env';
-import { useAccount } from 'wagmi';
+import { useAccount, useEnsName } from 'wagmi';
 
 type MenuItem = {
   title: string;
@@ -86,9 +86,12 @@ const NavDropdown = styled.div`
 `;
 
 export default function Header() {
-  const [{ data: accountData }, disconnect] = useAccount({
-    fetchEns: true,
-  });
+  const { address, connector: activeConnector } = useAccount();
+  const { data: ensName } = useEnsName({ address });
+
+  // const [{ data: accountData }, disconnect] = useAccount({
+  //   fetchEns: true,
+  // });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleNavDropdown = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -110,7 +113,7 @@ export default function Header() {
             <div className='flex flex-row align-middle items-center h-full text-md'>
               {menuItems.map((menuItem, index) => (
                 <React.Fragment key={index}>
-                  <div className={`${!menuItem.onlyShowIfConnected || accountData ? 'flex' : 'hidden'}`}>
+                  <div className={`${!menuItem.onlyShowIfConnected || address ? 'flex' : 'hidden'}`}>
                     <StyledNavLink
                       size='M'
                       weight='medium'
@@ -144,7 +147,7 @@ export default function Header() {
         <NavDropdown>
           {menuItems.map((menuItem, index) => (
             <React.Fragment key={index}>
-              <div className={`${!menuItem.onlyShowIfConnected || accountData ? 'w-full flex' : 'hidden'}`}>
+              <div className={`${!menuItem.onlyShowIfConnected || address ? 'w-full flex' : 'hidden'}`}>
                 <StyledNavLink
                   size='M'
                   weight='medium'
@@ -162,13 +165,13 @@ export default function Header() {
             </React.Fragment>
           ))}
           <div className='w-full'>
-            <ConnectWalletButton accountData={accountData} disconnect={disconnect} buttonStyle='tertiary' />
+            <ConnectWalletButton address={address} ensName={ensName as string} activeConnector={activeConnector} buttonStyle='tertiary' />
           </div>
         </NavDropdown>
       )}
       {isGTSmallScreen && (
         <div className='mr-8'>
-          <ConnectWalletButton accountData={accountData} disconnect={disconnect} />
+          <ConnectWalletButton address={address} ensName={ensName as string} activeConnector={activeConnector} />
         </div>
       )}
     </Nav>

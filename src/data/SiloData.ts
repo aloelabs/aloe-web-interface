@@ -86,6 +86,24 @@ const SiloDataMap = new Map<string, SiloData>([
       shortName: 'LOOKS Staking',
     },
   ],
+  // Euler WETH ERC4626 Silo
+  [
+    '0x922e36583eecd7acb7006aa3d2fa0fd1e4b0453e',
+    {
+      address: '0x922e36583eecd7acb7006aa3d2fa0fd1e4b0453e',
+      name: 'ERC4626 Euler WETH Silo',
+      shortName: 'Euler (ERC4626)',
+    },
+  ],
+  // Euler oSQTH ERC4626 Silo
+  [
+    '0x7f48a8a5c5c079627eafffd1fe4c9cf80e741fe8',
+    {
+      address: '0x7f48a8a5c5c079627eafffd1fe4c9cf80e741fe8',
+      name: 'ERC4626 Euler oSQTH Silo',
+      shortName: 'Euler (ERC4626)',
+    },
+  ],
 ]);
 
 export function GetSiloData(address: string): SiloData {
