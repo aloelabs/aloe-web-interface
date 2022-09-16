@@ -2,6 +2,7 @@ export type SiloData = {
   address: string;
   name?: string;
   shortName?: string;
+  deprecated?: boolean;
 };
 
 const SiloDataMap = new Map<string, SiloData>([
@@ -30,6 +31,7 @@ const SiloDataMap = new Map<string, SiloData>([
       address: '0xba9ad27ed23b5e002e831514e69554815a5820b3',
       name: 'Rari Fuse 8 WETH Silo',
       shortName: 'Rari Fuse 8',
+      deprecated: true,
     },
   ],
   // Rari Fuse 8 FEI Silo
@@ -39,6 +41,7 @@ const SiloDataMap = new Map<string, SiloData>([
       address: '0x0770d239e56d96bc1e049b94949b0a0199b77cf6',
       name: 'Rari Fuse 8 FEI Silo',
       shortName: 'Rari Fuse 8',
+      deprecated: true,
     },
   ],
   // Rari Fuse 8 TRIBE Incentivized Silo
@@ -48,6 +51,7 @@ const SiloDataMap = new Map<string, SiloData>([
       address: '0x2a9855dc8afa59e6067287b8aa15cd009938d137',
       name: 'Rari Fuse 8 TRIBE Incentivized Silo',
       shortName: 'Rari Fuse 8',
+      deprecated: true,
     },
   ],
   // WBTC yVault Silo
@@ -75,6 +79,7 @@ const SiloDataMap = new Map<string, SiloData>([
       address: '0xf70fc6b694d911b1f665b754f77ec5e83d340594',
       name: 'Rari Fuse 9 RAI Silo',
       shortName: 'Rari Fuse 9',
+      deprecated: true,
     },
   ],
   // LooksRare Silo

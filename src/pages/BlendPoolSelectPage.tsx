@@ -27,13 +27,15 @@ import {
   RESPONSIVE_BREAKPOINTS,
 } from '../data/constants/Breakpoints';
 import { BlendTableContext } from '../data/context/BlendTableContext';
-import { GetTokenData } from '../data/TokenData';
+import { GetTokenData, TokenData } from '../data/TokenData';
 import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
 import tw from 'twin.macro';
 import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
 import { IS_DEV } from '../util/Env';
 import { isHiddenPool } from '../data/HiddenBlendPools';
+import { GetSiloData } from '../data/SiloData';
+import { isPoolDeprecated } from '../util/Pool';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -145,6 +147,8 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
 
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
+    // Filter out deprecated pools
+    poolData = poolData.filter((pool) => !isPoolDeprecated(pool));
     if (isMounted.current) {
       setPools(poolData);
       if (poolData.length > 0) {
