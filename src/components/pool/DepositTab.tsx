@@ -31,12 +31,8 @@ import TokensDepositedModal from './modal/TokensDepositedModal';
 import TransactionFailedModal from './modal/TransactionFailedModal';
 import { OffChainPoolStats } from '../../data/PoolStats';
 
-export type DepositTabProps = {
-  poolData: BlendPoolMarkers;
-  offChainPoolStats: OffChainPoolStats | undefined;
-};
-
 enum ButtonState {
+  DEPRECATED,
   NO_WALLET,
   INSUFFICIENT_TOKEN_0,
   INSUFFICIENT_TOKEN_1,
@@ -53,6 +49,8 @@ function printButtonState(
   drawData: BlendPoolDrawData
 ) {
   switch (buttonState) {
+    case ButtonState.DEPRECATED:
+      return 'Deprecated';
     case ButtonState.NO_WALLET:
       return 'Deposit';
     case ButtonState.RATIO_CHANGE_TOO_LOW:
@@ -79,6 +77,12 @@ export const TabWrapper = styled.div`
 
 const TOOLTIP_CONTENT_DEPOSIT =
   'Deposit amounts are based on current prices. If prices shift while your transaction is pending, some funds may be returned to you instead of being deposited to Blend. Slippage is the threshold between returning funds and canceling the transaction altogether (to save gas).';
+
+export type DepositTabProps = {
+  poolData: BlendPoolMarkers;
+  offChainPoolStats: OffChainPoolStats | undefined;
+  deprecated: boolean;
+};
 
 export default function DepositTab(props: DepositTabProps) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -169,7 +173,9 @@ export default function DepositTab(props: DepositTabProps) {
     if (!mounted) {
       return;
     }
-    if (isTransactionPending) {
+    if (props.deprecated) {
+      setButtonState(ButtonState.DEPRECATED);
+    } else if (isTransactionPending) {
       setButtonState(ButtonState.PENDING_TRANSACTION);
     } else if (!depositData || amount0.eq(0) || amount1.eq(0)) {
       setButtonState(ButtonState.NO_WALLET);
@@ -399,6 +405,7 @@ export default function DepositTab(props: DepositTabProps) {
           color={'rgba(255, 255, 255, 1)'}
           fillWidth={true}
           disabled={[
+            ButtonState.DEPRECATED,
             ButtonState.INSUFFICIENT_TOKEN_0,
             ButtonState.INSUFFICIENT_TOKEN_1,
             ButtonState.PENDING_TRANSACTION,

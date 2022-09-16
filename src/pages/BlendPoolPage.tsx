@@ -247,7 +247,6 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
           </div>
         </div>
         <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
-          <PoolAnnotation poolData={poolData} />
           <PoolInteractionTabs
             poolData={poolData}
             walletIsConnected={walletIsConnected}
