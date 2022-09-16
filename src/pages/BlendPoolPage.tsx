@@ -33,6 +33,7 @@ import { FeeTier } from '../data/BlendPoolMarkers';
 import { theGraphUniswapV3Client } from '../App';
 import { getUniswapVolumeQuery } from '../util/GraphQL';
 import { IOSStyleSpinner } from '../components/common/Spinner';
+import PoolAnnotation from '../components/pool/PoolAnnotation';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -246,6 +247,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
           </div>
         </div>
         <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
+          <PoolAnnotation poolData={poolData} />
           <PoolInteractionTabs
             poolData={poolData}
             walletIsConnected={walletIsConnected}
