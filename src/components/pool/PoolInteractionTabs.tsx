@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import ConnectWallet from './ConnectWallet';
 import { OffChainPoolStats } from '../../data/PoolStats';
 import SwapTab from './SwapTab';
+import { isPoolDeprecated } from '../../util/Pool';
 
 export const MODAL_BLACK_TEXT_COLOR = 'rgba(7, 14, 18, 1)';
 
@@ -105,6 +106,7 @@ export type PoolInteractionTabsProps = {
 
 export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
   const { offChainPoolStats } = props;
+  const isDeprecated = isPoolDeprecated(props.poolData);
   return (
     <Wrapper>
       {!props.walletIsConnected && <ConnectWallet />}
@@ -124,7 +126,7 @@ export default function PoolInteractionTabs(props: PoolInteractionTabsProps) {
           <Tab.Panels as={Fragment}>
             <PanelsWrapper>
               <Tab.Panel>
-                <DepositTab poolData={props.poolData} offChainPoolStats={offChainPoolStats} />
+                <DepositTab poolData={props.poolData} offChainPoolStats={offChainPoolStats} deprecated={isDeprecated} />
               </Tab.Panel>
               <Tab.Panel>
                 <WithdrawTab poolData={props.poolData} offChainPoolStats={offChainPoolStats} />

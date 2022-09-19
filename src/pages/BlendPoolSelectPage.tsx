@@ -34,6 +34,7 @@ import tw from 'twin.macro';
 import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholder';
 import { IS_DEV } from '../util/Env';
 import { isHiddenPool } from '../data/HiddenBlendPools';
+import { isPoolDeprecated } from '../util/Pool';
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -102,6 +103,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const [searchText, setSearchText] = useState<string>('');
   const [activeSearchText, setActiveSearchText] = useState<string>('');
   const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
+  const [searchablePools, setSearchablePools] = useState<BlendPoolMarkers[]>([]);
   const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
   const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
   const [poolsToDisplay, setPoolsToDisplay] = useState<BlendPoolMarkers[]>([]);
@@ -145,15 +147,18 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
 
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
+    // Filter out deprecated pools
+    let nonDeprecatedPoolData = poolData.filter((pool) => !isPoolDeprecated(pool));
     if (isMounted.current) {
-      setPools(poolData);
+      setPools(nonDeprecatedPoolData);
+      setSearchablePools(poolData);
       if (poolData.length > 0) {
         setPoolsLoading(false);
       }
     }
     let tokenAddresses = Array.from(
       new Set(
-        poolData.flatMap((pool) => [
+        nonDeprecatedPoolData.flatMap((pool) => [
           pool.token0Address.toLowerCase(),
           pool.token1Address.toLocaleLowerCase(),
         ])
@@ -182,7 +187,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     if (activeSearchText.length > 0 && pools.length > 0) {
       if (isMounted.current) {
         setFilteredPools(
-          pools.filter((pool) => {
+          searchablePools.filter((pool) => {
             const {
               silo0Name,
               silo1Name,
@@ -214,7 +219,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
         setFilteredPools(pools);
       }
     }
-  }, [activeSearchText, pools]);
+  }, [activeSearchText, pools, searchablePools]);
 
   useEffect(() => {
     if (activeTokenOptions.length > 0) {
@@ -264,7 +269,8 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
         if (isMounted.current) {
           setPoolsToDisplay(
             filteredPools.filter((pool) => {
-              return activePools.includes(pool);
+              // Deprecated pools may not be active, but if the user is searching, we want to show them
+              return activePools.includes(pool) || isPoolDeprecated(pool);
             })
           );
           setToDisplayLoading(false);
