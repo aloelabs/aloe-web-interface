@@ -160,7 +160,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
       new Set(
         nonDeprecatedPoolData.flatMap((pool) => [
           pool.token0Address.toLowerCase(),
-          pool.token1Address.toLocaleLowerCase(),
+          pool.token1Address.toLowerCase(),
         ])
       )
     );
