@@ -209,6 +209,7 @@ export default function DepositTab(props: DepositTabProps) {
     isTransactionPending,
     props.poolData.token0Address,
     props.poolData.token1Address,
+    props.deprecated,
     maxSlippage,
     token0Amount,
     token1Amount,
