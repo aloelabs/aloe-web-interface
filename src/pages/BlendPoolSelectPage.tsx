@@ -148,9 +148,9 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
     // Filter out deprecated pools
-    let nonDeprecatedPoolData = poolData.filter((pool) => !isPoolDeprecated(pool));
+    // let nonDeprecatedPoolData = poolData.filter((pool) => !isPoolDeprecated(pool));
     if (isMounted.current) {
-      setPools(nonDeprecatedPoolData);
+      setPools(poolData);
       setSearchablePools(poolData);
       if (poolData.length > 0) {
         setPoolsLoading(false);
@@ -158,7 +158,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     }
     let tokenAddresses = Array.from(
       new Set(
-        nonDeprecatedPoolData.flatMap((pool) => [
+        poolData.flatMap((pool) => [
           pool.token0Address.toLowerCase(),
           pool.token1Address.toLowerCase(),
         ])
