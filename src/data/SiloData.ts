@@ -91,20 +91,40 @@ const SiloDataMap = new Map<string, SiloData>([
       shortName: 'LOOKS Staking',
     },
   ],
-  // Euler WETH ERC4626 Silo
+  // Euler WETH ERC4626 Silo (old erc4626)
   [
     '0x922e36583eecd7acb7006aa3d2fa0fd1e4b0453e',
     {
       address: '0x922e36583eecd7acb7006aa3d2fa0fd1e4b0453e',
       name: 'ERC4626 Euler WETH Silo',
-      shortName: 'Euler (ERC4626)',
+      shortName: 'Euler (ERC4626, old)',
+      deprecated: true,
     },
   ],
-  // Euler oSQTH ERC4626 Silo
+  // Euler oSQTH ERC4626 Silo (old erc4626)
   [
     '0x7f48a8a5c5c079627eafffd1fe4c9cf80e741fe8',
     {
       address: '0x7f48a8a5c5c079627eafffd1fe4c9cf80e741fe8',
+      name: 'ERC4626 Euler oSQTH Silo',
+      shortName: 'Euler (ERC4626, old)',
+      deprecated: true,
+    },
+  ],
+  // Euler WETH ERC4626 Silo (new erc4626)
+  [
+    '0x09b5c1909e62052adf7fb82060ea2a98c3a5be45',
+    {
+      address: '0x09b5c1909e62052adf7fb82060ea2a98c3a5be45',
+      name: 'ERC4626 Euler WETH Silo',
+      shortName: 'Euler (ERC4626)',
+    },
+  ],
+  // Euler oSQTH ERC4626 Silo (new erc4626)
+  [
+    '0xedee9503756aafdb50f6a7f6bfa3324cda453d47',
+    {
+      address: '0xedee9503756aafdb50f6a7f6bfa3324cda453d47',
       name: 'ERC4626 Euler oSQTH Silo',
       shortName: 'Euler (ERC4626)',
     },
