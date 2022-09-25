@@ -148,9 +148,9 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
     // Filter out deprecated pools
-    // let nonDeprecatedPoolData = poolData.filter((pool) => !isPoolDeprecated(pool));
+    let nonDeprecatedPoolData = poolData.filter((pool) => !isPoolDeprecated(pool));
     if (isMounted.current) {
-      setPools(poolData);
+      setPools(nonDeprecatedPoolData);
       setSearchablePools(poolData);
       if (poolData.length > 0) {
         setPoolsLoading(false);
@@ -158,7 +158,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     }
     let tokenAddresses = Array.from(
       new Set(
-        poolData.flatMap((pool) => [
+        nonDeprecatedPoolData.flatMap((pool) => [
           pool.token0Address.toLowerCase(),
           pool.token1Address.toLowerCase(),
         ])
@@ -265,26 +265,14 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
 
   useEffect(() => {
     if (activePools.length > 0 && filteredPools.length > 0) {
-      if (filteredPools.length >= activePools.length) {
-        if (isMounted.current) {
-          setPoolsToDisplay(
-            filteredPools.filter((pool) => {
-              // Deprecated pools may not be active, but if the user is searching, we want to show them
-              return activePools.includes(pool) || isPoolDeprecated(pool);
-            })
-          );
-          setToDisplayLoading(false);
-        }
-      } else {
-        if (isMounted.current) {
-          setPoolsToDisplay(
-            activePools.filter((pool) => {
-              return filteredPools.includes(pool);
-            })
-          );
-        }
-      }
+      // Keep track of filtered pools that are deprecated
+      const deprecatedPoolsToShow = activeSearchText !== '' ? filteredPools.filter(pool => isPoolDeprecated(pool)) : [];
+      // Only show pools that are in both active and filtered sets
+      const intersection = activePools.filter(pool => filteredPools.includes(pool));
+      // Combine the intersection with the deprecated pools that are in the filtered set
+      const poolsToShow = intersection.concat(deprecatedPoolsToShow);
       if (isMounted.current) {
+        setPoolsToDisplay(poolsToShow);
         setToDisplayLoading(false);
       }
     } else {
@@ -295,7 +283,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
         }
       }
     }
-  }, [filteredPools, activePools, poolsLoading, activeLoading]);
+  }, [filteredPools, activePools, poolsLoading, activeLoading, activeSearchText]);
 
   /* Calculating the number of applied filters */
   let numberOfFiltersApplied = 0;
