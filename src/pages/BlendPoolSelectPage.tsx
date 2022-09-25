@@ -220,9 +220,11 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
         const currentPoolAddress = `0x${topic1.substring(26)}`;
         return currentPoolAddress.toLowerCase() === poolStats.poolData.poolAddress.toLowerCase();
       });
+      const eventTimestamp = poolCreationEvent?.timeStamp;
+      const timestamp = eventTimestamp ? BigNumber.from(eventTimestamp).toNumber() : -1;
       return {
         ...poolStats,
-        timestamp: poolCreationEvent ? BigNumber.from(poolCreationEvent.timeStamp).toNumber() : -1,
+        timestamp,
       }
     });
     // Filter out deprecated pools
