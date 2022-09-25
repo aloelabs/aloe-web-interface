@@ -101,7 +101,6 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const [activeLoading, setActiveLoading] = useState(true);
   const [toDisplayLoading, setToDisplayLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
-  const [activeSearchText, setActiveSearchText] = useState<string>('');
   const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
   const [searchablePools, setSearchablePools] = useState<BlendPoolMarkers[]>([]);
   const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
@@ -148,9 +147,9 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
     // Filter out deprecated pools
-    // let nonDeprecatedPoolData = poolData.filter((pool) => !isPoolDeprecated(pool));
+    let nonDeprecatedPoolData = poolData.filter((pool) => !isPoolDeprecated(pool));
     if (isMounted.current) {
-      setPools(poolData);
+      setPools(nonDeprecatedPoolData);
       setSearchablePools(poolData);
       if (poolData.length > 0) {
         setPoolsLoading(false);
@@ -158,7 +157,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     }
     let tokenAddresses = Array.from(
       new Set(
-        poolData.flatMap((pool) => [
+        nonDeprecatedPoolData.flatMap((pool) => [
           pool.token0Address.toLowerCase(),
           pool.token1Address.toLowerCase(),
         ])
@@ -184,7 +183,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   }, [loadData]);
 
   useEffect(() => {
-    if (activeSearchText.length > 0 && pools.length > 0) {
+    if (searchText.length > 0 && pools.length > 0) {
       if (isMounted.current) {
         setFilteredPools(
           searchablePools.filter((pool) => {
@@ -208,7 +207,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
               ].findIndex((field) => {
                 return field
                   .toLowerCase()
-                  .includes(activeSearchText.toLowerCase());
+                  .includes(searchText.toLowerCase());
               }) !== -1
             );
           })
@@ -219,7 +218,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
         setFilteredPools(pools);
       }
     }
-  }, [activeSearchText, pools, searchablePools]);
+  }, [searchText, pools, searchablePools]);
 
   useEffect(() => {
     if (activeTokenOptions.length > 0) {
@@ -265,26 +264,14 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
 
   useEffect(() => {
     if (activePools.length > 0 && filteredPools.length > 0) {
-      if (filteredPools.length >= activePools.length) {
-        if (isMounted.current) {
-          setPoolsToDisplay(
-            filteredPools.filter((pool) => {
-              // Deprecated pools may not be active, but if the user is searching, we want to show them
-              return activePools.includes(pool) || isPoolDeprecated(pool);
-            })
-          );
-          setToDisplayLoading(false);
-        }
-      } else {
-        if (isMounted.current) {
-          setPoolsToDisplay(
-            activePools.filter((pool) => {
-              return filteredPools.includes(pool);
-            })
-          );
-        }
-      }
+      // Keep track of filtered pools that are deprecated
+      const deprecatedPoolsToShow = searchText !== '' ? filteredPools.filter(pool => isPoolDeprecated(pool)) : [];
+      // Only show pools that are in both active and filtered sets
+      const intersection = activePools.filter(pool => filteredPools.includes(pool));
+      // Combine the intersection with the deprecated pools that are in the filtered set
+      const poolsToShow = intersection.concat(deprecatedPoolsToShow);
       if (isMounted.current) {
+        setPoolsToDisplay(poolsToShow);
         setToDisplayLoading(false);
       }
     } else {
@@ -295,7 +282,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
         }
       }
     }
-  }, [filteredPools, activePools, poolsLoading, activeLoading]);
+  }, [filteredPools, activePools, poolsLoading, activeLoading, searchText]);
 
   /* Calculating the number of applied filters */
   let numberOfFiltersApplied = 0;
@@ -345,8 +332,6 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
                 svgColorType='fill'
                 placeholder='Search by name, symbol or address'
                 fullWidth={true}
-                onIconClick={() => setActiveSearchText(searchText)}
-                onEnter={() => setActiveSearchText(searchText)}
               />
             </SearchInputWrapper>
             <DropdownContainer>
