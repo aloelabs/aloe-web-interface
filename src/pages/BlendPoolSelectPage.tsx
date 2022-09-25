@@ -101,7 +101,6 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const [activeLoading, setActiveLoading] = useState(true);
   const [toDisplayLoading, setToDisplayLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
-  const [activeSearchText, setActiveSearchText] = useState<string>('');
   const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
   const [searchablePools, setSearchablePools] = useState<BlendPoolMarkers[]>([]);
   const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
@@ -184,7 +183,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   }, [loadData]);
 
   useEffect(() => {
-    if (activeSearchText.length > 0 && pools.length > 0) {
+    if (searchText.length > 0 && pools.length > 0) {
       if (isMounted.current) {
         setFilteredPools(
           searchablePools.filter((pool) => {
@@ -208,7 +207,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
               ].findIndex((field) => {
                 return field
                   .toLowerCase()
-                  .includes(activeSearchText.toLowerCase());
+                  .includes(searchText.toLowerCase());
               }) !== -1
             );
           })
@@ -219,7 +218,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
         setFilteredPools(pools);
       }
     }
-  }, [activeSearchText, pools, searchablePools]);
+  }, [searchText, pools, searchablePools]);
 
   useEffect(() => {
     if (activeTokenOptions.length > 0) {
@@ -266,7 +265,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   useEffect(() => {
     if (activePools.length > 0 && filteredPools.length > 0) {
       // Keep track of filtered pools that are deprecated
-      const deprecatedPoolsToShow = activeSearchText !== '' ? filteredPools.filter(pool => isPoolDeprecated(pool)) : [];
+      const deprecatedPoolsToShow = searchText !== '' ? filteredPools.filter(pool => isPoolDeprecated(pool)) : [];
       // Only show pools that are in both active and filtered sets
       const intersection = activePools.filter(pool => filteredPools.includes(pool));
       // Combine the intersection with the deprecated pools that are in the filtered set
@@ -283,7 +282,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
         }
       }
     }
-  }, [filteredPools, activePools, poolsLoading, activeLoading, activeSearchText]);
+  }, [filteredPools, activePools, poolsLoading, activeLoading, searchText]);
 
   /* Calculating the number of applied filters */
   let numberOfFiltersApplied = 0;
@@ -333,8 +332,6 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
                 svgColorType='fill'
                 placeholder='Search by name, symbol or address'
                 fullWidth={true}
-                onIconClick={() => setActiveSearchText(searchText)}
-                onEnter={() => setActiveSearchText(searchText)}
               />
             </SearchInputWrapper>
             <DropdownContainer>
