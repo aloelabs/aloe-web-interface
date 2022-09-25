@@ -46,6 +46,7 @@ import { BigNumber } from 'ethers';
 const FACTORY_ADDRESS = '0x000000000008b34b9C428ddC00f54d49105dA313';
 const TOPIC_ZERO =
   '0xfb83ca910097c70646250238daf4abcd392f91992164890d564d81e0e218f2b2';
+const BLOCK_TO_SEARCH_FROM = 14128969;
 
 const enum SortOption {
   APY = 'APY',
@@ -211,7 +212,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     );
     // Fetch the timestamps for all the pools
     const factoryCreationEventsRequest = await makeEtherscanRequest(
-      0,
+      BLOCK_TO_SEARCH_FROM,
       FACTORY_ADDRESS,
       [TOPIC_ZERO],
       false
