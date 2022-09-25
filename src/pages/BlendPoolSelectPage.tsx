@@ -41,17 +41,18 @@ import { OffChainPoolStats } from '../data/PoolStats';
 import axios, { AxiosResponse } from 'axios';
 import { API_URL } from '../data/constants/Values';
 import { makeEtherscanRequest } from '../util/Etherscan';
-import { BigNumber } from 'ethers'
+import { BigNumber } from 'ethers';
 
 const FACTORY_ADDRESS = '0x000000000008b34b9C428ddC00f54d49105dA313';
-const TOPIC_ZERO = '0xfb83ca910097c70646250238daf4abcd392f91992164890d564d81e0e218f2b2';
+const TOPIC_ZERO =
+  '0xfb83ca910097c70646250238daf4abcd392f91992164890d564d81e0e218f2b2';
 
 const enum SortOption {
-  APY= 'APY',
-  NEWEST= 'NEWEST',
-  OLDEST= 'OLDEST',
-  DEFAULT= 'DEFAULT',
-};
+  APY = 'APY',
+  NEWEST = 'NEWEST',
+  OLDEST = 'OLDEST',
+  DEFAULT = 'DEFAULT',
+}
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -128,15 +129,11 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const [toDisplayLoading, setToDisplayLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
   const [pools, setPools] = useState<PoolStatsData[]>([]);
-  const [searchablePools, setSearchablePools] = useState<PoolStatsData[]>(
-    []
-  );
+  const [searchablePools, setSearchablePools] = useState<PoolStatsData[]>([]);
   const [filteredPools, setFilteredPools] = useState<PoolStatsData[]>([]);
   const [activePools, setActivePools] = useState<PoolStatsData[]>([]);
   const [poolsToDisplay, setPoolsToDisplay] = useState<PoolStatsData[]>([]);
-  const [tokenOptions, setTokenOptions] = useState<
-    MultiDropdownOption[]
-  >([]);
+  const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
   const [activeTokenOptions, setActiveTokenOptions] = useState<
     MultiDropdownOption[]
   >([]);
@@ -213,19 +210,31 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
       }
     );
     // Fetch the timestamps for all the pools
-    const factoryCreationEventsRequest = await makeEtherscanRequest(0, FACTORY_ADDRESS, [TOPIC_ZERO], false);
+    const factoryCreationEventsRequest = await makeEtherscanRequest(
+      0,
+      FACTORY_ADDRESS,
+      [TOPIC_ZERO],
+      false
+    );
     const poolStatsData = intermediatePoolStatsData.map((poolStats) => {
-      const poolCreationEvent = factoryCreationEventsRequest.data.result.find((event: any) => {
-        const topic1: string = event.topics[1];
-        const currentPoolAddress = `0x${topic1.substring(26)}`;
-        return currentPoolAddress.toLowerCase() === poolStats.poolData.poolAddress.toLowerCase();
-      });
+      const poolCreationEvent = factoryCreationEventsRequest.data.result.find(
+        (event: any) => {
+          const topic1: string = event.topics[1];
+          const currentPoolAddress = `0x${topic1.substring(26)}`;
+          return (
+            currentPoolAddress.toLowerCase() ===
+            poolStats.poolData.poolAddress.toLowerCase()
+          );
+        }
+      );
       const eventTimestamp = poolCreationEvent?.timeStamp;
-      const timestamp = eventTimestamp ? BigNumber.from(eventTimestamp).toNumber() : -1;
+      const timestamp = eventTimestamp
+        ? BigNumber.from(eventTimestamp).toNumber()
+        : -1;
       return {
         ...poolStats,
         timestamp,
-      }
+      };
     });
     // Filter out deprecated pools
     let nonDeprecatedPoolData = poolStatsData.filter(
@@ -306,7 +315,9 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
       if (isMounted.current) {
         setActivePools(
           pools
-            .filter((pool) => IS_DEV || !isHiddenPool(pool.poolData.poolAddress)) // Hide pools that should only be shown in dev mode
+            .filter(
+              (pool) => IS_DEV || !isHiddenPool(pool.poolData.poolAddress)
+            ) // Hide pools that should only be shown in dev mode
             .filter((pool) => {
               const {
                 silo0Name,
@@ -372,13 +383,18 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
 
   const sortedPoolsToDisplay = poolsToDisplay.sort((poolA, poolB) => {
     if (selectedSortByOption.value === SortOption.APY) {
-      return poolB.poolStats.annual_percentage_rate - poolA.poolStats.annual_percentage_rate;
+      return (
+        poolB.poolStats.annual_percentage_rate -
+        poolA.poolStats.annual_percentage_rate
+      );
     } else if (selectedSortByOption.value === SortOption.NEWEST) {
       return poolB.timestamp - poolA.timestamp;
     } else if (selectedSortByOption.value === SortOption.OLDEST) {
       return poolA.timestamp - poolB.timestamp;
     } else {
-      return poolB.poolStats.total_value_locked - poolA.poolStats.total_value_locked;
+      return (
+        poolB.poolStats.total_value_locked - poolA.poolStats.total_value_locked
+      );
     }
   });
 
@@ -398,8 +414,8 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const handleItemsPerPageChange = (itemsPerPage: ItemsPerPage) => {
     setItemsPerPage(itemsPerPage);
   };
-  
-  const blendPoolData = pools.map(pool => pool.poolData);
+
+  const blendPoolData = pools.map((pool) => pool.poolData);
 
   return (
     <WideAppPage>
