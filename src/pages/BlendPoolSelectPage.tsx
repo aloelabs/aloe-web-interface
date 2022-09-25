@@ -5,9 +5,9 @@ import BrowseCard from '../components/browse/BrowseCard';
 import BrowsePoolsPerformance from '../components/browse/BrowsePoolsPerformance';
 import { OutlinedGradientRoundedButtonWithIcon } from '../components/common/Buttons';
 import {
-  DropdownWithPlaceholder,
-  DropdownWithPlaceholderOption,
-  MultiDropdown,
+  DropdownWithPlaceholderValue,
+  DropdownWithPlaceholderValueOption,
+  MultiDropdownWithPlaceholder,
   MultiDropdownOption,
 } from '../components/common/Dropdown';
 import { FilterBadge } from '../components/common/FilterBadge';
@@ -35,6 +35,23 @@ import { BrowseCardPlaceholder } from '../components/browse/BrowseCardPlaceholde
 import { IS_DEV } from '../util/Env';
 import { isHiddenPool } from '../data/HiddenBlendPools';
 import { isPoolDeprecated } from '../util/Pool';
+import { ReactComponent as APYIcon } from '../assets/svg/apy.svg';
+import { SortAscendingIcon, SortDescendingIcon } from '@heroicons/react/solid';
+import { OffChainPoolStats } from '../data/PoolStats';
+import axios, { AxiosResponse } from 'axios';
+import { API_URL } from '../data/constants/Values';
+import { makeEtherscanRequest } from '../util/Etherscan';
+import { BigNumber } from 'ethers'
+
+const FACTORY_ADDRESS = '0x000000000008b34b9C428ddC00f54d49105dA313';
+const TOPIC_ZERO = '0xfb83ca910097c70646250238daf4abcd392f91992164890d564d81e0e218f2b2';
+
+const enum SortOption {
+  APY= 'APY',
+  NEWEST= 'NEWEST',
+  OLDEST= 'OLDEST',
+  DEFAULT= 'DEFAULT',
+};
 
 const BROWSE_CARD_GAP = '24px';
 const MAX_WIDTH_XL =
@@ -91,6 +108,15 @@ const DropdownContainer = styled.div`
   ${tw`flex flex-row gap-x-4`}
 `;
 
+export type IntermediatePoolStatsData = {
+  poolData: BlendPoolMarkers;
+  poolStats: OffChainPoolStats;
+};
+
+export type PoolStatsData = IntermediatePoolStatsData & {
+  timestamp: number;
+};
+
 export type BlendPoolSelectPageProps = {
   blockNumber: string | null;
 };
@@ -101,12 +127,16 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const [activeLoading, setActiveLoading] = useState(true);
   const [toDisplayLoading, setToDisplayLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
-  const [pools, setPools] = useState<BlendPoolMarkers[]>([]);
-  const [searchablePools, setSearchablePools] = useState<BlendPoolMarkers[]>([]);
-  const [filteredPools, setFilteredPools] = useState<BlendPoolMarkers[]>([]);
-  const [activePools, setActivePools] = useState<BlendPoolMarkers[]>([]);
-  const [poolsToDisplay, setPoolsToDisplay] = useState<BlendPoolMarkers[]>([]);
-  const [tokenOptions, setTokenOptions] = useState<MultiDropdownOption[]>([]);
+  const [pools, setPools] = useState<PoolStatsData[]>([]);
+  const [searchablePools, setSearchablePools] = useState<PoolStatsData[]>(
+    []
+  );
+  const [filteredPools, setFilteredPools] = useState<PoolStatsData[]>([]);
+  const [activePools, setActivePools] = useState<PoolStatsData[]>([]);
+  const [poolsToDisplay, setPoolsToDisplay] = useState<PoolStatsData[]>([]);
+  const [tokenOptions, setTokenOptions] = useState<
+    MultiDropdownOption[]
+  >([]);
   const [activeTokenOptions, setActiveTokenOptions] = useState<
     MultiDropdownOption[]
   >([]);
@@ -115,22 +145,30 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const sortByOptions = [
     {
       label: 'Default',
-      value: 'default',
+      value: SortOption.DEFAULT,
       isDefault: true,
     },
     {
-      label: 'Newest First',
-      value: 'newest',
+      label: 'APY',
+      value: SortOption.APY,
       isDefault: false,
+      Icon: APYIcon,
+    },
+    {
+      label: 'Newest First',
+      value: SortOption.NEWEST,
+      isDefault: false,
+      Icon: SortDescendingIcon,
     },
     {
       label: 'Oldest First',
-      value: 'oldest',
+      value: SortOption.OLDEST,
       isDefault: false,
+      Icon: SortAscendingIcon,
     },
-  ] as DropdownWithPlaceholderOption[];
+  ] as DropdownWithPlaceholderValueOption[];
   const [selectedSortByOption, setSelectedSortByOption] =
-    useState<DropdownWithPlaceholderOption>(sortByOptions[0]);
+    useState<DropdownWithPlaceholderValueOption>(sortByOptions[0]);
 
   const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
   const { poolDataMap } = useContext(BlendTableContext);
@@ -141,16 +179,59 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
-    }
+    };
   }, []);
 
   const loadData = useCallback(async () => {
     let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
+    const poolRequests = poolData.map(async (pool) => {
+      return {
+        poolData: pool,
+        poolStats: await axios.get(
+          `${API_URL}/pool_stats/${pool.poolAddress}/1`,
+          {
+            transformResponse: (response) => {
+              const responseJSON = JSON.parse(response)[0];
+              return responseJSON as OffChainPoolStats;
+            },
+          }
+        ),
+      };
+    });
+    const poolStatsDataResponse = await Promise.all(poolRequests);
+    // Fetch the intermediate data (everything except the timestamp)
+    // TODO: see if we can move move the timestamp call into the above promise.all
+    const intermediatePoolStatsData = poolStatsDataResponse.map(
+      (response: {
+        poolData: BlendPoolMarkers;
+        poolStats: AxiosResponse<any, any>;
+      }) => {
+        return {
+          poolData: response.poolData,
+          poolStats: response.poolStats.data,
+        };
+      }
+    );
+    // Fetch the timestamps for all the pools
+    const factoryCreationEventsRequest = await makeEtherscanRequest(0, FACTORY_ADDRESS, [TOPIC_ZERO], false);
+    const poolStatsData = intermediatePoolStatsData.map((poolStats) => {
+      const poolCreationEvent = factoryCreationEventsRequest.data.result.find((event: any) => {
+        const topic1: string = event.topics[1];
+        const currentPoolAddress = `0x${topic1.substring(26)}`;
+        return currentPoolAddress.toLowerCase() === poolStats.poolData.poolAddress.toLowerCase();
+      });
+      return {
+        ...poolStats,
+        timestamp: poolCreationEvent ? BigNumber.from(poolCreationEvent.timeStamp).toNumber() : -1,
+      }
+    });
     // Filter out deprecated pools
-    let nonDeprecatedPoolData = poolData.filter((pool) => !isPoolDeprecated(pool));
+    let nonDeprecatedPoolData = poolStatsData.filter(
+      (pool) => !isPoolDeprecated(pool.poolData)
+    );
     if (isMounted.current) {
       setPools(nonDeprecatedPoolData);
-      setSearchablePools(poolData);
+      setSearchablePools(poolStatsData);
       if (poolData.length > 0) {
         setPoolsLoading(false);
       }
@@ -158,8 +239,8 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     let tokenAddresses = Array.from(
       new Set(
         nonDeprecatedPoolData.flatMap((pool) => [
-          pool.token0Address.toLowerCase(),
-          pool.token1Address.toLowerCase(),
+          pool.poolData.token0Address.toLowerCase(),
+          pool.poolData.token1Address.toLowerCase(),
         ])
       )
     );
@@ -194,7 +275,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
               silo1Label,
               token0Label,
               token1Label,
-            } = ResolveBlendPoolDrawData(pool);
+            } = ResolveBlendPoolDrawData(pool.poolData);
 
             return (
               [
@@ -205,9 +286,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
                 token0Label,
                 token1Label,
               ].findIndex((field) => {
-                return field
-                  .toLowerCase()
-                  .includes(searchText.toLowerCase());
+                return field.toLowerCase().includes(searchText.toLowerCase());
               }) !== -1
             );
           })
@@ -225,32 +304,32 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
       if (isMounted.current) {
         setActivePools(
           pools
-          .filter((pool) => IS_DEV || !isHiddenPool(pool.poolAddress)) // Hide pools that should only be shown in dev mode
-          .filter((pool) => {
-            const {
-              silo0Name,
-              silo1Name,
-              silo0Label,
-              silo1Label,
-              token0Label,
-              token1Label,
-            } = ResolveBlendPoolDrawData(pool);
-
-            return (
-              [
+            .filter((pool) => IS_DEV || !isHiddenPool(pool.poolData.poolAddress)) // Hide pools that should only be shown in dev mode
+            .filter((pool) => {
+              const {
                 silo0Name,
                 silo1Name,
                 silo0Label,
                 silo1Label,
                 token0Label,
                 token1Label,
-              ].findIndex((field) => {
-                return activeTokenOptions
-                  .map((option) => option.label.toLowerCase())
-                  .includes(field.toLowerCase());
-              }) !== -1
-            );
-          })
+              } = ResolveBlendPoolDrawData(pool.poolData);
+
+              return (
+                [
+                  silo0Name,
+                  silo1Name,
+                  silo0Label,
+                  silo1Label,
+                  token0Label,
+                  token1Label,
+                ].findIndex((field) => {
+                  return activeTokenOptions
+                    .map((option) => option.label.toLowerCase())
+                    .includes(field.toLowerCase());
+                }) !== -1
+              );
+            })
         );
         setActiveLoading(false);
       }
@@ -265,9 +344,14 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   useEffect(() => {
     if (activePools.length > 0 && filteredPools.length > 0) {
       // Keep track of filtered pools that are deprecated
-      const deprecatedPoolsToShow = searchText !== '' ? filteredPools.filter(pool => isPoolDeprecated(pool)) : [];
+      const deprecatedPoolsToShow =
+        searchText !== ''
+          ? filteredPools.filter((pool) => isPoolDeprecated(pool.poolData))
+          : [];
       // Only show pools that are in both active and filtered sets
-      const intersection = activePools.filter(pool => filteredPools.includes(pool));
+      const intersection = activePools.filter((pool) =>
+        filteredPools.includes(pool)
+      );
       // Combine the intersection with the deprecated pools that are in the filtered set
       const poolsToShow = intersection.concat(deprecatedPoolsToShow);
       if (isMounted.current) {
@@ -284,12 +368,24 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     }
   }, [filteredPools, activePools, poolsLoading, activeLoading, searchText]);
 
+  const sortedPoolsToDisplay = poolsToDisplay.sort((poolA, poolB) => {
+    if (selectedSortByOption.value === SortOption.APY) {
+      return poolB.poolStats.annual_percentage_rate - poolA.poolStats.annual_percentage_rate;
+    } else if (selectedSortByOption.value === SortOption.NEWEST) {
+      return poolB.timestamp - poolA.timestamp;
+    } else if (selectedSortByOption.value === SortOption.OLDEST) {
+      return poolA.timestamp - poolB.timestamp;
+    } else {
+      return poolB.poolStats.total_value_locked - poolA.poolStats.total_value_locked;
+    }
+  });
+
   /* Calculating the number of applied filters */
   let numberOfFiltersApplied = 0;
   if (activeTokenOptions.length < tokenOptions.length) {
     numberOfFiltersApplied++;
   }
-  if (selectedSortByOption.value !== 'default') {
+  if (selectedSortByOption.value !== SortOption.DEFAULT) {
     numberOfFiltersApplied++;
   }
 
@@ -300,6 +396,8 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const handleItemsPerPageChange = (itemsPerPage: ItemsPerPage) => {
     setItemsPerPage(itemsPerPage);
   };
+  
+  const blendPoolData = pools.map(pool => pool.poolData);
 
   return (
     <WideAppPage>
@@ -308,7 +406,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
           <Display size='L' weight='semibold'>
             Aloe's Performance
           </Display>
-          <BrowsePoolsPerformance poolData={pools} />
+          <BrowsePoolsPerformance poolData={blendPoolData} />
         </div>
         <div className='flex items-center gap-6'>
           <Display size='L' weight='semibold'>
@@ -335,14 +433,14 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
               />
             </SearchInputWrapper>
             <DropdownContainer>
-              <MultiDropdown
+              <MultiDropdownWithPlaceholder
                 options={tokenOptions}
                 activeOptions={activeTokenOptions}
                 handleChange={setActiveTokenOptions}
                 placeholder='All Tokens'
                 selectedText='Tokens'
               />
-              <DropdownWithPlaceholder
+              <DropdownWithPlaceholderValue
                 options={sortByOptions}
                 selectedOption={selectedSortByOption}
                 onSelect={setSelectedSortByOption}
@@ -376,7 +474,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
               <BrowseCardPlaceholder key={index} />
             ))}
           {!toDisplayLoading &&
-            poolsToDisplay
+            sortedPoolsToDisplay
               .slice(
                 (page - 1) * itemsPerPage,
                 (page - 1) * itemsPerPage + itemsPerPage
@@ -384,7 +482,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
               .map((pool, index) => {
                 return (
                   <BrowseCard
-                    blendPoolMarkers={pool}
+                    blendPoolMarkers={pool.poolData}
                     blockNumber={blockNumber}
                     key={index}
                   />
