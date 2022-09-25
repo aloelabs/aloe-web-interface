@@ -220,7 +220,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
       const poolCreationEvent = factoryCreationEventsRequest.data.result.find(
         (event: any) => {
           const topic1: string = event.topics[1];
-          const currentPoolAddress = `0x${topic1.substring(26)}`;
+          const currentPoolAddress = `0x${topic1.slice(26)}`;
           return (
             currentPoolAddress.toLowerCase() ===
             poolStats.poolData.poolAddress.toLowerCase()
