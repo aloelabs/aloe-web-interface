@@ -1,21 +1,39 @@
-import React from "react";
-import { getPoolAnnotation } from "../../data/BlendPoolAnnotations";
-import { BlendPoolMarkers } from "../../data/BlendPoolMarkers";
+import React from 'react';
+import styled from 'styled-components';
+import tw from 'twin.macro';
+import { getColorForAnnotationType, getPoolAnnotation } from '../../data/BlendPoolAnnotations';
+import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
+import { Text } from '../common/Typography';
+
+const PoolAnnotationWrapper = styled.div.attrs(
+  (props: { borderColor: string; }) => props
+)`
+  ${tw`my-2 p-2 rounded-xl grid`}
+  grid-template-columns: 24px 1fr;
+  grid-gap: 8px;
+  align-items: center;
+  border: 2px solid ${(props) => props.borderColor};
+`;
 
 export type PoolAnnotationProps = {
   poolData: BlendPoolMarkers;
-}
+};
 
-export default function PoolAnnotation({poolData}: PoolAnnotationProps) {
+export default function PoolAnnotation({ poolData }: PoolAnnotationProps) {
   const poolAnnotation = getPoolAnnotation(poolData.poolAddress);
 
   if (poolAnnotation == null) {
     return <></>;
   }
 
+  const color = getColorForAnnotationType(poolAnnotation.type);
+
   return (
-    <div className="my-2 p-2 rounded-xl border-2 border-caution">
-      <span className="text-caution">{poolAnnotation.label}</span>
-    </div>
+    <PoolAnnotationWrapper borderColor={color}>
+      <poolAnnotation.Icon />
+      <Text size='S' color={color}>
+        {poolAnnotation.label}
+      </Text>
+    </PoolAnnotationWrapper>
   );
 }
