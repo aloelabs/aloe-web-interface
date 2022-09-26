@@ -1,10 +1,11 @@
 import { Tab } from '@headlessui/react';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { Text } from '../common/Typography';
 import Tooltip from '../common/Tooltip';
 import { RESPONSIVE_BREAKPOINT_XS } from '../../data/constants/Breakpoints';
+import { formatNumberInput } from '../../util/Numbers';
 
 const MESSAGE_TEXT_COLOR = 'rgba(204, 223, 237, 1)';
 
@@ -111,6 +112,12 @@ export type MaxSlippageInputProps = {
 
 export default function MaxSlippageInput(props: MaxSlippageInputProps) {
   const { updateMaxSlippage, tooltipContent } = props;
+  const [customSlippage, setCustomSlippage] = useState<string>('');
+
+  function handleCustomSlippageChange(updatedSlippage: string) {
+    updateMaxSlippage(updatedSlippage);
+    setCustomSlippage(updatedSlippage);
+  }
   return (
     <div className='w-full flex flex-col gap-y-2 mt-6'>
       <Text size='S' weight='medium' color='rgba(130, 160, 182, 1)' className='flex gap-x-2 mb-1'>
@@ -139,10 +146,14 @@ export default function MaxSlippageInput(props: MaxSlippageInputProps) {
                       <CustomSlippageInputWrapper>
                         <CustomSlippageInput
                           onChange={(e) => {
-                            let newValue =
-                              e.target.value !== '' ? e.target.value : '0';
-                              updateMaxSlippage(newValue);
+                            const output = formatNumberInput(e.target.value);
+                            if (output !== null) {
+                              const numericOutput = parseFloat(output);
+                              const updatedOutput = numericOutput > 100 ? '100.0' : output.slice(0, 5);
+                              handleCustomSlippageChange(updatedOutput);
+                            }
                           }}
+                          value={customSlippage}
                           type='text'
                           className={selected ? 'selected' : ''}
                           autoFocus={true}

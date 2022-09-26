@@ -80,3 +80,34 @@ export function roundPercentage(
     Math.pow(10, precision)
   );
 }
+
+/**
+ * Formats a string to only include a numeric value
+ * @param input the input to format
+ * @param negative whether the input is negative
+ * @returns the input formatted as a number
+ */
+export function formatNumberInput(input: string, negative?: boolean): string | null {
+  //TODO: refactor this to handle edge cases better
+  if (input === '' || input === '-') {
+    return '';
+  } else if (input === '.') {
+    return negative ? '-0.' : '0.';
+  }
+  
+  const re = new RegExp(`^${negative ? '-?' : ''}[0-9\b]+[.\b]?[0-9\b]{0,18}$`);
+
+  if (re.test(input)) {
+    // if (max && new Big(input).gt(new Big(max))) {
+    //   return max;
+    // }
+
+    let result = input;
+    if (negative && !input.startsWith('-')) {
+      // If negative, add a negative sign if it isn't already there.
+      result = `-${input}`;
+    }
+
+    return result;
+  } else return null;
+}
