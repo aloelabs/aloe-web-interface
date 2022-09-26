@@ -1,5 +1,5 @@
 interface PoolPerformanceSnapshot {
-  timestamp: number; // TODO this should be a number like `TokenPerformanceSnapshot`, but Matt hasn't standardized the API yet
+  timestamp: number;
   block_number: number;
   pool_address: string;
   chain_id: number;
