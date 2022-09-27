@@ -1,6 +1,5 @@
-
 interface PoolPerformanceSnapshot {
-    timestamp: string; // TODO this should be a number like `TokenPerformanceSnapshot`, but Matt hasn't standardized the API yet
+    timestamp: number; // TODO this should be a number like `TokenPerformanceSnapshot`, but Matt hasn't standardized the API yet
     block_number: number;
     pool_address: string;
     chain_id: number;
@@ -26,14 +25,16 @@ export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenR
 
     // Copy to avoid mutating the actual data
     const poolReturnsCopy = [...poolReturns];
+
+    const [matchingPoolReturns, matchingToken0Returns, matchingToken1Returns] = intersectionOfReturns(poolReturnsCopy, token0Returns, token1Returns);
     // Whether the pool contains a total_supply that is null
-    const containsNull = poolReturnsCopy.some(r => r.total_supply === null);
+    const containsNull = matchingPoolReturns.some(r => r.total_supply === null);
     // If the pool contains a total_supply that is null, we want to start after the last null total_supply
     const initialIndex = containsNull ? poolReturnsCopy.length - poolReturnsCopy.reverse().findIndex(r => r.total_supply === null) : 0;
-    const initialSupply = poolReturns[initialIndex].total_supply;
-    const initialP0 = token0Returns[initialIndex].price;
-    const initialP1 = token1Returns[initialIndex].price;
-    const initialPoolTVL = (poolReturns[initialIndex].inventory0 * initialP0) + (poolReturns[initialIndex].inventory1 * initialP1);
+    const initialSupply = matchingPoolReturns[initialIndex].total_supply;
+    const initialP0 = matchingToken0Returns[initialIndex].price;
+    const initialP1 = matchingToken1Returns[initialIndex].price;
+    const initialPoolTVL = (matchingPoolReturns[initialIndex].inventory0 * initialP0) + (matchingPoolReturns[initialIndex].inventory1 * initialP1);
     const initialPricePerShare = initialPoolTVL / initialSupply;
     const initialSqrt = Math.sqrt(initialP0 * initialP1);
 
@@ -42,10 +43,10 @@ export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenR
         amount1: 0.5 * initialPoolTVL / initialP1,
     };
 
-    return poolReturns.slice(initialIndex).map((snapshot, i) => {
+    return matchingPoolReturns.slice(initialIndex).map((snapshot, i) => {
         const index = i + initialIndex;
-        const p0 = token0Returns[index].price;
-        const p1 = token1Returns[index].price;
+        const p0 = matchingToken0Returns[index].price;
+        const p1 = matchingToken1Returns[index].price;
 
         const pricePerShare = ((snapshot.inventory0 * p0) + (snapshot.inventory1 * p1)) / snapshot.total_supply;
         const pricePerShare5050 = ((matching5050Portfolio.amount0 * p0) + (matching5050Portfolio.amount1 * p1)) / initialSupply;
@@ -58,4 +59,22 @@ export function calculateReturns(poolReturns: PoolReturns, token0Returns: TokenR
             timestamp: snapshot.timestamp,
         };
     });
+}
+
+function intersectionOfReturns(
+  poolReturns: PoolReturns,
+  token0Returns: TokenReturns,
+  token1Returns: TokenReturns
+): [PoolReturns, TokenReturns, TokenReturns] {
+  const poolTimestamps = poolReturns.map((r) => r.timestamp);
+  const token0Timestamps = token0Returns.map((r) => r.timestamp);
+  const token1Timestamps = token1Returns.map((r) => r.timestamp);
+  const timestamps = poolTimestamps
+  .filter((t: number) => token0Timestamps.includes(t))
+  .filter((t: number) => token1Timestamps.includes(t));
+  return [
+    poolReturns.filter((r) => timestamps.includes(r.timestamp)),
+    token0Returns.filter((r) => timestamps.includes(r.timestamp)),
+    token1Returns.filter((r) => timestamps.includes(r.timestamp)),
+  ];
 }
