@@ -112,7 +112,7 @@ const DropdownContainer = styled.div`
 
 export type IntermediatePoolStatsData = {
   poolData: BlendPoolMarkers;
-  poolStats: OffChainPoolStats;
+  poolStats?: OffChainPoolStats;
 };
 
 export type PoolStatsData = IntermediatePoolStatsData & {
@@ -199,7 +199,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     const poolStatsDataResponse = await Promise.all(poolRequests);
     // Fetch the intermediate data (everything except the timestamp)
     // TODO: see if we can move move the timestamp call into the above promise.all
-    const intermediatePoolStatsData = poolStatsDataResponse.map(
+    const intermediatePoolStatsData: IntermediatePoolStatsData[] = poolStatsDataResponse.map(
       (response: {
         poolData: BlendPoolMarkers;
         poolStats: AxiosResponse<any, any>;
@@ -385,8 +385,8 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   const sortedPoolsToDisplay = poolsToDisplay.sort((poolA, poolB) => {
     if (selectedSortByOption.value === SortOption.APY) {
       return (
-        poolB.poolStats.annual_percentage_rate -
-        poolA.poolStats.annual_percentage_rate
+        (poolB.poolStats?.annual_percentage_rate ?? 0) -
+        (poolA.poolStats?.annual_percentage_rate ?? 0)
       );
     } else if (selectedSortByOption.value === SortOption.NEWEST) {
       return poolB.timestamp - poolA.timestamp;
@@ -394,7 +394,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
       return poolA.timestamp - poolB.timestamp;
     } else {
       return (
-        poolB.poolStats.total_value_locked - poolA.poolStats.total_value_locked
+        (poolB.poolStats?.total_value_locked ?? 0) - (poolA.poolStats?.total_value_locked ?? 0)
       );
     }
   });
