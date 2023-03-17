@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
-import { API_URL } from '../../data/constants/Values';
+import { API_URL, IS_API_ENABLED } from '../../data/constants/Values';
 import { GlobalStats } from '../../data/GlobalStats';
 import { formatUSD } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
@@ -62,6 +62,7 @@ export default function BrowsePoolsPerformance(
   useEffect(() => {
     let mounted = true;
     const fetchGlobalStats = async () => {
+      if (!IS_API_ENABLED) return;
       const res = await axios.get(`${API_URL}/global_stats`);
       const data = res.data[0];
       if (mounted && data) {

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -15,7 +14,6 @@ import {
   RESPONSIVE_BREAKPOINT_MD,
   RESPONSIVE_BREAKPOINT_SM,
 } from '../../data/constants/Breakpoints';
-import { API_URL } from '../../data/constants/Values';
 import { OffChainPoolStats } from '../../data/PoolStats';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
@@ -34,6 +32,8 @@ import {
 import { Display, Text } from '../common/Typography';
 import { theGraphUniswapV3Client } from '../../App';
 import { getUniswapVolumeQuery } from '../../util/GraphQL';
+import axios from 'axios';
+import { API_URL, IS_API_ENABLED } from '../../data/constants/Values';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -168,6 +168,24 @@ export default function BrowseCard(props: BrowseCardProps) {
 
   useEffect(() => {
     let mounted = true;
+    const fetchPoolStats = async () => {
+      if (!IS_API_ENABLED) return;
+      const poolStatsResponse = await axios.get(
+        `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
+      );
+      const poolStatsData = poolStatsResponse.data[0] as OffChainPoolStats;
+      if (mounted && poolStatsData) {
+        setPoolStats(poolStatsData);
+      }
+    };
+    fetchPoolStats();
+    return () => {
+      mounted = false;
+    };
+  }, [blendPoolMarkers.poolAddress]);
+
+  useEffect(() => {
+    let mounted = true;
     const fetchData = async () => {
       const uniswapVolumeQuery = getUniswapVolumeQuery(blockNumber, token0.address, token1.address, blendPoolMarkers.feeTier);
       const uniswapVolumeData = await theGraphUniswapV3Client.query({ query: uniswapVolumeQuery});
@@ -187,23 +205,6 @@ export default function BrowseCard(props: BrowseCardProps) {
       mounted = false;
     };
   }, [blendPoolMarkers.feeTier, blockNumber, token0.address, token1.address]);
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchPoolStats = async () => {
-      const poolStatsResponse = await axios.get(
-        `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
-      );
-      const poolStatsData = poolStatsResponse.data[0] as OffChainPoolStats;
-      if (mounted && poolStatsData) {
-        setPoolStats(poolStatsData);
-      }
-    };
-    fetchPoolStats();
-    return () => {
-      mounted = false;
-    };
-  }, [blendPoolMarkers.poolAddress]);
 
   // TODO: Move this to a utility function
   useEffect(() => {

@@ -11,7 +11,6 @@ import GovernancePage from './pages/GovernancePage';
 
 import AppBody from './components/common/AppBody';
 import { RedirectPartialPath } from './util/RedirectPartialPath';
-import { BlendTableProvider } from './data/context/BlendTableContext';
 import ScrollToTop from './util/ScrollToTop';
 import { IS_DEV } from './util/Env';
 import ButtonExamplesPage from './pages/ButtonExamplesPage';
@@ -82,52 +81,55 @@ function App() {
     <>
       <Suspense fallback={null}>
         <WagmiProvider>
-          <BlendTableProvider>
-            <ScrollToTop />
-            <AppBody>
-              <Header />
-              <main className='flex-grow'>
-                <Routes>
+          <ScrollToTop />
+          <AppBody>
+            <Header />
+            <main className='flex-grow'>
+              <Routes>
+                <Route
+                  path='/blend'
+                  element={
+                    <RedirectPartialPath
+                      from={['/blend', '/blend/']}
+                      to={'/blend/pools'}
+                    />
+                  }
+                >
                   <Route
-                    path='/blend'
-                    element={
-                      <RedirectPartialPath
-                        from={['/blend', '/blend/']}
-                        to={'/blend/pools'}
-                      />
-                    }
-                  >
-                    <Route path='pools' element={<BlendPoolSelectPage blockNumber={blockNumber} />} />
-                    <Route
-                      path='pool/:pooladdress'
-                      element={<BlendPoolPage blockNumber={blockNumber} />}
-                    />
-                    <Route
-                      path='pool'
-                      element={<Navigate replace to='/blend' />}
-                    />
-                    <Route
-                      path='*'
-                      element={<Navigate replace to='/blend/pools' />}
-                    />
-                  </Route>
-                  {/* <Route path='/portfolio' element={<PortfolioPage />} /> */}
-                  { // Devmode-only example page routing
-                    IS_DEV && (
-                      <>
-                        <Route path='/buttons' element={<ButtonExamplesPage />} />
-                        <Route path='/inputs' element={<InputExamplesPage />} />
-                        <Route path='/portfolio' element={<PortfolioPage />} />
-                        <Route path='/governance' element={<GovernancePage />} />
-                      </>
-                  )}
-                  <Route path='/' element={<Navigate replace to='/blend' />} />
-                  <Route path='*' element={<Navigate to='/' />} />
-                </Routes>
-              </main>
-              <Footer />
-            </AppBody>
-          </BlendTableProvider>
+                    path='pools'
+                    element={<BlendPoolSelectPage blockNumber={blockNumber} />}
+                  />
+                  <Route
+                    path='pool/:pooladdress'
+                    element={<BlendPoolPage blockNumber={blockNumber} />}
+                  />
+                  <Route
+                    path='pool'
+                    element={<Navigate replace to='/blend' />}
+                  />
+                  <Route
+                    path='*'
+                    element={<Navigate replace to='/blend/pools' />}
+                  />
+                </Route>
+                {/* <Route path='/portfolio' element={<PortfolioPage />} /> */}
+                {
+                  // Devmode-only example page routing
+                  IS_DEV && (
+                    <>
+                      <Route path='/buttons' element={<ButtonExamplesPage />} />
+                      <Route path='/inputs' element={<InputExamplesPage />} />
+                      <Route path='/portfolio' element={<PortfolioPage />} />
+                      <Route path='/governance' element={<GovernancePage />} />
+                    </>
+                  )
+                }
+                <Route path='/' element={<Navigate replace to='/blend' />} />
+                <Route path='*' element={<Navigate to='/' />} />
+              </Routes>
+            </main>
+            <Footer />
+          </AppBody>
         </WagmiProvider>
       </Suspense>
     </>

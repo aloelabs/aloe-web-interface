@@ -8,3 +8,4 @@ export const DEFAULT_RATIO_CHANGE = '5.0';
 export const RATIO_CHANGE_CUTOFF = 0;
 export const API_URL = 'https://api.aloe.capital';
 export const GAS_ESTIMATION_SCALING = 1.1;
+export const IS_API_ENABLED = false;
