@@ -32,6 +32,8 @@ import {
 import { Display, Text } from '../common/Typography';
 import { theGraphUniswapV3Client } from '../../App';
 import { getUniswapVolumeQuery } from '../../util/GraphQL';
+import axios from 'axios';
+import { API_URL, IS_API_ENABLED } from '../../data/constants/Values';
 
 const CARD_BODY_BG_COLOR = 'rgba(13, 23, 30, 1)';
 const FEE_TIER_BG_COLOR = 'rgba(26, 41, 52, 1)';
@@ -163,6 +165,24 @@ export default function BrowseCard(props: BrowseCardProps) {
   const silo0 = GetSiloData(blendPoolMarkers.silo0Address.toLocaleLowerCase());
   const silo1 = GetSiloData(blendPoolMarkers.silo1Address.toLocaleLowerCase());
   const feeTier = PrintFeeTier(blendPoolMarkers.feeTier);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchPoolStats = async () => {
+      if (!IS_API_ENABLED) return;
+      const poolStatsResponse = await axios.get(
+        `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
+      );
+      const poolStatsData = poolStatsResponse.data[0] as OffChainPoolStats;
+      if (mounted && poolStatsData) {
+        setPoolStats(poolStatsData);
+      }
+    };
+    fetchPoolStats();
+    return () => {
+      mounted = false;
+    };
+  }, [blendPoolMarkers.poolAddress]);
 
   useEffect(() => {
     let mounted = true;

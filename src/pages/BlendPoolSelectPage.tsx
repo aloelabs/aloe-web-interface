@@ -41,6 +41,8 @@ import { makeEtherscanRequest } from '../util/Etherscan';
 import { BigNumber } from 'ethers';
 import { useProvider } from 'wagmi';
 import { fetchBlendPoolData } from '../data/BlendPoolFinder';
+import axios from 'axios';
+import { API_URL, IS_API_ENABLED } from '../data/constants/Values';
 
 const FACTORY_ADDRESS = '0x000000000008b34b9C428ddC00f54d49105dA313';
 const TOPIC_ZERO =
@@ -195,7 +197,22 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     const blendPoolMarkers: BlendPoolMarkers[] = await Promise.all(pools.map((pool: string) => {
       return fetchBlendPoolData(pool, provider);
     }));
-    const intermediatePoolStatsData: IntermediatePoolStatsData[] = blendPoolMarkers.map((pool: BlendPoolMarkers) => {
+    const poolRequests = IS_API_ENABLED ? blendPoolMarkers.map(async (pool) => {
+      return {
+        poolData: pool,
+        poolStats: await axios.get(
+          `${API_URL}/pool_stats/${pool.poolAddress}/1`,
+          {
+            transformResponse: (response) => {
+              const responseJSON = JSON.parse(response)[0];
+              return responseJSON as OffChainPoolStats;
+            },
+          }
+        ),
+      };
+    }) : undefined;
+    const poolStatsDataResponse = poolRequests ? await Promise.all(poolRequests) : undefined;
+    const intermediatePoolStatsData: IntermediatePoolStatsData[] = poolStatsDataResponse ?? blendPoolMarkers.map((pool: BlendPoolMarkers) => {
       return {
         poolData: pool,
       }

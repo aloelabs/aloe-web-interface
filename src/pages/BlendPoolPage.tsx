@@ -32,6 +32,8 @@ import { getUniswapVolumeQuery } from '../util/GraphQL';
 import { IOSStyleSpinner } from '../components/common/Spinner';
 import PoolAnnotation from '../components/pool/PoolAnnotation';
 import { fetchBlendPoolData } from '../data/BlendPoolFinder';
+import axios from 'axios';
+import { API_URL, IS_API_ENABLED } from '../data/constants/Values';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -160,6 +162,26 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
       mounted = false;
     }
   }, [params.pooladdress, provider]);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchPoolStats = async () => {
+      if (!IS_API_ENABLED) return;
+      const response = await axios.get(
+        `${API_URL}/pool_stats/${poolData?.poolAddress}/1`
+      );
+      const poolStatsData = response.data[0] as OffChainPoolStats;
+      if (mounted && poolStatsData) {
+        setOffChainPoolStats(poolStatsData);
+      }
+    };
+    if (poolData) {
+      fetchPoolStats();
+    }
+    return () => {
+      mounted = false;
+    }
+  }, [poolData]);
 
   useEffect(() => {
     let mounted = true;
