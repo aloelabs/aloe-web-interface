@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as PlusIcon } from '../assets/svg/white_plus.svg';
 import BrowseCard from '../components/browse/BrowseCard';
@@ -26,7 +26,6 @@ import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINTS,
 } from '../data/constants/Breakpoints';
-import { BlendTableContext } from '../data/context/BlendTableContext';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as SearchIcon } from '../assets/svg/search.svg';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
@@ -38,10 +37,12 @@ import { isPoolDeprecated } from '../util/Pool';
 import { ReactComponent as APYIcon } from '../assets/svg/apy.svg';
 import { SortAscendingIcon, SortDescendingIcon } from '@heroicons/react/solid';
 import { OffChainPoolStats } from '../data/PoolStats';
-import axios, { AxiosResponse } from 'axios';
-import { API_URL } from '../data/constants/Values';
 import { makeEtherscanRequest } from '../util/Etherscan';
 import { BigNumber } from 'ethers';
+import { useProvider } from 'wagmi';
+import { fetchBlendPoolData } from '../data/BlendPoolFinder';
+import axios from 'axios';
+import { API_URL, IS_API_ENABLED } from '../data/constants/Values';
 
 const FACTORY_ADDRESS = '0x000000000008b34b9C428ddC00f54d49105dA313';
 const TOPIC_ZERO =
@@ -169,7 +170,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     useState<DropdownWithPlaceholderValueOption>(sortByOptions[0]);
 
   const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
-  const { poolDataMap } = useContext(BlendTableContext);
+  const provider = useProvider();
 
   const isMounted = useRef(false);
 
@@ -181,8 +182,22 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
   }, []);
 
   const loadData = useCallback(async () => {
-    let poolData = Array.from(poolDataMap.values()) as BlendPoolMarkers[];
-    const poolRequests = poolData.map(async (pool) => {
+    const factoryCreationEventsRequest = await makeEtherscanRequest(
+      BLOCK_TO_SEARCH_FROM,
+      FACTORY_ADDRESS,
+      [TOPIC_ZERO],
+      false
+    );
+    const results = factoryCreationEventsRequest.data.result;
+    const pools = results.map((result: any) => {
+      const topic1: string = result.topics[1];
+      const currentPoolAddress = `0x${topic1.slice(26)}`;
+      return currentPoolAddress;
+    });
+    const blendPoolMarkers: BlendPoolMarkers[] = await Promise.all(pools.map((pool: string) => {
+      return fetchBlendPoolData(pool, provider);
+    }));
+    const poolRequests = IS_API_ENABLED ? blendPoolMarkers.map(async (pool) => {
       return {
         poolData: pool,
         poolStats: await axios.get(
@@ -195,28 +210,13 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
           }
         ),
       };
-    });
-    const poolStatsDataResponse = await Promise.all(poolRequests);
-    // Fetch the intermediate data (everything except the timestamp)
-    // TODO: see if we can move move the timestamp call into the above promise.all
-    const intermediatePoolStatsData: IntermediatePoolStatsData[] = poolStatsDataResponse.map(
-      (response: {
-        poolData: BlendPoolMarkers;
-        poolStats: AxiosResponse<any, any>;
-      }) => {
-        return {
-          poolData: response.poolData,
-          poolStats: response.poolStats.data,
-        };
+    }) : undefined;
+    const poolStatsDataResponse = poolRequests ? await Promise.all(poolRequests) : undefined;
+    const intermediatePoolStatsData: IntermediatePoolStatsData[] = poolStatsDataResponse ?? blendPoolMarkers.map((pool: BlendPoolMarkers) => {
+      return {
+        poolData: pool,
       }
-    );
-    // Fetch the timestamps for all the pools
-    const factoryCreationEventsRequest = await makeEtherscanRequest(
-      BLOCK_TO_SEARCH_FROM,
-      FACTORY_ADDRESS,
-      [TOPIC_ZERO],
-      false
-    );
+    });
     const poolStatsData = intermediatePoolStatsData.map((poolStats) => {
       const poolCreationEvent = factoryCreationEventsRequest.data.result.find(
         (event: any) => {
@@ -244,7 +244,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
     if (isMounted.current) {
       setPools(nonDeprecatedPoolData);
       setSearchablePools(poolStatsData);
-      if (poolData.length > 0) {
+      if (pools.length > 0) {
         setPoolsLoading(false);
       }
     }
@@ -269,7 +269,7 @@ export default function BlendPoolSelectPage(props: BlendPoolSelectPageProps) {
       setTokenOptions(tokenOptionData);
       setActiveTokenOptions(tokenOptionData);
     }
-  }, [poolDataMap]);
+  }, [provider]);
 
   useEffect(() => {
     loadData();

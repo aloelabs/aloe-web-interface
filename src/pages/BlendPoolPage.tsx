@@ -1,5 +1,4 @@
-import axios from 'axios';
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import BlendAllocationGraph from '../components/allocationgraph/BlendAllocationGraph';
@@ -19,21 +18,22 @@ import {
   RESPONSIVE_BREAKPOINT_SM,
   RESPONSIVE_BREAKPOINT_XS,
 } from '../data/constants/Breakpoints';
-import { API_URL } from '../data/constants/Values';
 import { BlendPoolProvider } from '../data/context/BlendPoolContext';
-import { BlendTableContext } from '../data/context/BlendTableContext';
 import { OffChainPoolStats } from '../data/PoolStats';
 import { GetSiloData } from '../data/SiloData';
 import { GetTokenData } from '../data/TokenData';
 import { ReactComponent as OpenIcon } from '../assets/svg/open.svg';
 import tw from 'twin.macro';
 import useMediaQuery from '../data/hooks/UseMediaQuery';
-import { useAccount } from 'wagmi';
-import { FeeTier } from '../data/BlendPoolMarkers';
+import { useAccount, useProvider } from 'wagmi';
+import { BlendPoolMarkers, FeeTier } from '../data/BlendPoolMarkers';
 import { theGraphUniswapV3Client } from '../App';
 import { getUniswapVolumeQuery } from '../util/GraphQL';
 import { IOSStyleSpinner } from '../components/common/Spinner';
 import PoolAnnotation from '../components/pool/PoolAnnotation';
+import { fetchBlendPoolData } from '../data/BlendPoolFinder';
+import axios from 'axios';
+import { API_URL, IS_API_ENABLED } from '../data/constants/Values';
 
 const ABOUT_MESSAGE_TEXT_COLOR = 'rgba(130, 160, 182, 1)';
 
@@ -135,21 +135,38 @@ export type BlendPoolPageProps = {
 
 export default function BlendPoolPage(props: BlendPoolPageProps) {
   const { blockNumber } = props;
+  const [poolData, setPoolData] = React.useState<BlendPoolMarkers | null>(null);
   const [offChainPoolStats, setOffChainPoolStats] =
     React.useState<OffChainPoolStats>();
   const [uniswapVolume, setUniswapVolume] = React.useState<number | null>(null);
   const params = useParams<PoolParams>();
   const navigate = useNavigate();
+  const provider = useProvider();
   const isGTMediumScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.MD);
   const isGTSmallScreen = useMediaQuery(RESPONSIVE_BREAKPOINTS.SM);
 
-  const { poolDataMap, fetchPoolData } = useContext(BlendTableContext);
-
-  const poolData = poolDataMap.get(params.pooladdress || '');
+  useEffect(() => {
+    let mounted = true;
+    async function fetch() {
+      const poolAddress = params.pooladdress;
+      if (!poolAddress) {
+        return;
+      }
+      const fetchedPoolData = await fetchBlendPoolData(poolAddress, provider);
+      if (mounted) {
+        setPoolData(fetchedPoolData);
+      }
+    }
+    fetch();
+    return () => {
+      mounted = false;
+    }
+  }, [params.pooladdress, provider]);
 
   useEffect(() => {
     let mounted = true;
     const fetchPoolStats = async () => {
+      if (!IS_API_ENABLED) return;
       const response = await axios.get(
         `${API_URL}/pool_stats/${poolData?.poolAddress}/1`
       );
@@ -163,7 +180,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
     }
     return () => {
       mounted = false;
-    };
+    }
   }, [poolData]);
 
   useEffect(() => {
@@ -208,9 +225,6 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
   const walletIsConnected = address !== undefined;
 
   if (!poolData) {
-    if (params.pooladdress) {
-      fetchPoolData(params.pooladdress);
-    }
     return (
       <LoaderWrapper>
         <IOSStyleSpinner
@@ -247,7 +261,7 @@ export default function BlendPoolPage(props: BlendPoolPageProps) {
           </div>
         </div>
         <GridExpandingDiv className='w-full min-w-[300px] md:mt-24 md:grid-flow-row-dense'>
-          <PoolAnnotation poolData={poolData}/>
+          <PoolAnnotation poolData={poolData} />
           <PoolInteractionTabs
             poolData={poolData}
             walletIsConnected={walletIsConnected}
