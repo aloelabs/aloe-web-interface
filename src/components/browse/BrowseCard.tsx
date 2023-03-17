@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
@@ -15,7 +14,6 @@ import {
   RESPONSIVE_BREAKPOINT_MD,
   RESPONSIVE_BREAKPOINT_SM,
 } from '../../data/constants/Breakpoints';
-import { API_URL } from '../../data/constants/Values';
 import { OffChainPoolStats } from '../../data/PoolStats';
 import { GetSiloData } from '../../data/SiloData';
 import { GetTokenData } from '../../data/TokenData';
@@ -187,23 +185,6 @@ export default function BrowseCard(props: BrowseCardProps) {
       mounted = false;
     };
   }, [blendPoolMarkers.feeTier, blockNumber, token0.address, token1.address]);
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchPoolStats = async () => {
-      const poolStatsResponse = await axios.get(
-        `${API_URL}/pool_stats/${blendPoolMarkers.poolAddress}/1`
-      );
-      const poolStatsData = poolStatsResponse.data[0] as OffChainPoolStats;
-      if (mounted && poolStatsData) {
-        setPoolStats(poolStatsData);
-      }
-    };
-    fetchPoolStats();
-    return () => {
-      mounted = false;
-    };
-  }, [blendPoolMarkers.poolAddress]);
 
   // TODO: Move this to a utility function
   useEffect(() => {

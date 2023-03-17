@@ -1,10 +1,8 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { BlendPoolMarkers } from '../../data/BlendPoolMarkers';
 import { RESPONSIVE_BREAKPOINT_SM } from '../../data/constants/Breakpoints';
-import { API_URL } from '../../data/constants/Values';
 import { GlobalStats } from '../../data/GlobalStats';
 import { formatUSD } from '../../util/Numbers';
 import { Display, Text } from '../common/Typography';
@@ -58,25 +56,6 @@ export default function BrowsePoolsPerformance(
   props: BrowsePoolsPerformanceProps
 ) {
   const [globalStats, setGlobalStats] = useState<GlobalStats>();
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchGlobalStats = async () => {
-      const res = await axios.get(`${API_URL}/global_stats`);
-      const data = res.data[0];
-      if (mounted && data) {
-        setGlobalStats({
-          poolCount: data['pool_count'],
-          users: data['users'],
-          totalValueLocked: data['total_value_locked'],
-        });
-      }
-    };
-    fetchGlobalStats();
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   return (
     <Wrapper>
